@@ -1,0 +1,8 @@
+#!/bin/bash
+
+pushd ~
+yadm submodule update --init --recursive --remote
+popd
+
+# set up alternate gitconfig file used to determine local settings
+yadm alt

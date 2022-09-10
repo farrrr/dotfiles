@@ -1,0 +1,18 @@
+#!/bin/bash
+
+###############################################################################
+# Associate filetypes to apps that should open them                           #
+###############################################################################
+# open in Visual Studio Code
+duti -s com.microsoft.VSCode .js all           # javascript - extensions work too
+duti -s com.microsoft.VSCode .ts all           # typescript
+duti -s com.microsoft.VSCode .md all           # markdown
+duti -s com.microsoft.VSCode com.apple.log all # .log
+duti -s com.microsoft.VSCode public.json all
+duti -s com.microsoft.VSCode public.plain-text all # text files
+duti -s com.microsoft.VSCode public.text all       # does this have a real effect?
+duti -s com.microsoft.VSCode public.xml all
+duti -s com.microsoft.VSCode public.yaml all
+# seems to have no effecxt: public.data, .lock
+# open in chrome
+#duti -s com.google.chrome public.svg-image all # .svg

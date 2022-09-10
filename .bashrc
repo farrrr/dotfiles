@@ -1,0 +1,25 @@
+###############################################################################
+# .bashrc subshells run only this, not .bash_profile
+###############################################################################
+# shellcheck shell=bash
+#echo ".bashrc running"
+
+#export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+# history settings
+# HISTSIZE 2500 had good performance (250ms startup, contains about three to four months history)
+export HISTSIZE=9999
+if [ -n "$BASH_VERSION" ]; then
+  export HISTFILESIZE=$HISTSIZE
+  export HISTTIMEFORMAT='%F %T '
+  # make sure history is saved
+  shopt -s histappend
+  # http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
+  export HISTFILE=~/.bash_history_not_truncated
+  # stop duplicates in history
+  export HISTCONTROL=ignoreboth:erasedups
+  # and synced https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
+  PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
+
+  [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+fi

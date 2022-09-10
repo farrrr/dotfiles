@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# install asdf version manager https://asdf-vm.com/
+if [ ! -d ~/.asdf ]; then
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+fi
+asdf update
+asdf plugin update --all
+
+set +e
+# remove these removals eventually
+# asdf uninstall java
+# asdf plugin remove java
+# asdf plugin remove nodejs
+
+asdf plugin add ruby
+asdf plugin add python
+# asdf plugin add bundler
+# asdf direnv doesn't seem absolutely necessary, but could improve performance. 2.30.2 works
+asdf plugin add direnv
+asdf plugin add lazydocker https://github.com/comdotlinux/asdf-lazydocker.git
+set -e
+asdf install direnv latest
+asdf global direnv latest
+# if no versions are installed, the asdf plugin will fall back to "system"
+asdf install lazydocker latest && asdf global lazydocker latest

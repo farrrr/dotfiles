@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ -d ~/.tmux/plugins ]; then
+  for plugin in ~/.tmux/plugins/*; do
+    set +e
+    pushd "$plugin"
+    git pull
+    git submodule update --init --recursive
+    popd
+    set -e
+  done
+fi
+
+# add tmux-256color terminfo to ~/.terminfo
+curl -L https://invisible-island.net/datafiles/current/terminfo.src.gz >/tmp/terminfo.src.gz
+gunzip -f /tmp/terminfo.src.gz
+/usr/bin/tic -xe tmux-256color /tmp/terminfo.src

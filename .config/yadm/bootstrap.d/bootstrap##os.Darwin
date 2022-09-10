@@ -1,0 +1,385 @@
+#!/bin/bash
+###############################################################################
+# OS: Darwin
+###############################################################################
+set -e
+
+export PROCESSOR_ARCHITECTURE=${PROCESSOR_ARCHITECTURE:-$(uname -p)}
+
+if [ -f "/Library/Apple/System/Library/Receipts/com.apple.pkg.RosettaUpdateAuto.bom" ]; then
+  export ROSETTA_INSTALLED=1
+fi
+if [[ $PROCESSOR_ARCHITECTURE != 'arm' || -n "$ROSETTA_INSTALLED" ]]; then
+  export X86_OR_ROSETTA=1
+fi
+
+###############################################################################
+# macOS specific installations
+###############################################################################
+OS_MAJOR_VERSION=$(sw_vers -productVersion | cut -d. -f1)
+BIG_SUR_MAJOR_VERSION=11
+MONTEREY_MAJOR_VERSION=12
+
+###############################################################################
+# App store                                                                   #
+###############################################################################
+brew install mas || true
+
+#mas install 497799835                   # Xcode
+#mas install 1176074088                  # Termius - SSH Client
+#mas install 1529448980                  # Reeder 5
+#mas install 1037779758                  # Best Trace
+#mas install 441258766                   # Magnet
+#mas install 1091189122                  # 熊掌記
+#mas install 539883307                   # LINE
+#mas install 425424353                   # The Unarchiver
+
+
+# if [[ -n $X86_OR_ROSETTA ]]; then
+#   # Microsoft Remote Desktop 10 1295203466
+#   mas install 1295203466 # Microsoft Remote Desktop
+# fi
+
+# upgrade all
+# if [ "$OS_MAJOR_VERSION" -ge "$BIG_SUR_MAJOR_VERSION" ]; then
+#   mas upgrade
+# fi
+
+xcode-select --install || true
+
+###############################################################################
+# Homebrew                                                                    #
+###############################################################################
+
+if ! hash brew 2>/dev/null; then
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
+brewSafeUninstall() {
+  if brew list "$@" 2>/dev/null; then
+    brew uninstall "$@"
+  fi
+}
+
+brewSafeUninstallCask() {
+  if brew list --cask "$@" 2>/dev/null; then
+    brew uninstall --cask "$@"
+  fi
+}
+
+brewSafeUntap() {
+  if brew tap "$@" 2>/dev/null; then
+    brew untap "$@"
+  fi
+}
+
+# some uninstalls must be made before update
+# brewSafeUninstallCask virtualbox
+# brewSafeUninstall gdu
+
+brew cleanup
+brew update
+brew upgrade
+# is a separate upgrade for casks redundant?
+#brew upgrade --cask
+brew tap aws/tap                # for aws-sam-cli
+brew tap homebrew/cask-fonts    # for font-fira-code
+brew tap homebrew/cask-versions # for google-chrome-beta
+# enables searching brew for commands not found, e.g. when. https://github.com/Homebrew/homebrew-command-not-found
+brew tap homebrew/command-not-found
+
+# not all computers need logitech drivers, also, these need sudo
+# brew install --cask homebrew/cask-drivers/logitech-gaming-software
+brew install --cask homebrew/cask-drivers/logitech-options
+
+# remove brews here that were previously installed, to sync between machines
+# brewSafeUntap wix/brew # for AppleSimulatorUtils
+# for formula in zsh-autosuggestions ilmbase asciinema cheat fortune git-number z.lua weechat broot deno htop rbenv applesimutils node@14 nodebrew asdf pipenv pyenv-virtualenvwrapper pyenv-virtualenv pyenv openjdk@11 transcrypt nginx cloc mosh volta; do
+#   brewSafeUninstall $formula
+# done
+#
+# for cask in luna-display zeplin zenmap pokerth dash controlplane fork keycastr postman shortcat tor-browser tripmode stunnel java8 p4v authy; do
+#   brewSafeUninstallCask $cask
+# done
+
+# this must be in alphabetical order!
+# maybe add these eventually:
+# haskell-stack
+# and then: cargo install viu https://github.com/atanunq/viu
+apps="
+atuin
+awscli
+bash
+bash-completion
+bat
+choose-rust
+coreutils
+diff-so-fancy
+direnv
+duf
+duti
+exa
+fd
+findutils
+fx
+fzf
+gawk
+gh
+git
+git-cliff
+git-crypt
+git-delta
+git-extras
+git-lfs
+git-recent
+glances
+gnu-sed
+gnupg
+gpg-tui
+gradle
+grc
+grep
+gron
+highlight
+htop
+hyperfine
+imagemagick
+jesseduffield/lazygit/lazygit
+jq
+less
+librsvg
+lnav
+lsd
+ncdu
+neovim
+prettyping
+procs
+react-native-cli
+ripgrep
+rust
+sd
+shellcheck
+shfmt
+speedtest-cli
+thefuck
+tig
+tmux
+tree
+ugit
+vim
+watch
+watchman
+wget
+yadm
+yarn
+zoxide
+zsh
+"
+# note: yarn will install node, which you might want to remove, since it is handled by nvm
+alreadyInstalled=$(brew list --formula)
+installTheseLines=$(comm -23 <(echo "$apps") <(echo "$alreadyInstalled"))
+installThese=${installTheseLines//$'\n'/ }
+echo "$installThese" | xargs brew install
+
+# TODO: add more when better arm support: philips-hue-sync plex imageoptim private-internet-access mockoon
+casks="
+adobe-acrobat-reader
+alfred
+docker
+flipper
+font-meslo-lg-nerd-font
+font-sauce-code-pro-nerd-font
+google-chrome-beta
+google-cloud-sdk
+iina
+iterm2
+jetbrains-toolbox
+microsoft-edge
+microsoft-teams
+monitorcontrol
+notion
+setapp
+sound-control
+switchhosts
+telegram
+tower
+visual-studio-code
+"
+
+alreadyInstalled=$(brew list --cask)
+installTheseLines=$(comm -23 <(echo "$casks") <(echo "$alreadyInstalled"))
+installThese=${installTheseLines//$'\n'/ }
+echo "$installThese" | xargs brew install --cask
+
+brew link --overwrite ugit
+
+  # if [[ $PROCESSOR_ARCHITECTURE == 'arm' ]]; then
+
+  # fi
+  # arm part ends
+
+# this is needed to suppress zsh message "compinit: insecure directories""
+chmod g-w "$HOMEBREW_PREFIX"/share ~/.zsh-personal-completions
+
+
+############################################################################
+# mac specific configurations
+###############################################################################
+
+if ! [ -f ~/.fzf."$SHELLNAME" ]; then
+  "$HOMEBREW_PREFIX"/opt/fzf/install --key-bindings --completion --no-update-rc
+fi
+
+###############################################################################
+# Finder                                                                      #
+###############################################################################
+# show hidden files
+defaults write com.apple.finder AppleShowAllFiles -bool true
+# Show all filename extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+# Finder: show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+# Show Path bar in Finder
+defaults write com.apple.finder ShowPathbar -bool true
+# Use list view in all Finder windows by default (won't affect folders where there is already a DS_Store)
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+# When performing a search, search the current folder by default
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+# hide all icons on from desktop
+defaults write com.apple.finder CreateDesktop -bool false
+# Remove items from the Trash after 30 days
+defaults write com.apple.finder FXRemoveOldTrashItems -bool true
+# Display full POSIX path as Finder window title
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+# Disable the warning when changing a file extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+# show "Quit" menu item for finder
+defaults write com.apple.finder QuitMenuItem -bool true
+
+###############################################################################
+# Sound                                                                       #
+###############################################################################
+# Play feedback when volume is changed
+defaults write -g com.apple.sound.beep.feedback -int 1
+# Change the alert beep sound
+if [ -f /System/Library/Sounds/Pop.aiff ]; then
+  defaults write .GlobalPreferences com.apple.sound.beep.sound /System/Library/Sounds/Pop.aiff
+fi
+
+###############################################################################
+# Performance                                                                 #
+###############################################################################
+# reduce transparency to make WindowServer take less CPU, but looks like shit
+#defaults write com.apple.universalaccess reduceTransparency 1
+
+###############################################################################
+# Miscellaneous                                                               #
+###############################################################################
+# Save screenshots to Pictures
+defaults write com.apple.screencapture location "${HOME}/Pictures"
+
+# reopen previous windows when starting an app
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
+
+# don't restore images in preview
+defaults write com.apple.Preview NSQuitAlwaysKeepsWindows -bool false
+
+# Expand save panel by default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Make animated dialog boxes, like the save, appear faster (0.2 is default)
+# did this make dialogs appear slower?
+#defaults write NSGlobalDomain NSWindowResizeTime .05
+
+# Expand print panel by default - these don't work anymore? (but expanded state is preserved between restarts)
+#defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+#defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# show battery percent
+defaults write com.apple.menuextra.battery ShowPercent YES
+
+# make clock show only time, so it can be clickable in Big Sur (to show notification center)
+defaults write com.apple.menuextra.clock DateFormat -string "HH:mm"
+
+# set TextEdit default format to plain text
+defaults write com.apple.TextEdit RichText -int 0
+
+# smoother font on low DPI https://code.visualstudio.com/updates/v1_28#_blurriness-on-macos-mojave
+# Apple doesn't intend to support this option https://intellij-support.jetbrains.com/hc/en-us/articles/360016827360-Reporting-font-rendering-problems
+#defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO
+defaults delete CGFontRenderingFontSmoothingDisabled || true
+
+# set screen saver to activate after 20min instead of 5min
+defaults -currentHost write com.apple.screensaver idleTime 1200
+
+###############################################################################
+# Mouse & Trackpad                                                            #
+###############################################################################
+# show in menu bar - these files no longer present in Big Sur
+#defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" "/System/Library/CoreServices/Menu Extras/Volume.menu"
+# increase trackpad tracking speed - works!
+# defaults write -g com.apple.trackpad.scaling -float 3.0
+# increase mouse tracking speed, 3.0 normal max but magic mouse is slow
+# defaults write -g com.apple.mouse.scaling -float 5.0
+# Trackpad: enable tap to click for this user and for the login screen - don't work!
+#defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+#defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+#defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+# defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseButtonMode TwoButton
+# Smart zoom enabled, double-tap with one finger
+# defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseOneFingerDoubleTapGesture -int 1
+# Double-tap with two fingers to Mission Control (set to 0 to disable) (already default?)
+# defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseTwoFingerDoubleTapGesture -int 3
+# Two finger horizontal swipe
+# 0 = Swipe between pages with one finger
+# 1 = Swipe between pages
+# 2 = Swipe between full screen apps with two fingers, swipe between pages with one finger (already default?)
+# defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseTwoFingerHorizSwipeGesture -int 2
+
+###############################################################################
+# Keyboard                                                                    #
+###############################################################################
+# THESE SEEM DANGEROUS, NOT CONSISTENT, destroys key repeat in Chrome?
+# Set a blazingly fast keyboard repeat rate
+# defaults write NSGlobalDomain KeyRepeat -int 1
+# defaults write NSGlobalDomain InitialKeyRepeat -int 25
+
+# Disable smart quotes as they’re annoying when typing code
+# defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Disable smart dashes as they’re annoying when typing code
+# defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Use all F1, F2, etc keys as standard function keys
+# defaults write -g com.apple.keyboard.fnState -bool true
+
+###############################################################################
+# Keyboard shortcuts                                                          #
+###############################################################################
+# local keyboard shortucts
+
+# repair full screen for chrome beta
+#defaults write com.google.Chrome.beta NSUserKeyEquivalents -dict-add "Enter Full Screen" "@^f"
+# undo the setting, do
+# defaults delete com.google.Chrome.beta NSUserKeyEquivalents
+
+# this didn't work anyway
+#defaults write com.electron.react-native-debugger NSUserKeyEquivalents -dict-add "Enter Full Screen" "@^f"
+
+# global keyboard shortcuts fixed
+
+#defaults write -globalDomain NSUserKeyEquivalents -dict-add "Enter Full Screen" "@^f"
+#defaults write -globalDomain NSUserKeyEquivalents -dict-add "Zoom In" "@+"
+# couldn't get @< to parse
+#defaults write -globalDomain NSUserKeyEquivalents -dict-add "Move focus to next window" '@\\<'
+
+# to undo the setting
+#defaults delete -globalDomain NSUserKeyEquivalents
+
+if [ "$OS_MAJOR_VERSION" -ge "$MONTEREY_MAJOR_VERSION" ]; then
+  # brew doctor will always fail on Monterey while it is in beta
+  set +e
+fi
+brew doctor
+set -e

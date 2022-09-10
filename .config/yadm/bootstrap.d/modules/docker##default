@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker system prune -f 2>>/tmp/docker_system_prune.err.txt || true

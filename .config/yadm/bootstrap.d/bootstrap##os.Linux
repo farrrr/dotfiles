@@ -1,0 +1,237 @@
+#!/bin/bash
+
+set -e
+
+if grep -q Raspbian /etc/os-release 2>/dev/null; then
+  DOTFILES_LITE=1
+fi
+
+if [ -x "$(command -v lsb_release)" ] && [[ $(lsb_release -si) == 'Ubuntu' ]]; then
+  OS_UBUNTU=1
+  if dpkg -l ubuntu-desktop >/dev/null; then
+    UBUNTU_DESKTOP=1
+  fi
+fi
+
+if grep -q 'microsoft.*WSL' /proc/version; then OS_WSL=1; fi
+
+export PROCESSOR_ARCHITECTURE=${PROCESSOR_ARCHITECTURE:-$(uname -p)}
+
+###############################################################################
+# Linux (and Windows Subsystem for Linux)                                     #
+###############################################################################
+if ! [ -x "$(command -v add-apt-repository)" ]; then
+  sudo apt install -y software-properties-common
+fi
+if vi --version | grep -q "Small version"; then
+  sudo apt install -y --reinstall vim
+fi
+set +e
+# add repo to get newest git
+sudo add-apt-repository -y ppa:git-core/ppa
+# add repo to get newest tmux
+sudo add-apt-repository -y ppa:pi-rho/dev
+# add repo to get neovim
+sudo apt-add-repository -y ppa:neovim-ppa/stable
+# add repo to get gh
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+sudo apt-add-repository -y https://cli.github.com/packages
+sudo apt update
+sudo apt full-upgrade -y
+# eventually remove the removals
+sudo apt remove -y fasd
+# tmux-next, ripgrep and bat are absent from raspbian
+  apps="
+    zsh
+    git
+    git-crypt
+    yadm
+    vim
+    tmux
+    highlight
+    trash-cli
+    zoxide
+    ripgrep
+    bat
+    fd-find
+    gh
+    tree
+    tig
+    aptitude
+    lnav
+    tmpreaper
+    libssl-dev
+    pkg-config
+  "
+  for app in $apps; do
+    if ! dpkg-query -l "$app" >/dev/null; then
+      sudo apt install -y "$app"
+    fi
+  done
+
+  if [ -z "$DOTFILES_LITE" ]; then
+    sudo apt install -y \
+      direnv \
+      build-essential \
+      python-pip \
+      python3-pip \
+      python-dev \
+      python3-dev \
+      cargo \
+      fortune-mod
+
+    sudo -H pip install --upgrade pip
+    sudo -H pip3 install --upgrade pip
+    sudo -H pip install virtualenv virtualenvwrapper
+    sudo -H pip3 install thefuck
+  fi
+  set -e
+
+  installLsd() {
+    SYSTEM_DEB_SUFFIX=$1
+    TEMP_DEB="$(mktemp)" &&
+      curl -sL github.com/Peltoche/lsd/releases/latest |
+      grep "lsd_[[:digit:]]\.[[:digit:]]*\.[[:digit:]]*_$SYSTEM_DEB_SUFFIX.deb\"" |
+        head -1 |
+        awk -F "\"" '{print "https://github.com" $2}' |
+        wget --show-progress -O "$TEMP_DEB" -qNi - &&
+      sudo dpkg --skip-same-version -i "$TEMP_DEB"
+    rm -f "$TEMP_DEB"
+  }
+
+  if [[ $(dpkg --print-architecture) == "amd64" || $(dpkg --print-architecture) == "arm64" ]]; then
+    # WSL will have amd64
+    # Ubuntu desktop on Raspberry pi 400 will have arm64
+    installLsd "$(dpkg --print-architecture)"
+  elif [[ $(dpkg --print-architecture) == "armhf" ]]; then
+    # probably 32 bit Rapberry Pi OS
+    LSD_INSTALL_DIR="$HOME/.manually-installed/lsd"
+    mkdir -p "$LSD_INSTALL_DIR"
+    curl -sL github.com/Peltoche/lsd/releases/latest |
+      grep "lsd-[[:digit:]]\.[[:digit:]]*\.[[:digit:]]*-arm-unknown-linux-gnueabihf.tar.gz\"" |
+      head -1 |
+      awk -F "\"" '{print "https://github.com" $2}' |
+      wget --show-progress -qNi - -O - |
+      tar -xzv --strip=1 -C "$LSD_INSTALL_DIR"
+  else
+    # afaik this fallback is never used, but it should fail and stop the execution if it doesn't work
+    installLsd "$(dpkg --print-architecture)"
+  fi
+
+  if [ -n "$OS_WSL" ]; then
+    #################################################################################
+    # configuration specific for WSL
+    #################################################################################
+    # unfortunately trash-empty 0.12 does not clean NTFS mounted file systems
+    ~/bin/trash-empty-wsl +30
+  else
+    #################################################################################
+    # configuration specific non-WSL, e.g. raspberry pi, and those that support snap
+    #################################################################################
+
+    # the following was an attempt to use snap on Raspberry pi. Installed, but no command line tool except hello-world worked
+    if ! [ -x "$(command -v snap)" ]; then
+      sudo apt install -y snapd
+      sudo reboot
+    fi
+    sudo snap install core
+    sudo snap refresh
+    if [ -n "$OS_UBUNTU" ]; then
+      sudo snap install http --channel latest/candidate
+      if [ -n "$UBUNTU_DESKTOP" ]; then
+        # dark mode
+        gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+        # no background picture (default was 'zoom')
+        gsettings set org.gnome.desktop.background picture-options 'none'
+        # black Background (default was '#023c88')
+        gsettings set org.gnome.desktop.background primary-color '#000000'
+
+        # auto hide dock
+        gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
+        gsettings set org.gnome.shell.extensions.dash-to-dock autohide true
+        gsettings set org.gnome.shell.extensions.dash-to-dock intellihide-mode 'ALL_WINDOWS'
+
+        sudo apt install -y curl
+
+        # ssh
+        sudo apt install -y ssh
+        sudo systemctl enable --now ssh
+
+        # install vscode
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >/tmp/packages.microsoft.gpg
+        sudo install -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+        sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+        sudo apt install -y apt-transport-https
+        sudo apt install -y code fonts-cascadia-code xclip
+
+        # install Chromium
+        sudo snap install chromium --channel latest/beta
+      fi
+      if [ -x "$(command -v cargo)" ]; then
+        cargo install hyperfine
+        cargo install exa
+      fi
+    fi
+  fi
+
+  sudo apt autoremove --yes
+
+  # overwrite old tmux
+  if [ -f /usr/bin/tmux-next ]; then
+    sudo ln -sf /usr/bin/tmux-next /usr/bin/tmux
+  fi
+
+  if ! [ -x "$(command -v git-lfs)" ]; then
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+  fi
+  sudo apt install git-lfs || true
+  if [ -x "$(command -v git-lfs)" ]; then
+    git lfs install --skip-smudge
+  fi
+
+  # do some cleanup
+  trash-empty 30
+  sudo tmpreaper --all --showdeleted 30d /tmp
+
+  # remove cron warning
+  sudo sed -i~ 's/^SHOWWARNING=true$/# SHOWWARNING=true/' /etc/tmpreaper.conf
+
+  # remove the boring and verbose standard motd
+  if [ -f /etc/motd ] && ! [ -f /etc/motd\~ ]; then
+    pushd /etc
+    sudo mv motd motd\~
+    sudo touch motd
+    popd
+  fi
+
+  if ! grep -q "$USR:.*zsh" /etc/passwd; then
+    sudo chsh -s "$(which zsh)" "$(whoami)"
+  fi
+
+  # install fuzzy matcher (^R, Alt-C, ^T, **)
+  if [ -x "$(command -v fzf)" ]; then
+    pushd ~/.fzf
+    git pull
+    ./install --bin
+    popd
+  else
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install --completion --key-bindings --no-update-rc
+  fi
+
+  if [ -z "$DOTFILES_LITE" ]; then
+    # haskell
+    if ! [ -x "$(command -v stack)" ]; then
+      wget -qO- https://get.haskellstack.org/ | sh || true
+    fi
+  fi
+
+  # when it is needed, this updates the OS, so it will take a LONG time
+  if [ -x "$(command -v do-release-upgrade)" ]; then
+    # upgrade to the development release
+    sudo do-release-upgrade -d || true
+  fi
+
+  # no more Linux related things to do
+  exit 0
+fi

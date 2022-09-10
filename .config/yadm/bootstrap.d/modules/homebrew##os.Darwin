@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ -d "/opt/homebrew/bin" ]; then
+  export HOMEBREW_PREFIX=/opt/homebrew
+else
+  export HOMEBREW_PREFIX=/usr/local
+  # the /opt/homebrew path is hard coded n gpg-agent.conf
+  sudo mkdir -p /opt/homebrew/bin
+  sudo ln -fs $HOMEBREW_PREFIX/bin/pinentry-mac /opt/homebrew/bin/pinentry-mac
+fi
+
+# overriding original path /usr/bin:/bin:/usr/sbin:/sbin with ${PATH_OVERRIDE} so that gpg and node will be on path for spotlight launched programs"
+# not working on Big Sur?
+PATH_OVERRIDE=$(getconf PATH):${HOME}/bin:$HOMEBREW_PREFIX/bin
+sudo launchctl config user path "$PATH_OVERRIDE"
