@@ -1,3 +1,94 @@
 [user]
 	name = Far Tseng
 	email = farrrr@gmail.com
+[include]
+    path = .gitconfig.modern
+[include]
+    path = .gitconfig.pager
+[init]
+	defaultBranch = main
+[checkout]
+	workers = 0
+[commit]
+	gpgsign = true
+[mergetool]
+	keepbackup = false
+	prompt = false
+    trustExitCode = true
+[difftool]
+    prompt = true
+[diff]
+    algorithm = histogram
+	# Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject instead of a/b/c/d as prefixes for patches
+  	mnemonicPrefix = true
+    tool = vscode
+    colorMoved = default
+    submodule = log
+[merge]
+    tool = kdiff3
+	# Include summaries of merged commits in newly created merge commit messages
+	log = true
+[status]
+	submodulesummary = true
+[alias]
+	lol = log --graph --all
+	lo = log --graph
+	ci = commit -v
+	br = branch
+	st = status
+	mt = mergetool
+	dt = difftool
+	re = restore
+	sw = switch
+	d = diff --color-words=.
+	# fetch only current branch and master
+	f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'master' ]]; then git fetch --no-tags origin master; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) master:master; fi"
+	# pull only current branch, fetch nothing else
+	p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
+	# logp and reflogp have been adjustd so that they are compatible with git-delta
+	logp = log -p --format='commit %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s'
+	reflogp = reflog -p --format='commit %C(auto)%h%d %gd: %gs (%s)'
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	worktree-skipped = !git ls-files -v | grep "^S"
+	unchange-assumed = !git ls-files -v | grep "^[[:lower:]]"
+    cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 git branch -d"
+	cleanup-all = "!f(){\
+        git branch | grep -v 'master' | grep -v ^* | sh -c 'while read br; \
+		  do git log -1 $br; \
+		  git branch -D $br >> /tmp/cleaned-branches.txt; \
+		done' ;\
+    }; f"
+	stash-rename = "!_() { if [ -z \"$1\" ] || [ -z \"$2\" ]; then echo \"git rename-stash 0 NewName\" && echo \"\" && git stash list && exit 1; else stash=\"stash@{$1}\"; rev=$(git rev-parse \"${stash}\"); git stash drop \"${stash}\" || exit 1; git stash store -m \"$2\" \"$rev\" || exit 1; git stash list; fi }; _"
+[fetch]
+	prune = true
+[log]
+	decorate = short
+	abbrevcommit = true
+	date = relative
+[rerere]
+	enabled = true
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
+[format]
+	pretty = %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s
+[difftool "vscode"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+[mergetool "vscode"]
+    cmd = code --wait $MERGED
+# diff for binary Apple property list files
+[diff "plist"]
+	textconv = plutil -convert xml1 -o -
+# this will redirect all http based remote URLs to the git protocol instead, fixing auth problems at github. But causing https://stackoverflow.com/questions/58596233/failed-to-fetch-https-github-com-rust-lang-crates-io-index, but when I comment these lines out I get https://stackoverflow.com/questions/10909221/why-is-github-asking-for-username-password-when-following-the-instructions-on-sc
+[url "git@github.com:"]
+	insteadOf = http://github.com/
+	insteadOf = https://github.com/
+[lfs]
+	locksverify = false
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

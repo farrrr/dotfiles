@@ -309,37 +309,6 @@ zinit wait'2' lucid light-mode for \
 
 zinit wait'2' lucid atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' light-mode for hlissner/zsh-autopair
 
-# if [ -z "$DOTFILES_LITE" ]
-# then
-#   # Not really plugins, but very good to have async anyway
-#   # sourcing rvm takes 0.51s, so there will be a lag when it is sourced
-#   # also, loading rvm as a zinit will make it ignore the .ruby-version file if you are already inside that folder
-#   #if [ -d ~/.rbenv ]; then
-#   #  zinit wait'2' lucid as'null' \
-#   #    atinit'eval "$(rbenv init -)"' light-mode for zdharma-continuum/null
-#   #else
-#   #  zinit wait'2' lucid as'null' \
-#   #    atinit'if [ -s $HOME/.rvm/scripts/rvm ]; then source "$HOME/.rvm/scripts/rvm"; fi' light-mode for zdharma-continuum/null
-#   #fi
-#   if [ -s $HOME/.rvm/scripts/rvm ]; then
-#     source "$HOME/.rvm/scripts/rvm"
-#     rvm implode
-#   fi
-#
-#   # # python environent will also cause a lag
-#   # # this takes 0.166s
-#   # zinit wait'2a' lucid as'null' atinit'command -v pyenv > /dev/null && eval "$(pyenv init -)"' light-mode for zdharma-continuum/null
-#   # zinit wait'2b' lucid as'null' atinit'command -v pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"' light-mode for zdharma-continuum/null
-#   # export WORKON_HOME=~/.py_virtualenvs
-#   # zinit wait'2c' lucid as'null' atinit'if [ -x "$(command -v python3)" ]; then export VIRTUALENVWRAPPER_PYTHON=$(command -v python3); elif [ -x "$(command -v python3)" ]; then export VIRTUALENVWRAPPER_PYTHON=$(command -v python2); fi' light-mode for zdharma-continuum/null
-#   # # this taskes 0.39s
-#   # # this has to be loaded much later than the preceding plugins, otherwise you will get "No module named virtualenvwrapper  "
-#   # zinit wait'9' lucid as'null' atinit'if [ -f $HOMEBREW_PREFIX/bin/virtualenvwrapper.sh ]; then source $HOMEBREW_PREFIX/bin/virtualenvwrapper.sh; fi' light-mode for zdharma-continuum/null
-#
-#   # yarn must be run after node is defined, takes 0.31s, and only adds $HOMEBREW_PREFIX/bin
-#   #zinit wait'2' lucid as'null' atinit'export PATH="$PATH:$(yarn global bin)"' light-mode for zdharma-continuum/null
-# fi
-
 # TODO: convert these to zinit
 # zplug "lukechilds/zsh-better-npm-completion", defer:2
 if [[ -n $UNAME_LINUX ]]; then

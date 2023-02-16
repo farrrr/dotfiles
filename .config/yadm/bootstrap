@@ -1,26 +1,492 @@
 #!/bin/bash
+###############################################################################
+# Klas Mellbourn's dotfile
+#
+# https://github.com/Mellbourn/dotfiles
+# https://dotfiles.github.io/
+#
+# Many settings inspired by
+# https://github.com/mathiasbynens/dotfiles/blob/master/.macos
+#
+# Nice links here
+# https://medium.com/@webprolific/getting-started-with-dotfiles-43c3602fd789#.2d3cfjv7d
+###############################################################################
+set -e
 
-# Save this file as ~/.config/yadm/bootstrap and make it executable. It will
-# execute all executable files (excluding templates and editor backups) in the
-# ~/.config/yadm/bootstrap.d directory when run.
+version_gte() {
+  printf '%s\n%s' "$1" "$2" | sort -C -V -r
+}
 
-set -eu
-
-# Directory to look for bootstrap executables in
-BOOTSTRAP_D="${BASH_SOURCE[0]}.d"
-
-if [[ ! -d "$BOOTSTRAP_D" ]]; then
-    echo "Error: bootstrap directory '$BOOTSTRAP_D' not found" >&2
-    exit 1
+if grep -q Raspbian /etc/os-release 2>/dev/null; then
+  DOTFILES_LITE=1
+fi
+export PROCESSOR_ARCHITECTURE=${PROCESSOR_ARCHITECTURE:-$(uname -p)}
+if [ -f "/Library/Apple/System/Library/Receipts/com.apple.pkg.RosettaUpdateAuto.bom" ]; then
+  export ROSETTA_INSTALLED=1
+fi
+if [[ $PROCESSOR_ARCHITECTURE != 'arm' || -n "$ROSETTA_INSTALLED" ]]; then
+  export X86_OR_ROSETTA=1
 fi
 
-find -L "$BOOTSTRAP_D" -type f | sort | while IFS= read -r bootstrap; do
-    if [[ -x "$bootstrap" && ! "$bootstrap" =~ "##" && ! "$bootstrap" =~ "~$" ]]; then
-        if ! "$bootstrap"; then
-            BOOTSTRAP_FILENAME=$(basename -- $bootstrap)
-            echo "Error: bootstrap '$bootstrap' failed" >&2
-            echo "Failed installing '${BOOTSTRAP_FILENAME%%.*}' ..." >&2
-            exit 1
-        fi
+if [ -x "$(command -v lsb_release)" ] && [[ $(lsb_release -si) == 'Ubuntu' ]]; then
+  #OS_UBUNTU=1
+  if dpkg -l ubuntu-desktop >/dev/null; then
+    UBUNTU_DESKTOP=1
+  fi
+fi
+
+if [ -x "$(command -v ssh-agent)" ]; then
+  eval "$(ssh-agent -s)"
+
+  if [ -f ~/.ssh/id_rsa_github ]; then
+    ssh-add -K ~/.ssh/id_rsa_github
+  fi
+
+  if [ -f ~/.ssh/id_rsa_farrrr ]; then
+    ssh-add -K ~/.ssh/id_rsa_farrrr
+  fi
+fi
+
+
+pushd ~
+yadm submodule update --init --recursive --remote
+popd
+
+# Install `zinit` if not installed
+if [ ! -d ~/.zinit ]; then
+  mkdir ~/.zinit
+  chmod go-w ~/.zinit # to avoid insecure directories complaint
+  git clone https://github.com/zdharma-continuum/zinit.git ~/.zinit/bin
+else
+  # when all computers have switchted to zdharma-continuum, this can be removed
+  pushd ~/.zinit/bin
+  git remote set-url origin https://github.com/zdharma-continuum/zinit.git
+  popd
+fi
+
+# install asdf version manager https://asdf-vm.com/
+if [ ! -d ~/.asdf ]; then
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+  source ~/.asdf/asdf.sh
+fi
+asdf update
+asdf plugin update --all
+
+set +e
+
+asdf plugin add nodejs
+
+asdf plugin add python
+# asdf direnv doesn't seem absolutely necessary, but could improve performance. 2.30.2 works
+asdf plugin add direnv
+asdf plugin add lazydocker https://github.com/comdotlinux/asdf-lazydocker.git
+set -e
+asdf install direnv latest
+asdf global direnv latest
+
+asdf install nodejs latest
+asdf global nodejs latest
+
+asdf install python latest
+asdf global python latest
+
+# if no versions are installed, the asdf plugin will fall back to "system"
+asdf install lazydocker latest && asdf global lazydocker latest
+
+if [[ $(uname) == 'Darwin' ]]; then
+  ###############################################################################
+  # macOS specific installations
+  ###############################################################################
+  OS_MAJOR_VERSION=$(sw_vers -productVersion | cut -d. -f1)
+  BIG_SUR_MAJOR_VERSION=11
+  MONTEREY_MAJOR_VERSION=12
+
+  ###############################################################################
+  # App store                                                                   #
+  ###############################################################################
+  brew install mas || true
+
+  # Xcode
+  #mas install 497799835                   # Xcode
+  #mas install 1176074088                  # Termius - SSH Client
+  #mas install 1529448980                  # Reeder 5
+  #mas install 1037779758                  # Best Trace
+  #mas install 441258766                   # Magnet
+  #mas install 1091189122                  # 熊掌記
+  #mas install 539883307                   # LINE
+  #mas install 425424353                   # The Unarchiver
+
+
+  # if [[ -n $X86_OR_ROSETTA ]]; then
+  #   # Microsoft Remote Desktop 10 1295203466
+  #   mas install 1295203466 # Microsoft Remote Desktop
+  # fi
+
+  # upgrade all
+  # if [ "$OS_MAJOR_VERSION" -ge "$BIG_SUR_MAJOR_VERSION" ]; then
+  #   mas upgrade
+  # fi
+
+  xcode-select --install || true
+
+  ###############################################################################
+  # Homebrew                                                                    #
+  ###############################################################################
+
+  if ! hash brew 2>/dev/null; then
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  fi
+
+  brewSafeUninstallFormula() {
+    if brew list --formula "$@" 2>/dev/null; then
+      brew uninstall --formula "$@"
     fi
-done
+  }
+
+  brewSafeUninstallCask() {
+    if brew list --cask "$@" 2>/dev/null; then
+      brew uninstall --cask "$@"
+    fi
+  }
+
+  brewSafeUntap() {
+    if brew tap "$@" 2>/dev/null; then
+      brew untap "$@"
+    fi
+  }
+
+  brew cleanup
+  brew update
+  brew upgrade
+  # is a separate upgrade for casks redundant?
+  #brew upgrade --cask
+  brew tap aws/tap                # for aws-sam-cli
+  brew tap homebrew/cask-fonts    # for font-fira-code
+  brew tap homebrew/cask-versions # for google-chrome-beta
+  # enables searching brew for commands not found, e.g. when. https://github.com/Homebrew/homebrew-command-not-found
+  brew tap homebrew/command-not-found
+
+  # not all computers need logitech drivers, also, these need sudo
+  # brew install --cask homebrew/cask-drivers/logitech-gaming-software
+  # brew install --cask homebrew/cask-drivers/logitech-options
+
+  # remove brews here that were previously installed, to sync between machines
+  for formula in zsh-autosuggestions z.lua broot deno htop asdf pipenv pyenv-virtualenvwrapper pyenv-virtualenv pyenv cloc mosh volta dockutil; do
+    brewSafeUninstallFormula $formula
+  done
+
+  for cask in postman; do
+    brewSafeUninstallCask $cask
+  done
+
+  # this must be in alphabetical order!
+  # maybe add these eventually:
+  # haskell-stack
+  # and then: cargo install viu https://github.com/atanunq/viu
+  apps="
+1password-cli
+atuin
+awscli
+bash
+bash-completion
+bat
+choose-rust
+coreutils
+diff-so-fancy
+direnv
+duf
+duti
+exa
+fd
+findutils
+fx
+fzf
+gawk
+gh
+git
+git-cliff
+git-crypt
+git-delta
+git-extras
+git-lfs
+git-recent
+git-secret
+glances
+gnu-sed
+gnupg
+gpg-tui
+gradle
+grc
+grep
+gron
+highlight
+hyperfine
+imagemagick
+jesseduffield/lazygit/lazygit
+jq
+less
+librsvg
+lnav
+lsd
+ncdu
+neovim
+prettyping
+react-native-cli
+ripgrep
+rust
+sd
+shellcheck
+shfmt
+speedtest-cli
+thefuck
+tig
+tmux
+tree
+ugit
+vim
+watch
+watchman
+wget
+yadm
+yarn
+zellij
+zoxide
+zsh
+"
+  # note: yarn will install node, which you might want to remove, since it is handled by nvm
+  alreadyInstalled=$(brew list --formula)
+  installTheseLines=$(comm -23 <(echo "$apps") <(echo "$alreadyInstalled"))
+  installThese=${installTheseLines//$'\n'/ }
+  echo "$installThese" | xargs brew install
+
+  # TODO: add more when better arm support: philips-hue-sync plex imageoptim private-internet-access mockoon
+  casks="
+adobe-acrobat-reader
+alfred
+docker
+flipper
+font-meslo-lg-nerd-font
+font-sauce-code-pro-nerd-font
+google-chrome-beta
+google-cloud-sdk
+iina
+httpie
+istat-menus
+iterm2
+jetbrains-toolbox
+microsoft-edge
+microsoft-teams
+monitorcontrol
+moom
+"
+
+  alreadyInstalled=$(brew list --cask)
+  installTheseLines=$(comm -23 <(echo "$casks") <(echo "$alreadyInstalled"))
+  installThese=${installTheseLines//$'\n'/ }
+  echo "$installThese" | xargs brew install --cask
+
+  brew link --overwrite ugit
+
+  if [ -d ~/.tmux/plugins ]; then
+    for plugin in ~/.tmux/plugins/*; do
+      set +e
+      pushd "$plugin"
+      git pull
+      git submodule update --init --recursive
+      popd
+      set -e
+    done
+  fi
+
+  # this is needed to suppress zsh message "compinit: insecure directories""
+  chmod g-w "$HOMEBREW_PREFIX"/share ~/.zsh-personal-completions
+
+fi ############################################################################
+# configuration for both Mac and Linux
+###############################################################################
+
+if [ -x "$(command -v cargo)" ] && version_gte "$(cargo --version | cut -d " " -f2)" 1.0.0; then
+  cargo install --verbose cargo-update || true
+  cargo install --verbose --git https://github.com/jez/as-tree || true
+  if ! [ -x "$(command -v atuin)" ]; then
+    cargo install --verbose atuin || true
+  fi
+  # not working anymore?
+  if [ -f ~/.cargo/bin/cargo-install-update ]; then
+    set +e
+    cargo install-update -a
+    set -e
+  fi
+  if [ -f ~/.cargo/bin/cargo-install-update-config ]; then
+    mv ~/.cargo/bin/cargo-install-update-config ~/.cargo/bin/cargo-install-update-configure
+  fi
+fi
+
+# this seems healthy to do every now and then to make sure zsh completion works
+trash ~/.zcompdump* ~/.zcompcache 2>/tmp/zcomp_delete_error.txt || true
+
+# atuin completion
+if [ -n "$GENCOMPL_FPATH" ] && [[ -x "$(command -v atuin)" ]]; then
+  mkdir -p "$GENCOMPL_FPATH"
+  atuin gen-completions --shell zsh --out-dir "$GENCOMPL_FPATH"
+fi
+
+# add tmux-256color terminfo to ~/.terminfo
+curl -L https://invisible-island.net/datafiles/current/terminfo.src.gz >/tmp/terminfo.src.gz
+gunzip -f /tmp/terminfo.src.gz
+/usr/bin/tic -xe tmux-256color /tmp/terminfo.src
+
+if [ -x "$(command -v gh)" ]; then
+  if ! gh auth status; then
+    gh auth login -p ssh -h github.com -w || true
+  fi
+fi
+
+# fonts
+if [[ $(uname) == 'Darwin' || -n $UBUNTU_DESKTOP ]]; then
+  if [[ $(uname) == 'Darwin' ]]; then
+    FONT_DIRECTORY=~/Library/Fonts
+  else
+    mkdir -p ~/.local/share/fonts
+    FONT_DIRECTORY=~/.local/share/fonts
+  fi
+
+  gh release download -R adam7/delugia-code -p delugia-book.zip --skip-existing -D "$TMPDIR"
+  yes | unzip -u "$TMPDIR"delugia-book.zip -d $FONT_DIRECTORY
+fi
+
+if [ -x "$(command -v zsh)" ]; then
+  zsh -ic "zinit self-update; zinit update --all; zinit cclear"
+  zsh -ic "zinit delete -y zdharma/fast-syntax-highlighting | true"
+  zsh -ic "zinit delete -y zdharma/history-search-multi-word | true"
+  zsh -ic "zinit delete -y zdharma/null | true"
+  zsh -ic "zinit delete -y zdharma/zsh-diff-so-fancy | true"
+fi
+
+# set up alternate gitconfig file used to determine local settings
+yadm alt
+
+# make a persistent temp directory
+mkdir -p ~/temp
+
+if [[ -x "$(command -v atuin)" ]]; then
+  # you have to register atuin once and import _once_
+  atuin sync || (if atuin login -u far | grep "You are already logged in! Please run 'atuin logout' if you wish to login again"; then
+    atuin logout
+    atuin login -u far
+  fi && atuin import auto)
+fi
+
+###############################################################################
+# development
+###############################################################################
+
+docker system prune -f 2>>/tmp/docker_system_prune.err.txt || true
+
+function zsh_performance_measurements() {
+  ~/bin/mezsh -m 5
+}
+
+############################################################################
+# configuration for just Linux
+###############################################################################
+if [[ $(uname) == 'Linux' ]]; then
+
+  # do some cleanup
+  if [ -x "$(command -v trash-empty)" ]; then
+    trash-empty 30
+  fi
+  # unfortunately trash-empty 0.12 does not clean NTFS mounted file systems
+  ~/bin/trash-empty-wsl +30
+
+  zsh_performance_measurements
+  exit 0
+fi ############################################################################
+# mac specific configurations
+###############################################################################
+
+if ! [ -f ~/.fzf."$SHELLNAME" ]; then
+  "$HOMEBREW_PREFIX"/opt/fzf/install --key-bindings --completion --no-update-rc
+fi
+
+###############################################################################
+# development
+###############################################################################
+set +e
+gh extension install dlvhdr/gh-dash
+gh extension install gennaro-tedesco/gh-f
+gh extension install meiji163/gh-notify
+set -e
+gh extension upgrade --all
+
+# these uninstalls don't remove the exceutables from /opt/homebrew/bin - had to remove them manually
+npm uninstall -g nx lerna detox-cli @antfu/ni
+npm i -g zx
+npm i -g tsx
+# @swc/core needed for _debugging_ ts-node, but not for running it
+npm i -g ts-node @swc/core
+npm i -g cleanup-branches
+
+npm update -g
+
+# save some disk
+xcrun simctl delete unavailable || true
+
+###############################################################################
+# Associate filetypes to apps that should open them                           #
+###############################################################################
+# open in Visual Studio Code
+#duti -s com.microsoft.VSCode .js all           # javascript - extensions work too
+#duti -s com.microsoft.VSCode .ts all           # typescript
+duti -s com.microsoft.VSCode .md all           # markdown
+duti -s com.microsoft.VSCode com.apple.log all # .log
+duti -s com.microsoft.VSCode public.json all
+duti -s com.microsoft.VSCode public.plain-text all # text files
+duti -s com.microsoft.VSCode public.text all       # does this have a real effect?
+duti -s com.microsoft.VSCode public.xml all
+duti -s com.microsoft.VSCode public.yaml all
+# seems to have no effecxt: public.data, .lock
+# open in chrome
+#duti -s com.google.chrome public.svg-image all # .svg
+# prefer vlc over quicktime
+# duti -s org.videolan.vlc .avi Viewer
+
+###############################################################################
+# Finder                                                                      #
+###############################################################################
+# show hidden files
+defaults write com.apple.finder AppleShowAllFiles -bool true
+# Show all filename extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+# Finder: show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+# Show Path bar in Finder
+defaults write com.apple.finder ShowPathbar -bool true
+# Use list view in all Finder windows by default (won't affect folders where there is already a DS_Store)
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+# When performing a search, search the current folder by default
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+# hide all icons on from desktop
+defaults write com.apple.finder CreateDesktop -bool false
+# Remove items from the Trash after 30 days
+defaults write com.apple.finder FXRemoveOldTrashItems -bool true
+# Display full POSIX path as Finder window title
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+# Disable the warning when changing a file extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+# show "Quit" menu item for finder
+defaults write com.apple.finder QuitMenuItem -bool true
+
+###############################################################################
+# Performance                                                                 #
+###############################################################################
+# reduce transparency to make WindowServer take less CPU, but looks like shit
+#defaults write com.apple.universalaccess reduceTransparency 1
+
+if [ "$OS_MAJOR_VERSION" -ge "$MONTEREY_MAJOR_VERSION" ]; then
+  # brew doctor will always fail on Monterey while it is in beta
+  set +e
+fi
+brew doctor
+set -e
+zsh_performance_measurements

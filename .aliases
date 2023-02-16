@@ -18,3 +18,6 @@ alias mv='mv -v'
 alias rm="echo Replace '\"rm\"' with '\"trash\"', or force the original with '\"\\\rm\"': trash "
 alias tig='TERM=xterm-256color tig'
 alias weather='curl v2.wttr.in'
+alias y='noglob yadm'
+alias yc='GIT_DIR=~/.local/share/yadm/repo.git code ~/.config/yadm'
+alias yv='GIT_DIR=~/.lcaol/share/yadm/repo.git nvim ~/.config/yadm'
