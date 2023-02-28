@@ -26,7 +26,8 @@ fpath=(~/.zsh-personal-completions $fpath $GENCOMPL_FPATH)
 autoload -U zmv
 
 # helping brew completion is needed if HOMEBREW_PREFIX is not /usr/local
-FPATH=$HOMEBREW_PREFIX/share/zsh/site-functions:$FPATH
+# curl is here to enable curlie to get to curls completion
+FPATH=$HOMEBREW_PREFIX/share/zsh/site-functions:$HOMEBREW_PREFIX/opt/curl/share/zsh/site-functions:$FPATH
 
 # misc
 setopt interactive_comments long_list_jobs extendedglob notify list_packed transient_rprompt
@@ -106,6 +107,8 @@ zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}
 ###############################################################################
 zinit depth=1 light-mode for romkatv/powerlevel10k
 
+zinit silent light-mode lucid for SinaKhalili/mecho
+
 zinit wait'0a' lucid blockf for zsh-users/zsh-completions
 
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
@@ -155,9 +158,8 @@ else
 fi
 
 if [ -x "$(command -v zoxide)" ]; then
-  export _ZO_MAXAGE=400
   export _ZO_EXCLUDE_DIRS=$HOME
-  zinit wait'0' lucid as'null' atinit'unalias zi;eval "$(zoxide init --no-aliases zsh)" && alias z=__zoxide_z c=__zoxide_zi zi=zinit' light-mode for zdharma-continuum/null
+  zinit wait'0' lucid as'null' atinit'unalias zi;eval "$(zoxide init zsh --hook prompt)" && alias c=__zoxide_zi zi=zinit' light-mode for zdharma-continuum/null
 elif [ -d "$HOMEBREW_PREFIX/share/z.lua" ]; then
   export _ZL_MATCH_MODE=1
   zinit wait'0' lucid as'null' atinit'source $HOMEBREW_PREFIX/share/z.lua/z.lua.plugin.zsh' light-mode for zdharma-continuum/null
@@ -191,6 +193,7 @@ fi
 
 zinit wait'1' lucid for supercrabtree/k
 
+zinit wait'1' lucid light-mode for lukechilds/zsh-better-npm-completion
 zinit wait'1' atclone'./zplug.zsh' lucid for g-plane/zsh-yarn-autocompletions
 
 if [ ! -x "$(command -v dircolors)" ]; then
@@ -212,7 +215,8 @@ fi
 # fuzzy completion: ^R, ^T, ⌥C, **
 export FZF_DEFAULT_COMMAND="$FD --type file"
 # --ansi makes fzf a bit slower, but I haven't really noticed, this preview is used for ** completion
-export FZF_DEFAULT_OPTS="--ansi --select-1 --height 40% --reverse --tiebreak=begin --bind end:preview-down,home:preview-up,ctrl-a:select-all+accept"
+export FZF_DEFAULT_OPTS="--ansi --select-1 --height ~40% --reverse --tiebreak=begin --bind end:preview-down,home:preview-up,ctrl-a:select-all+accept \
+ --color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6 --color=marker:#ff79c6,spinner:#ffb86c, header:#6272a4"
 export FZF_TMUX_OPTS="-d 70%"
 # tmux was a bit slower
 #export FZF_TMUX=1
@@ -251,7 +255,7 @@ export FORGIT_STASH_FZF_OPTS='--bind="ctrl-d:reload(git stash drop $(cut -d: -f1
 #zinit wait'1' lucid as'null' atinit'source "$HOMEBREW_PREFIX/Homebrew/Library/Taps/homebrew/homebrew-command-not-found/handler.sh"' light-mode for zdharma-continuum/null
 
 zinit wait'1' lucid for \
-  djui/alias-tips \
+  MichaelAquilina/zsh-you-should-use \
   OMZP::dircycle
 
 zinit wait'1' lucid atinit'alias f=fuck' light-mode for laggardkernel/zsh-thefuck
@@ -260,7 +264,7 @@ zinit wait'1' lucid atinit'alias f=fuck' light-mode for laggardkernel/zsh-thefuc
 zinit wait'1' lucid as"program" pick"bin/git-dsf" if'[[ ! -x "$(command -v diff-so-fancy)" ]]' light-mode for \
   zdharma-continuum/zsh-diff-so-fancy
 
-zinit wait'1' lucid as"completion" light-mode for nilsonholger/osx-zsh-completions
+zinit wait'1' lucid as"completion" light-mode pick"_*" for nilsonholger/osx-zsh-completions
 
 zinit wait'1' lucid light-mode for mellbourn/zabb
 
@@ -309,9 +313,9 @@ zinit wait'2' lucid light-mode for \
 
 zinit wait'2' lucid atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' light-mode for hlissner/zsh-autopair
 
-# TODO: convert these to zinit
-# zplug "lukechilds/zsh-better-npm-completion", defer:2
-if [[ -n $UNAME_LINUX ]]; then
+# make text copy operations generic: clipcopy/clippaste
+zinit wait'2' lucid for OMZL::clipboard.zsh
+
   # this will work on 64 bit linux, but not on old raspberry, and probably not on wsl?
   if [[ -n $UNAME_LINUX_64 ]]; then
     zinit wait'2' lucid light-mode from"gh-r" as"program" bpick"*Linux_arm64*" for jesseduffield/lazygit
@@ -356,7 +360,7 @@ fi
 ###############################################################################
 # usage: cd services && getTreeidForService orders
 function getTreeidForService() {
-	noglob git cat-file -p @^{tree} | \
+  noglob git cat-file -p @^{tree} | \
      grep "services$" | \
      awk '{ system("git cat-file -p " $3) }' | \
      egrep "$1$" | \
@@ -394,13 +398,6 @@ _fzf_compgen_path() {
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
   $FD --type d --follow . "$1"
-}
-
-function go() {
-    local repos repo
-    repos=$(find $CODE_DIR -name .git -type d -maxdepth 3 -prune | egrep -i "$1"  | sed 's#/.git$##') &&
-    repo=$(echo "$repos" | $FZF +s +m) &&
-    cd $(echo "$repo" | sed "s:.* remotes/origin/::" | sed "s:.* ::")
 }
 
 function fd() {
@@ -608,6 +605,9 @@ if [ -x "$(command -v prettyping)" ]; then
   alias ping="prettyping --nolegend"
   compdef prettyping=ping
 fi
+# repair c completion after it was borken by zinit
+compdef __zoxide_z_complete __zoxide_zi
+
 
 ' light-mode for zdharma-continuum/null
 
