@@ -6,7 +6,7 @@ if grep -q Raspbian /etc/os-release 2>/dev/null; then
   DOTFILES_LITE=1
 fi
 
-if [[ $(hostname) == *"MacBook-Pro-16-2021"* ]]; then
+if [[ $(hostname) == *"FarMac"* ]]; then
   export FIRSTVET=1
 fi
 if [ -f "/Library/Apple/System/Library/Receipts/com.apple.pkg.RosettaUpdateAuto.bom" ]; then
@@ -71,13 +71,14 @@ if [[ $(uname) == 'Linux' ]]; then
     libssl-dev
     pkg-config
     cargo
+    neovim
   "
   for app in $apps; do
     if ! dpkg-query -l "$app" >/dev/null; then
       sudo apt install -y "$app"
     fi
   done
-  # for some reason, keychain cannot be installed using the list
+# for some reason, keychain cannot be installed using the list
   sudo apt install -y keychain
 
   if [ -z "$DOTFILES_LITE" ]; then
@@ -122,9 +123,9 @@ if [[ $(uname) == 'Linux' ]]; then
   elif [[ $(dpkg --print-architecture) == "amd64" ]]; then
     # WSL will have amd64
     if gh auth status; then
-      LATEST_TAG=$(gh release list --exclude-drafts -R Peltoche/lsd -L 1 | awk '{print $1;}')
-      gh release download "$LATEST_TAG" -R Peltoche/lsd -p "lsd_${LATEST_TAG}_amd64.deb" --skip-existing -D "/tmp"
-      sudo dpkg --skip-same-version -i "/tmp/lsd_${LATEST_TAG}_amd64.deb"
+        LATEST_TAG=$(gh release list --exclude-drafts -R Peltoche/lsd -L 1 | awk '{print $1;}')
+        gh release download "$LATEST_TAG" -R Peltoche/lsd -p "lsd_${LATEST_TAG}_amd64.deb" --skip-existing -D "/tmp"
+        sudo dpkg --skip-same-version -i "/tmp/lsd_${LATEST_TAG}_amd64.deb"
     fi
 
   elif [ -x "$(command -v gh)" ] && [[ $(dpkg --print-architecture) == "armhf" ]]; then
@@ -243,13 +244,6 @@ if [[ $(uname) == 'Linux' ]]; then
     ~/.fzf/install --completion --key-bindings --no-update-rc
   fi
 
-  if [ -z "$DOTFILES_LITE" ]; then
-    # haskell
-    if ! [ -x "$(command -v stack)" ]; then
-      wget -qO- https://get.haskellstack.org/ | sh || true
-    fi
-  fi
-
   # when it is needed, this updates the OS, so it will take a LONG time
   if [ -x "$(command -v do-release-upgrade)" ]; then
     # upgrade to the development release
@@ -286,39 +280,7 @@ sudo launchctl config user path "$PATH_OVERRIDE"
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo git-lfs install --system || true
 
-export WORKING_FROM_HOME=1
-if [ -n "$WORKING_FROM_HOME" ]; then
-  # enable startup sound
-  if [[ $PROCESSOR_ARCHITECTURE == 'arm' ]]; then
-    sudo nvram StartupMute=%00
-  else
-    sudo nvram -d SystemAudioVolume
-  fi
-else
-  if [[ ${HW_MODEL} == MacBook* ]]; then
-    # stop startup sound
-    if [[ $PROCESSOR_ARCHITECTURE == 'arm' ]]; then
-      sudo nvram StartupMute=%01
-    else
-      sudo nvram SystemAudioVolume=%80
-    fi
-  fi
-fi
-
 sudo xcodebuild -license accept
-
-# FirstVet might need this
-#sudo ln -s $(which python3) /usr/local/bin/python
-
-# speed up time machine backups until next reboot
-sudo sysctl debug.lowpri_throttle_enabled=0
-
-# set up cleanup of Downloads and Pictures
-cat <<EOF >/etc/periodic.conf
-daily_clean_tmps_dirs="/tmp $HOME/Downloads $HOME/Pictures $HOME/Desktop"
-daily_clean_tmps_ignore=".X*-lock .X11-unix .ICE-unix .font-unix .XIM-unix *.photoslibrary *Library"
-#daily_clean_tmps_days="14"
-EOF
 
 ###############################################################################
 # bash4
@@ -336,10 +298,6 @@ if ! grep -q "$HOMEBREW_PREFIX/bin/zsh" "/etc/shells"; then
 fi
 sudo chsh -s $HOMEBREW_PREFIX/bin/zsh "$(whoami)"
 
-sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "This Mac belongs to Klas Mellbourn.\ne-mail: klas@mellbourn.net phone: +46 708 80 00 00\nReward offered for return of this Mac. No questions asked."
-
-# supress "Disk Not Ejected Properly" for backup disk, since it does sleep  https://apple.stackexchange.com/a/12701/12219
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.DiskArbitration.diskarbitrationd.plist DADisableEjectNotification -bool YES
 ###############################################################################
 # Update App Store apps
 ###############################################################################
@@ -349,39 +307,24 @@ sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool TRU
 sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
 
 # this will not install major updates, e.g. Catalina
-sudo softwareupdate --schedule on
+#sudo softwareupdate --schedule on
 sudo softwareupdate -i -a --restart
 if [[ -n "$FIRSTVET" ]]; then
   # needed for python2 which is needed for node-gyp and node-sass
   if [[ -z "$ROSETTA_INSTALLED" ]]; then
     yes A | softwareupdate --install-rosetta
   fi
-  xcodes update
-  XCODE_VERSION=13.4.1
-  if ! xcodes installed | grep -q "$XCODE_VERSION"; then
-    xcodes install "$XCODE_VERSION"
-  fi
+  # xcodes update
+  # XCODE_VERSION=13.4.1
+  # if ! xcodes installed | grep -q "$XCODE_VERSION"; then
+  #   xcodes install "$XCODE_VERSION"
+  # fi
 fi
 
 # always boot in verbose mode (not MacOS GUI mode) - no longer seems to work on Big Sur
-if [[ $PROCESSOR_ARCHITECTURE != 'arm' ]]; then
-  sudo nvram boot-args="-v"
-fi
-
-# Enable firewall. Possible values:
-#   0 = off
-#   1 = on for specific sevices
-#   2 = on for essential services
-sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
-
-# disable Gatekeeper, i.e. allow unsigned apps. Seems to be default at current customer
-#sudo spctl --master-disable
+# if [[ $PROCESSOR_ARCHITECTURE != 'arm' ]]; then
+#   sudo nvram boot-args="-v"
+# fi
 
 # disable guest user
 sudo sysadminctl -guestAccount off
-
-# protect KeeWeb
-sudo chown -R root /Applications/KeeWeb.app
-
-# run customer specific bootstrap
-. "${XDG_CONFIG_HOME:-$HOME/.config}"/yadm/bootstrap-sudo-customer

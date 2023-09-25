@@ -21,11 +21,8 @@ if grep -q Raspbian /etc/os-release 2>/dev/null; then
   DOTFILES_LITE=1
 fi
 export PROCESSOR_ARCHITECTURE=${PROCESSOR_ARCHITECTURE:-$(uname -p)}
-if [[ $(hostname) == *"Klarna"* ]] || [[ $(hostname) == "C0"* ]] || [[ $(hostname) == "FV"* ]] || [[ $(hostname) == "HKG"* ]]; then
-  export KLARNA=1
-fi
-if [[ $(hostname) == *"MacBook-Pro-16"* ]]; then
-  export FIRSTVET=1
+if [[ $(hostname) == *"FarMac"* ]]; then
+export FIRSTVET=1
 fi
 if [ -f "/Library/Apple/System/Library/Receipts/com.apple.pkg.RosettaUpdateAuto.bom" ]; then
   export ROSETTA_INSTALLED=1
@@ -41,16 +38,25 @@ if [ -x "$(command -v lsb_release)" ] && [[ $(lsb_release -si) == 'Ubuntu' ]]; t
   fi
 fi
 
-if ! [ -f ~/.ssh/id_ed25519 ]; then
-  ssh-keygen -t ed25519 -b 4096 -C "${USER}@$(hostname)" -f ~/.ssh/id_ed25519
+if [ -x "$(command -v ssh-agent)" ]; then
   eval "$(ssh-agent -s)"
+
   if [[ $(uname) == 'Darwin' ]]; then
-    ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+    ssh-add --apple-use-keychain ~/.ssh/id_rsa_farrrr
+    ssh-add --apple-use-keychain ~/.ssh/id_rsa_github
   else
     ssh-add
   fi
-  echo "Remember to add the new public key in ~/.ssh/id_ed25519.pub to github and appropriate authorized_hosts."
+
+  if [ -f ~/.ssh/id_rsa_github ]; then
+    ssh-add -K ~/.ssh/id_rsa_github
+  fi
+
+  if [ -f ~/.ssh/id_rsa_farrrr ]; then
+    ssh-add -K ~/.ssh/id_rsa_farrrr
+  fi
 fi
+
 
 pushd ~
 yadm submodule update --init --recursive --remote
@@ -77,15 +83,11 @@ asdf update
 asdf plugin update --all
 
 set +e
-# remove these removals eventually
-asdf uninstall java zulu-8.58.0.13
 
 asdf plugin add nodejs
 asdf plugin add java
 
-asdf plugin add ruby
 asdf plugin add python
-asdf plugin add bundler
 # asdf direnv doesn't seem absolutely necessary, but could improve performance. 2.30.2 works
 asdf plugin add direnv
 asdf plugin add lazydocker https://github.com/comdotlinux/asdf-lazydocker.git
@@ -94,17 +96,10 @@ asdf install direnv latest
 asdf global direnv latest
 
 if [[ -n "$FIRSTVET" ]]; then
-  asdf install nodejs 16.17.0
-  asdf install nodejs 14.20.0
-  asdf global nodejs 16.17.0
-  asdf install java temurin-11.0.16+101
-  asdf global java temurin-11.0.16+101
-  asdf install ruby 2.7.6
-  asdf install ruby 3.1.4
-  asdf install python 3.9.10 # this is for klapp
-  asdf install python 3.10.6
-  asdf global python 3.10.6
-  asdf global ruby 3.1.4
+  asdf install nodejs latest
+  asdf global nodejs latest
+  asdf install python latest
+  asdf global python latest
 fi
 
 # if no versions are installed, the asdf plugin will fall back to "system"
@@ -116,52 +111,33 @@ if [[ $(uname) == 'Darwin' ]]; then
   ###############################################################################
   OS_MAJOR_VERSION=$(sw_vers -productVersion | cut -d. -f1)
   BIG_SUR_MAJOR_VERSION=11
-
-  # activate cleanup jobs, doesn't actually update?
-  launchctl unload ~/Library/LaunchAgents/local.cleanup.downloads.plist
-  launchctl load -w ~/Library/LaunchAgents/local.cleanup.downloads.plist
-  launchctl unload ~/Library/LaunchAgents/local.cleanup.pictures.plist
-  launchctl load -w ~/Library/LaunchAgents/local.cleanup.pictures.plist
-  launchctl unload ~/Library/LaunchAgents/local.cleanup.resurrect.plist
-  launchctl load -w ~/Library/LaunchAgents/local.cleanup.resurrect.plist
-  launchctl unload ~/Library/LaunchAgents/local.cleanup.trash.plist
-  launchctl load -w ~/Library/LaunchAgents/local.cleanup.trash.plist
-  # they don't work, so run them anyway
-  "$HOME"/bin/cleanup-directory -d "$HOME"/Downloads -l 10 -v
-  "$HOME"/bin/cleanup-directory -d "$HOME"/Pictures -l 10 -v
-  # not needed: tmux-resurrect deletes files older than 30 days by default
-  #$HOME/bin/cleanup-directory -d $HOME/.tmux/resurrect -f \*/tmux_resurrect_\*.txt -l 5 -v
-  # not needed - I have enough space
-  # "$HOMEBREW_PREFIX"/sbin/tmpreaper -vv 2d -T 180 "$HOME"/.Trash &
+  MONTEREY_MAJOR_VERSION=12
 
   ###############################################################################
   # App store                                                                   #
   ###############################################################################
   brew install mas || true
 
-  mas install 497799835                    # Xcode
-  mas install 1352778147                   # Bitwarden
-  mas lucky "Copy 'Em (Clipboard Manager)" # (2.11) 876540291
-  mas lucky "John's Background Switcher"   # 907640277
-  mas lucky "Yubico Authenticator"         # (6.1.0) 1497506650
-  # Safari extensions
-  mas lucky "Adblock Plus for Safari ABP" # (2.1.10) 1432731683
-  mas lucky "DuckTabs Extension"          # (2.0) 1508584686
-  mas lucky "Dark Reader for Safari"      # (1.4.3) 1438243180
-  mas lucky "Grammarly for Safari"        # (9.33) 1462114288
-  mas lucky "Popcorn for Safari"          # (2.0) 1535719670
+  # Xcode
+  #mas install 497799835                   # Xcode
+  #mas install 1176074088                  # Termius - SSH Client
+  #mas install 1529448980                  # Reeder 5
+  #mas install 1037779758                  # Best Trace
+  #mas install 441258766                   # Magnet
+  #mas install 1091189122                  # 熊掌記
+  #mas install 539883307                   # LINE
+  #mas install 425424353                   # The Unarchiver
 
-  if [[ -n $X86_OR_ROSETTA ]]; then
-    # these still require rosetta afaik
-    mas lucky Bredbandskollen # 1147976909
-    # Microsoft Remote Desktop 10 1295203466
-    mas lucky "Microsoft Remote Desktop"
-  fi
+
+  # if [[ -n $X86_OR_ROSETTA ]]; then
+  #   # Microsoft Remote Desktop 10 1295203466
+  #   mas install 1295203466 # Microsoft Remote Desktop
+  # fi
 
   # upgrade all
-  if [ "$OS_MAJOR_VERSION" -ge "$BIG_SUR_MAJOR_VERSION" ]; then
-    mas upgrade
-  fi
+  # if [ "$OS_MAJOR_VERSION" -ge "$BIG_SUR_MAJOR_VERSION" ]; then
+  #   mas upgrade
+  # fi
 
   xcode-select --install || true
 
@@ -185,43 +161,35 @@ if [[ $(uname) == 'Darwin' ]]; then
     fi
   }
 
-  # some uninstalls must be made before update
-  set +e
-  brew untap homebrew/homebrew-cask-drivers # for philips-hue-sync and luna-display
-  set -e
-  brewSafeUninstallCask virtualbox
-  brewSafeUninstallFormula gdu
+  brewSafeUntap() {
+    if brew tap "$@" 2>/dev/null; then
+      brew untap "$@"
+    fi
+  }
 
   brew cleanup
   brew update
   brew upgrade
-
   # is a separate upgrade for casks redundant?
   #brew upgrade --cask
   brew tap aws/tap                # for aws-sam-cli
-  brew tap git-time-metric/gtm    # for gtm
   brew tap homebrew/cask-fonts    # for font-fira-code
   brew tap homebrew/cask-versions # for google-chrome-beta
-  brew tap lokalise/cli-2
   # enables searching brew for commands not found, e.g. when. https://github.com/Homebrew/homebrew-command-not-found
   brew tap homebrew/command-not-found
-  brew tap facebook/fb           # for idb-companion for flipper
-  brew tap wix/brew              # for applesimutils
-  brew tap robotsandpencils/made # for xcodes
-  brew tap ankitpokhrel/jira-cli # for jira-cli
 
   # not all computers need logitech drivers, also, these need sudo
   # brew install --cask homebrew/cask-drivers/logitech-gaming-software
   # brew install --cask homebrew/cask-drivers/logitech-options
 
-  # remove brews here that were previously installed, to sync between machines
-  for formula in zsh-autosuggestions ilmbase asciinema fortune git-number z.lua weechat broot deno htop rbenv node@14 nodebrew asdf pipenv pyenv-virtualenvwrapper pyenv-virtualenv pyenv openjdk@11 transcrypt nginx cloc mosh volta dockutil tldr awscli@1 git-extras git-cliff libgit2@1.5 awscli gcal; do
-    brewSafeUninstallFormula $formula
-  done
-
-  for cask in luna-display zeplin zenmap pokerth dash controlplane fork keycastr postman shortcat tor-browser tripmode stunnel java8 p4v authy browserstacklocal insomnia keka; do
-    brewSafeUninstallCask $cask
-  done
+#  # remove brews here that were previously installed, to sync between machines
+#  for formula in zsh-autosuggestions git-number z.lua broot deno htop node asdf pipenv pyenv-virtualenvwrapper pyenv-virtualenv pyenv openjdk cloc mosh volta tldr awscli git-extras git-cliff libgit2 gcal; do
+#    brewSafeUninstallFormula $formula
+#  done
+#
+#  for cask in postman java; do
+#    brewSafeUninstallCask $cask
+#  done
 
   # this must be in alphabetical order!
   # maybe add these eventually:
@@ -230,17 +198,12 @@ if [[ $(uname) == 'Darwin' ]]; then
   apps="
 1password-cli
 atuin
-aws-sam-cli
+awscli
 bash
 bash-completion
 bat
-bitwarden-cli
-cheat
 choose-rust
-circleci
 coreutils
-croc
-d2
 dasel
 diff-so-fancy
 direnv
@@ -250,14 +213,15 @@ eth-p/software/bat-extras-batgrep
 exa
 fd
 findutils
-fpp
 fx
 fzf
 gawk
 gh
 git
+git-cliff
 git-crypt
 git-delta
+git-extras
 git-lfs
 git-recent
 git-secret
@@ -266,73 +230,48 @@ gnu-sed
 gnupg
 gpg-tui
 gradle
-graphicsmagick
 grc
 grep
 gron
-gtm
 highlight
-htmlq
-httpie
 hyperfine
-idb-companion
 imagemagick
-jc
 jesseduffield/lazygit/lazygit
-jira-cli
 jq
-kpcli
-lastpass-cli
-lokalise2
 less
 librsvg
 lnav
 lsd
 ncdu
-noti
-ouch
-parallel
+neovim
 pinentry-mac
-pkg-config
 prettyping
 procs
-pv
+
 react-native-cli
-reattach-to-user-namespace
-redis
 rich-cli
 ripgrep
-rs/tap/curlie
 rust
 sd
 shellcheck
 shfmt
 speedtest-cli
-tealdeer
-terminal-notifier
 thefuck
 tig
-tiv
 tmpreaper
 tmux
 tokei
 tree
-tuc
 ugit
-viddy
 vim
-wakeonlan
 watch
 watchman
-wemux
 wget
-wix/brew/applesimutils
 xcodes
 xplr
 yadm
-yank
 yarn
-ykman
+zellij
 zoxide
 zsh
 "
@@ -342,34 +281,25 @@ zsh
   installThese=${installTheseLines//$'\n'/ }
   echo "$installThese" | xargs brew install
 
-  # TODO: add more when better arm support: philips-hue-sync private-internet-access plex imageoptim mockoon
+  # TODO: add more when better arm support: philips-hue-sync plex imageoptim private-internet-access mockoon
   casks="
-1password
-bartender
-chromium
+adobe-acrobat-reader
+alfred
 docker
 flipper
-font-cascadia-code-pl
-font-caskaydia-cove-nerd-font
-font-fira-code
-font-jetbrains-mono
-font-jetbrains-mono-nerd-font
+font-meslo-lg-nerd-font
+font-sauce-code-pro-nerd-font
 google-chrome-beta
-grandperspective
-hpedrorodrigues/tools/dockutil
+google-cloud-sdk
+iina
 httpie
 istat-menus
 iterm2
-keeweb
-keycue
-launchcontrol
+jetbrains-toolbox
+microsoft-edge
+microsoft-teams
+monitorcontrol
 moom
-paletro
-react-native-debugger
-ui-browser
-visual-studio-code
-vlc
-witch
 "
 
   alreadyInstalled=$(brew list --cask)
@@ -378,88 +308,6 @@ witch
   echo "$installThese" | xargs brew install --cask
 
   brew link --overwrite ugit
-
-  if [ -n "$X86_OR_ROSETTA" ]; then
-    # TODO: when there are Apple Silicon versions of these packages, move the installation to the normal list
-    brew install --cask yubico-yubikey-manager
-  fi
-
-  if [[ $PROCESSOR_ARCHITECTURE == 'arm' ]]; then
-
-    if [[ -n "$FIRSTVET" ]]; then
-      gem install fastlane
-      gem install cocoapods
-    fi
-
-    if [[ -n "$KLARNA" ]]; then
-      brew install readline libffi
-
-      set +e
-      pushd /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/
-      set -e
-      if [ ! -e universal-darwin20 ]; then
-        sudo ln -s universal-darwin21 universal-darwin20
-      fi
-      set +e
-      popd
-      set -e
-
-      # ruby (works: 2.6.8, 2.7.5, 3.1.0)
-      # shellcheck disable=SC2015
-      set +e
-      # default gems in .default-gems
-      pushd "$CODE_DIR"/klarna/klarna-app/master
-      set -e
-      asdf install
-      if [ ! -d "$HOME/.volta" ]; then
-        # not sure this actually works from the script
-        ./bin/install-node-version-manager.sh
-      fi
-      set +e
-      popd
-      set -e
-      if [ -d "$HOME/.volta" ]; then
-        # no point in using a global "install", that would be overridden anyway by git hooks
-        #volta install node@latest
-        trash "$HOME/.volta/tools/image/node/17.7.1" || true
-        trash "$HOME"/.volta/tools/inventory/node/node-v17.7.1* || true
-        trash "$HOME/.volta/tools/image/node/16.14.0" || true
-        trash "$HOME"/.volta/tools/inventory/node/node-v16.14.0* || true
-        # do not install yarn latest, it will override the scripted yarn wrapper
-        # volta install yarn@latest
-
-        # installing npm tools using volta
-        volta install git-branch-delete
-      fi
-      asdf global python 3.9.10
-
-      asdf install bundler 2.3.3 && asdf global bundler 2.3.3
-
-      # Android Studio homebrew installation no longer supported, install it manually
-      brewSafeUninstallCask android-studio
-      brewSafeUninstallFormula temurin8
-
-      # running yarn android:setup makes these unnecessary
-      asdf plugin remove cmake || true
-      # else
-      #asdf install kubectl latest && asdf global kubectl latest
-      # is krew important?
-      # set +e
-      # asdf plugin-add krew https://github.com/nlamirault/asdf-krew.git
-      # set -e
-      # asdf install krew latest && asdf global krew latest
-    fi
-
-  fi
-  # arm part ends
-
-  echo will cite | parallel --citation >/dev/null 2>&1
-
-  # set up wemux user name
-  if [ -f "$HOMEBREW_PREFIX"/etc/wemux.conf ]; then
-    sed -i -- "s/host_list=(brew)/host_list=($USER)/" "$HOMEBREW_PREFIX"/etc/wemux.conf
-    sed -i -- 's/# allow_server_change="true"/allow_server_change="true"/' "$HOMEBREW_PREFIX"/etc/wemux.conf
-  fi
 
   if [ -d ~/.tmux/plugins ]; then
     for plugin in ~/.tmux/plugins/*; do
@@ -470,16 +318,6 @@ witch
       popd
       set -e
     done
-  fi
-
-  # finish PIA installation
-  # if you already have a manual installation, you will have to remove it with
-  # rm -rf /Applications/Private\ Internet\ Access.app
-  if [ ! -d /Applications/Private\ Internet\ Access.app ]; then
-    RUNNER="$HOMEBREW_PREFIX/Caskroom/private-internet-access/v70/Private\ Internet\ Access\ Installer.app/Contents/MacOS/runner.sh"
-    if [ -f "$RUNNER" ]; then
-      "$RUNNER"
-    fi
   fi
 
   # this is needed to suppress zsh message "compinit: insecure directories""
@@ -509,8 +347,6 @@ popd
 
 if [ -x "$(command -v cargo)" ] && version_gte "$(cargo --version | cut -d " " -f2)" 1.0.0; then
   cargo install --verbose cargo-update || true
-  cargo install --verbose termimage || true
-  cargo install --verbose cyme || true
   cargo install --verbose --git https://github.com/jez/as-tree || true
   if ! [ -x "$(command -v atuin)" ]; then
     cargo install --verbose atuin || true
@@ -526,14 +362,6 @@ if [ -x "$(command -v cargo)" ] && version_gte "$(cargo --version | cut -d " " -
   fi
 fi
 
-# repair cheat completion
-HOMEBREW_SITE_FUNCTIONS="$HOMEBREW_PREFIX"/share/zsh/site-functions
-if [ -f "$HOMEBREW_SITE_FUNCTIONS"/cheat.zsh ] && ! [ -f "$HOMEBREW_SITE_FUNCTIONS"/_cheat ]; then
-  pushd "$HOMEBREW_SITE_FUNCTIONS"
-  ln -s cheat.zsh _cheat
-  popd
-fi
-
 # this seems healthy to do every now and then to make sure zsh completion works
 trash ~/.zcompdump* ~/.zcompcache 2>/tmp/zcomp_delete_error.txt || true
 
@@ -542,10 +370,6 @@ if [ -n "$GENCOMPL_FPATH" ] && [[ -x "$(command -v atuin)" ]]; then
   mkdir -p "$GENCOMPL_FPATH"
   atuin gen-completions --shell zsh --out-dir "$GENCOMPL_FPATH"
 fi
-
-# vim
-mkdir -p ~/.vim/autoload
-wget --show-progress -qNP ~/.vim/autoload https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # add tmux-256color terminfo to ~/.terminfo
 curl -L https://invisible-island.net/datafiles/current/terminfo.src.gz >/tmp/terminfo.src.gz
@@ -588,32 +412,11 @@ yadm alt
 # make a persistent temp directory
 mkdir -p ~/temp
 
-if ! [ "$CODE_DIR" ]; then
-  # supress Spotlight indexing of code folder, no longer working?
-  mkdir -p "$CODE_DIR"
-  touch "$CODE_DIR"/.metadata_never_index
-  mkdir -p "$CODE_DIR"/private
-  mkdir -p "$CODE_DIR"/experiments
-fi
-
-if [ -z "$DOTFILES_LITE" ]; then
-  if [ -x "$(command -v tldr)" ]; then
-    # this has stopped working? "Could Not Rename"
-    set +e
-    tldr --update
-    set -e
-  fi
-fi
-
-if [[ -x "$(command -v cheat)" ]] && [ ! -d ~/.config/cheat/cheatsheets ]; then
-  git clone https://github.com/cheat/cheatsheets.git ~/.config/cheat/cheatsheets/community
-fi
-
 if [[ -x "$(command -v atuin)" ]]; then
   # you have to register atuin once and import _once_
-  atuin sync || (if atuin login -u Mellbourn | grep "You are already logged in! Please run 'atuin logout' if you wish to login again"; then
+  atuin sync || (if atuin login -u far | grep "You are already logged in! Please run 'atuin logout' if you wish to login again"; then
     atuin logout
-    atuin login -u Mellbourn
+    atuin login -u far
   fi && atuin import auto)
 fi
 
@@ -631,10 +434,6 @@ function zsh_performance_measurements() {
 # configuration for just Linux
 ###############################################################################
 if [[ $(uname) == 'Linux' ]]; then
-  # unclear if this is needed, maybe bootstrap-sudo handles this
-  #if [[ -x "$(command -v zsh)" ]] && ! grep -q "$USER:.*zsh" /etc/passwd; then
-  #  chsh -s "$(which zsh)" "$(whoami)"
-  #fi
 
   # do some cleanup
   if [ -x "$(command -v trash-empty)" ]; then
@@ -671,18 +470,10 @@ npm i -g tsx
 npm i -g ts-node @swc/core
 npm i -g cleanup-branches
 
-if [[ -n "$KLARNA" ]]; then
-  if \ping -c1 -W1 jira.int.klarna.net; then
-    npm update -g --registry=https://artifactory.klarna.net/artifactory/api/npm/v-npm-production/
-  fi
-else
-  npm update -g
-fi
+npm update -g
+
 # save some disk
 xcrun simctl delete unavailable || true
-
-# remove itunes from login items. This way it does not open when you plug in an iPhone
-osascript -e 'tell application "System Events" to delete login item "iTunesHelper"' 2>/tmp/delete_itunes_helper_error.txt || true
 
 ###############################################################################
 # Associate filetypes to apps that should open them                           #
@@ -701,7 +492,7 @@ duti -s com.microsoft.VSCode public.yaml all
 # open in chrome
 #duti -s com.google.chrome public.svg-image all # .svg
 # prefer vlc over quicktime
-duti -s org.videolan.vlc .avi Viewer
+# duti -s org.videolan.vlc .avi Viewer
 
 ###############################################################################
 # Finder                                                                      #
@@ -730,193 +521,10 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 defaults write com.apple.finder QuitMenuItem -bool true
 
 ###############################################################################
-# Sound                                                                       #
-###############################################################################
-# Play feedback when volume is changed
-defaults write -g com.apple.sound.beep.feedback -int 1
-# Change the alert beep sound
-if [ -f /System/Library/Sounds/Pop.aiff ]; then
-  defaults write .GlobalPreferences com.apple.sound.beep.sound /System/Library/Sounds/Pop.aiff
-fi
-
-###############################################################################
 # Performance                                                                 #
 ###############################################################################
 # reduce transparency to make WindowServer take less CPU, but looks like shit
 #defaults write com.apple.universalaccess reduceTransparency 1
-
-###############################################################################
-# Miscellaneous                                                               #
-###############################################################################
-# Save screenshots to Pictures
-defaults write com.apple.screencapture location "${HOME}/Pictures"
-
-# reopen previous windows when starting an app
-defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
-
-# don't restore images in preview
-defaults write com.apple.Preview NSQuitAlwaysKeepsWindows -bool false
-
-# Expand save panel by default
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
-
-# Make animated dialog boxes, like the save, appear faster (0.2 is default)
-# did this make dialogs appear slower?
-#defaults write NSGlobalDomain NSWindowResizeTime .05
-
-# Expand print panel by default - these don't work anymore? (but expanded state is preserved between restarts)
-#defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
-#defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
-
-# show battery percent
-defaults write com.apple.menuextra.battery ShowPercent YES
-
-# make clock show only time, so it can be clickable in Big Sur (to show notification center)
-defaults write com.apple.menuextra.clock DateFormat -string "HH:mm"
-
-# set TextEdit default format to plain text
-defaults write com.apple.TextEdit RichText -int 0
-
-# smoother font on low DPI https://code.visualstudio.com/updates/v1_28#_blurriness-on-macos-mojave
-# Apple doesn't intend to support this option https://intellij-support.jetbrains.com/hc/en-us/articles/360016827360-Reporting-font-rendering-problems
-#defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO
-defaults delete CGFontRenderingFontSmoothingDisabled || true
-
-# set screen saver to activate after 20min instead of 5min
-defaults -currentHost write com.apple.screensaver idleTime 1200
-
-###############################################################################
-# Mouse & Trackpad                                                            #
-###############################################################################
-# show in menu bar - these files no longer present in Big Sur
-#defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" "/System/Library/CoreServices/Menu Extras/Volume.menu"
-# increase trackpad tracking speed - works!
-defaults write -g com.apple.trackpad.scaling -float 3.0
-# increase mouse tracking speed, 3.0 normal max but magic mouse is slow
-defaults write -g com.apple.mouse.scaling -float 5.0
-# Trackpad: enable tap to click for this user and for the login screen - don't work!
-#defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
-#defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
-#defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
-defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseButtonMode TwoButton
-# Smart zoom enabled, double-tap with one finger
-defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseOneFingerDoubleTapGesture -int 1
-# Double-tap with two fingers to Mission Control (set to 0 to disable) (already default?)
-defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseTwoFingerDoubleTapGesture -int 3
-# Two finger horizontal swipe
-# 0 = Swipe between pages with one finger
-# 1 = Swipe between pages
-# 2 = Swipe between full screen apps with two fingers, swipe between pages with one finger (already default?)
-defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseTwoFingerHorizSwipeGesture -int 2
-
-###############################################################################
-# Calendar                                                                    #
-###############################################################################
-# Show week numbers (10.8 only)
-defaults write com.apple.iCal "Show Week Numbers" -bool true
-# disable Show invitation messages in Notification Center
-defaults write com.apple.iCal InvitationNotificationsDisabled -int 1
-# disable Time to Leave alert - this seems unnecessary to disable
-#defaults write com.apple.iCal TimeToLeaveEnabled  -int 0
-
-###############################################################################
-# Keyboard                                                                    #
-###############################################################################
-# THESE SEEM DANGEROUS, NOT CONSISTENT, destroys key repeat in Chrome?
-# Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 1
-defaults write NSGlobalDomain InitialKeyRepeat -int 25
-
-# Disable smart quotes as they’re annoying when typing code
-defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-
-# Disable smart dashes as they’re annoying when typing code
-defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
-
-# Use all F1, F2, etc keys as standard function keys
-defaults write -g com.apple.keyboard.fnState -bool true
-
-###############################################################################
-# Keyboard shortcuts                                                          #
-###############################################################################
-# local keyboard shortucts
-
-# repair full screen for chrome beta
-#defaults write com.google.Chrome.beta NSUserKeyEquivalents -dict-add "Enter Full Screen" "@^f"
-# undo the setting, do
-# defaults delete com.google.Chrome.beta NSUserKeyEquivalents
-
-# this didn't work anyway
-#defaults write com.electron.react-native-debugger NSUserKeyEquivalents -dict-add "Enter Full Screen" "@^f"
-
-# global keyboard shortcuts fixed
-
-#defaults write -globalDomain NSUserKeyEquivalents -dict-add "Enter Full Screen" "@^f"
-#defaults write -globalDomain NSUserKeyEquivalents -dict-add "Zoom In" "@+"
-# couldn't get @< to parse
-#defaults write -globalDomain NSUserKeyEquivalents -dict-add "Move focus to next window" '@\\<'
-
-# to undo the setting
-#defaults delete -globalDomain NSUserKeyEquivalents
-
-###############################################################################
-# Dock                                                                        #
-###############################################################################
-# show more recent apps than three
-defaults write com.apple.dock show-recents -bool true
-defaults write com.apple.dock show-recent-count -int 12
-# arrange the icons
-set +e
-declare -a apps_to_remove=("Mail" "Safari" "Maps" "Photos" "FaceTime" "Calendar" "Contacts" "Reminders" "Notes" "TV" "Music" "Podcasts" "Keynote" "Numbers" "Pages" "App Store" "Messages" "Epson Photo+" "Epson Photo+ Tool" "Feedback Assistant" "Freeform")
-for app_to_remove in "${apps_to_remove[@]}"; do
-  dockutil --remove "$app_to_remove" --no-restart
-done
-dockutil --add "/Applications/Google Chrome Beta.app" --after "Launchpad" --no-restart
-dockutil --add "/Applications/iTerm.app" --after "Google Chrome Beta" --no-restart
-dockutil --add "/Applications/Visual Studio Code.app" --after "iTerm" --no-restart
-dockutil --add "/Applications/Bitwarden.app" --after "Visual Studio Code"
-set -e
-
-# autohide dock - my screen realestate is valuable!
-defaults write com.apple.dock autohide -bool true
-# Set the icon size of Dock items to 24 pixels
-defaults write com.apple.dock tilesize -int 24
-# Make Dock icons of hidden applications translucent
-defaults write com.apple.dock showhidden -bool true
-
-###############################################################################
-# Safari & WebKit                                                             #
-###############################################################################
-# Show status bar
-defaults write com.apple.Safari ShowStatusBar -bool true
-defaults write com.apple.Safari ShowOverlayStatusBar -bool true
-# Show the full URL in the address bar (note: this still hides the scheme)
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
-# Safari opens with: last session
-defaults write com.apple.Safari AlwaysRestoreSessionAtLaunch -bool true
-# Enable the Develop menu and the Web Inspector in Safari
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-# Enable Safari’s debug menu
-defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
-# Update extensions automatically, does this still do anything?
-defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
-# Make Safari’s search banners default to Contains instead of Starts With
-defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
-# Allow website tracking by disabling prevent cross-site tracking
-defaults write com.apple.Safari BlockStoragePolicy -int 1
-# Website use of location services, does this still do anything?
-# 0 = Deny without prompting
-# 1 = Prompt for each website once each day
-# 2 = Prompt for each website one time only
-defaults write com.apple.Safari SafariGeolocationPermissionPolicy -int 2
-
-# run customer specific bootstrap
-"${XDG_CONFIG_HOME:-$HOME/.config}"/yadm/bootstrap-customer
-
-# this script makes brew doctor fail
-trash "$HOMEBREW_PREFIX"/Library/Taps/wix/homebrew-brew/applesimutils.rb
-# brew doctor fails with Unexpected dylibs:  /usr/local/lib/libDellMonitorSdkLib.dylib
 set +e
 brew doctor
 set -e

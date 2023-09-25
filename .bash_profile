@@ -76,12 +76,12 @@ if grep -q Raspbian /etc/os-release 2>/dev/null; then
   export DOTFILES_LITE=1
 fi
 
-if [[ $(hostname) == *"MacBook-Pro-16"* ]]; then
+if [[ $(hostname) == *"FarMac"* ]]; then
   export FIRSTVET=1
 fi
 
 if [[ -n $FIRSTVET ]]; then
-  export GITHUB_ORGANIZATION=firstvetcom
+  export GITHUB_ORGANIZATION=longshun
 fi
 
 if [ -n "$SHELL" ]; then
@@ -124,8 +124,6 @@ fi
 addFirstInPath "$HOME/.manually-installed/bin"
 addLastInPath "$HOME/.manually-installed/lsd"
 addFirstInPath "$HOME/.local/bin"
-# this is needed while we are using an old awscli
-addLastInPath "$HOMEBREW_PREFIX/opt/awscli@1/bin"
 addFirstInPath "$HOME"/.cargo/bin
 addFirstInPath "$HOME"/bin
 addFirstInPath "$HOME"/bin/mts
@@ -231,31 +229,8 @@ addLastInPath "$ANDROID_HOME/tools/bin"
 addLastInPath "$ANDROID_HOME/platform-tools"
 addFirstInPath /Applications/Android\ Studio.app/Contents/jre/Contents/Home/bin
 
-export REACT_NATIVE_DOWNLOADS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/react-native-downloads"
-
 # bc settings
 export BC_ENV_ARGS="-l -q"
-
-# ansible needs sqlite3
-# macOS provides an older sqlite3.
-#If you need to have this software first in your PATH run:
-#  echo 'export PATH="$HOMEBREW_PREFIX/opt/sqlite/bin:$PATH"' >> "$HOME"/.bash_profile
-addFirstInPath "$HOMEBREW_PREFIX/opt/sqlite/bin"
-# For compilers to find this software you may need to set:
-#    LDFLAGS:  -L$HOMEBREW_PREFIX/opt/sqlite/lib
-#    CPPFLAGS: -I$HOMEBREW_PREFIX/opt/sqlite/include
-# For pkg-config to find this software you may need to set:
-#    PKG_CONFIG_PATH: $HOMEBREW_PREFIX/opt/sqlite/lib/pkgconfig
-
-# ansible also needed openssl
-# If you need to have this software first in your PATH run:
-#  echo 'export PATH="$HOMEBREW_PREFIX/opt/openssl@1.1/bin:$PATH"' >> "$HOME"/.bash_profile
-addFirstInPath "$HOMEBREW_PREFIX/opt/openssl@1.1/bin"
-# For compilers to find this software you may need to set:
-#    LDFLAGS:  -L$HOMEBREW_PREFIX/opt/openssl@1.1/lib
-#    CPPFLAGS: -I$HOMEBREW_PREFIX/opt/openssl@1.1/include
-# For pkg-config to find this software you may need to set:
-#    PKG_CONFIG_PATH: $HOMEBREW_PREFIX/opt/openssl@1.1/lib/pkgconfig
 
 ### aliases
 . "$HOME"/.aliases

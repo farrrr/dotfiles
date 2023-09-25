@@ -1,122 +1,101 @@
 [user]
-name = Klas Mellbourn
-signingkey = 9421003411C7A828
+    name = Far Tseng
+    email = farrrr@gmail.com
+    signingkey = ADFC5C75ED2320AAC2D400799725A67A8B5287C9
 [include]
-path = .gitconfig.modern
+    path = .gitconfig.modern
 [include]
-path = .gitconfig.pager
-[include]
-path = .gitconfig.user.foss
-[include]
-path = .gitconfig.credentials
-[includeIf "gitdir:~/code/klarna/"]
-path = .gitconfig.user
-
-[includeIf "gitdir:~/code/klarna/ui/"]
-path = .gitconfig.user.foss
-[includeIf "gitdir:~/code/klarna/bubble-ui/"]
-path = .gitconfig.user.foss
-# redundant, but don't forget this repo
-[includeIf "gitdir:~/.yadm/"]
-path = .gitconfig.user.foss
+    path = .gitconfig.pager
 [init]
-defaultBranch = main
+    defaultBranch = main
 [checkout]
-workers = 0
+    workers = 0
 [commit]
-gpgsign = true
+    gpgsign = true
 [mergetool]
-keepbackup = false
-prompt = false
-trustExitCode = true
+    keepbackup = false
+    prompt = false
+    trustExitCode = true
 [difftool]
-prompt = true
+    prompt = true
 [diff]
-algorithm = histogram
-# Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject instead of a/b/c/d as prefixes for patches
-mnemonicPrefix = true
-tool = vscode
-colorMoved = default
-submodule = log
+    algorithm = histogram
+    # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject instead of a/b/c/d as prefixes for patches
+    mnemonicPrefix = true
+    tool = vscode
+    colorMoved = default
+    submodule = log
 [merge]
-tool = vscode
-# Include summaries of merged commits in newly created merge commit messages
-log = true
+    tool = kdiff3
+    # Include summaries of merged commits in newly created merge commit messages
+    log = true
 [status]
-submodulesummary = true
+    submodulesummary = true
 [alias]
-lol = log --graph --all
-lo = log --graph
-ci = commit -v
-br = branch
-st = status
-mt = mergetool
-dt = difftool
-re = restore
-sw = switch
-d = diff --color-words=.
-# fetch only current branch and main
-f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'main' ]]; then git fetch --no-tags origin main; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) main:main; fi"
-# pull only current branch, fetch nothing else
-p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
-pc = "!git push && gh cws"
-puff = push --force-if-includes --force-with-lease
-# logp and reflogp have been adjustd so that they are compatible with git-delta
-logp = log -p --format='commit %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s'
-reflogp = reflog -p --format='commit %C(auto)%h%d %gd: %gs (%s)'
-unstage = reset HEAD --
-last = log -1 HEAD
-worktree-skipped = !git ls-files -v | grep "^S"
-unchange-assumed = !git ls-files -v | grep "^[[:lower:]]"
-cleanup = "!git branch --merged | grep  -v '^\\*\\|master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | xargs -n 1 git branch -d"
-cleanup-all = "!f(){\
+    lol = log --graph --all
+    lo = log --graph
+    ci = commit -v
+    br = branch
+    st = status
+    mt = mergetool
+    dt = difftool
+    re = restore
+    sw = switch
+    d = diff --color-words=.
+    # fetch only current branch and main
+    f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'main' ]]; then git fetch --no-tags origin main; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) main:main; fi"
+    # pull only current branch, fetch nothing else
+    p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
+    pc = "!git push && gh cws"
+    puff = push --force-if-includes --force-with-lease
+    # logp and reflogp have been adjustd so that they are compatible with git-delta
+    logp = log -p --format='commit %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s'
+    reflogp = reflog -p --format='commit %C(auto)%h%d %gd: %gs (%s)'
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    worktree-skipped = !git ls-files -v | grep "^S"
+    unchange-assumed = !git ls-files -v | grep "^[[:lower:]]"
+    cleanup = "!git branch --merged | grep  -v '^\\*\\|master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | xargs -n 1 git branch -d"
+    cleanup-all = "!f(){\
         git branch | grep -v 'master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | grep -v ^* | sh -c 'while read br; \
-		  do git log -1 $br; \
-		  git branch -D $br >> ~/temp/cleaned-branches.txt; \
-		done' ;\
-    }; f"
-stash-rename = "!_() { if [ -z \"$1\" ] || [ -z \"$2\" ]; then echo \"git rename-stash 0 NewName\" && echo \"\" && git stash list && exit 1; else stash=\"stash@{$1}\"; rev=$(git rev-parse \"${stash}\"); git stash drop \"${stash}\" || exit 1; git stash store -m \"$2\" \"$rev\" || exit 1; git stash list; fi }; _"
+        do git log -1 $br; \
+        git branch -D $br >> ~/temp/cleaned-branches.txt; \
+        done' ;\
+       }; f"
+    stash-rename = "!_() { if [ -z \"$1\" ] || [ -z \"$2\" ]; then echo \"git rename-stash 0 NewName\" && echo \"\" && git stash list && exit 1; else stash=\"stash@{$1}\"; rev=$(git rev-parse \"${stash}\"); git stash drop \"${stash}\" || exit 1; git stash store -m \"$2\" \"$rev\" || exit 1; git stash list; fi }; _"
 [fetch]
-prune = true
+    prune = true
 [log]
-decorate = short
-abbrevcommit = true
-date = relative
+    decorate = short
+    abbrevcommit = true
+    date = relative
 [rerere]
-enabled = true
+    enabled = true
 [pull]
-rebase = true
+    rebase = true
 [push]
-autoSetupRemote = true
+    autoSetupRemote = true
 [rebase]
-autoStash = true
+    autoStash = true
 [format]
-pretty = "%C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s"
+    pretty = "%C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s"
 [difftool "vscode"]
-cmd = code --wait --diff $LOCAL $REMOTE
+    cmd = code --wait --diff $LOCAL $REMOTE
 [mergetool "vscode"]
-cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
-[difftool "sourcetree"]
-cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-path =
-[mergetool "sourcetree"]
-cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-trustExitCode = true
+    cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
 # diff for binary Apple property list files
 [diff "plist"]
-textconv = plutil -convert xml1 -o -
-# this will redirect all http based remote URLs to the git protocol instead, fixing auth problems at github. But causing https://stackoverflow.com/questions/58596233/failed-to-fetch-https-github-com-rust-lang-crates-io-index, but when I comment these lines out I get https://stackoverflow.com/questions/10909221/why-is-github-asking-for-username-password-when-following-the-instructions-on-sc
+    textconv = plutil -convert xml1 -o -
+    # this will redirect all http based remote URLs to the git protocol instead, fixing auth problems at github. But causing https://stackoverflow.com/questions/58596233/failed-to-fetch-https-github-com-rust-lang-crates-io-index, but when I comment these lines out I get https://stackoverflow.com/questions/10909221/why-is-github-asking-for-username-password-when-following-the-instructions-on-sc
 [url "git@github.com:"]
-insteadOf = http://github.com/
-insteadOf = https://github.com/
-[url "https://github.com/rust-lang/crates.io-index"]
-insteadOf = https://github.com/rust-lang/crates.io-index
+	insteadOf = http://github.com/
+	insteadOf = https://github.com/
 [lfs]
-locksverify = false
+	locksverify = false
 [maintenance]
 repo = /Users/klas.mellbourn/code/firstvet/monorepo/.bare
 [filter "lfs"]
-	process = git-lfs filter-process
+    process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

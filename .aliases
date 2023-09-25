@@ -1,12 +1,10 @@
 # from oh-my-zsh
 alias ...='cd ../..'
-alias ....='cd ../../..'
 alias d='dirs -v | head -10'
 
 #personal
 alias cliplast='fc -ln|tail -1|pbcopy'
 alias cp='cp -v'
-alias cr='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222'
 alias dkill='docker stop $(docker ps -a -q)'
 alias drm='docker rm $(docker ps -a -q)'
 alias drma='docker system prune -a --volumes # dkill; drm; drmi; drmv'
@@ -18,12 +16,6 @@ alias glances='TERM=xterm-256color glances --process-short-name'
 alias gn='git number --column' # note that command line completion does not work well for this alias
 alias gr='cd $(git rev-parse --show-toplevel)'
 alias grep='grep --color=auto'
-alias jic='jira issue create -a@me --web --no-input -l"frontend" -l"team-treatment" -yMedium -tTask'
-alias jil='jila -q "status != done"'
-alias jila='jira issue list -a$(jira me) --order-by lastViewed'
-alias jilp='jil --plain'
-alias jilw='jira issue list -q "assignee = currentUser() and updated >= startofDay(-8d)" --order-by updated --plain'
-alias jim='jira issue move'
 alias l='ls -F '
 alias la='ls -AF '
 alias ld=lazydocker
@@ -31,17 +23,10 @@ alias ll='ls -lF '
 alias lla='ll -A'
 alias more=less
 alias mv='mv -v'
-alias prev='open -a Preview'
-alias psh='pwsh.exe'
-alias ql='qlmanage -p >/dev/null 2>&1'
-alias resolution='system_profiler SPDisplaysDataType | grep Resolution'
-alias rm_node_modules='$FD -t d -u node_modules -x rm -rf'
-# screws up rm in sourced files, e.g. ssh-find-agent
 #alias rm="echo Replace '\"rm\"' with '\"trash\"', or force the original with '\"\\\rm\"': trash "
 alias tig='TERM=xterm-256color tig'
 alias weather='curl -s v2.wttr.in'
 alias y='noglob yadm'
 alias yc='GIT_DIR=~/.local/share/yadm/repo.git code ~/.config/yadm'
-alias yl='lazygit --use-config-file "$HOME/.config/yadm/lazygit.yml,$HOME/Library/Application Support/lazygit/config.yml" --work-tree ~ --git-dir ~/.local/share/yadm/repo.git'
 alias yv='GIT_DIR=~/.local/share/yadm/repo.git vi ~/.config/yadm'
 alias zmv='noglob zmv'

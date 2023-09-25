@@ -28,14 +28,8 @@ autoload -U zmv
 autoload -Uz $(ls ~/.zsh-personal-functions)
 
 # helping brew completion is needed if HOMEBREW_PREFIX is not /usr/local
-# curl is here to enablie curlie to get to curls completions
+# curl is here to enable curlie to get to curls completions
 FPATH=$HOMEBREW_PREFIX/share/zsh/site-functions:$HOMEBREW_PREFIX/opt/curl/share/zsh/site-functions:$FPATH
-
-# fixing weird error of fpath on Klas's MacBook Pro 16" 2023, having 5.8.1 instead of 5.9
-case "$FPATH" in
-    */usr/share/zsh/site-functions:/usr/share/zsh/5.8.1/functions*)
-      FPATH=$FPATH:/opt/homebrew/share/zsh/site-functions:/opt/homebrew/Cellar/zsh/5.9/share/zsh/functions ;;
-esac
 
 # misc
 setopt interactive_comments long_list_jobs extendedglob notify list_packed transient_rprompt
@@ -221,10 +215,6 @@ if [[ -n $UNAME_MACOS ]]; then
   zinit wait'0' lucid light-mode as"program" pick"src/trash" for morgant/tools-osx
 fi
 
-zinit wait'1' lucid for OMZP::magic-enter
-MAGIC_ENTER_GIT_COMMAND="g st"
-MAGIC_ENTER_OTHER_COMMAND="l"
-
 zinit wait'1' lucid for supercrabtree/k
 
 zinit wait'1' lucid light-mode for lukechilds/zsh-better-npm-completion
@@ -353,37 +343,6 @@ zinit wait'2' lucid atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' lig
 # make text copy operations generic: clipcopy/clippaste
 zinit wait'2' lucid for OMZL::clipboard.zsh
 
-if [ -z "$DOTFILES_LITE" ]
-then
-  # Not really plugins, but very good to have async anyway
-  # sourcing rvm takes 0.51s, so there will be a lag when it is sourced
-  # also, loading rvm as a zinit will make it ignore the .ruby-version file if you are already inside that folder
-  #if [ -d ~/.rbenv ]; then
-  #  zinit wait'2' lucid as'null' \
-  #    atinit'eval "$(rbenv init -)"' light-mode for zdharma-continuum/null
-  #else
-  #  zinit wait'2' lucid as'null' \
-  #    atinit'if [ -s $HOME/.rvm/scripts/rvm ]; then source "$HOME/.rvm/scripts/rvm"; fi' light-mode for zdharma-continuum/null
-  #fi
-  if [ -s $HOME/.rvm/scripts/rvm ]; then
-    source "$HOME/.rvm/scripts/rvm"
-    rvm implode
-  fi
-
-  # # python environent will also cause a lag
-  # # this takes 0.166s
-  # zinit wait'2a' lucid as'null' atinit'command -v pyenv > /dev/null && eval "$(pyenv init -)"' light-mode for zdharma-continuum/null
-  # zinit wait'2b' lucid as'null' atinit'command -v pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"' light-mode for zdharma-continuum/null
-  # export WORKON_HOME=~/.py_virtualenvs
-  # zinit wait'2c' lucid as'null' atinit'if [ -x "$(command -v python3)" ]; then export VIRTUALENVWRAPPER_PYTHON=$(command -v python3); elif [ -x "$(command -v python3)" ]; then export VIRTUALENVWRAPPER_PYTHON=$(command -v python2); fi' light-mode for zdharma-continuum/null
-  # # this taskes 0.39s
-  # # this has to be loaded much later than the preceding plugins, otherwise you will get "No module named virtualenvwrapper  "
-  # zinit wait'9' lucid as'null' atinit'if [ -f $HOMEBREW_PREFIX/bin/virtualenvwrapper.sh ]; then source $HOMEBREW_PREFIX/bin/virtualenvwrapper.sh; fi' light-mode for zdharma-continuum/null
-
-  # yarn must be run after node is defined, takes 0.31s, and only adds $HOMEBREW_PREFIX/bin
-  #zinit wait'2' lucid as'null' atinit'export PATH="$PATH:$(yarn global bin)"' light-mode for zdharma-continuum/null
-fi
-
 if [[ -n $UNAME_LINUX ]]; then
   # this will work on 64 bit linux, but not on old raspberry, and probably not on wsl?
   if [[ -n $UNAME_LINUX_64 ]]; then
@@ -392,9 +351,6 @@ if [[ -n $UNAME_LINUX ]]; then
     zinit wait'2' lucid light-mode from"gh-r" as"program" bpick"*Linux_armv*" for jesseduffield/lazygit
   fi
 fi
-
-# note that this is for completion of cyme only, the command is gotten from cargo
-zinit wait'2' lucid light-mode from"gh" pick"doc/_cyme" as"completion" for tuna-f1sh/cyme
 
 ###############################################################################
 # add-ons installed by homebrew
@@ -439,7 +395,7 @@ function httpp() {
 }
 # usage: cd services && getTreeidForService orders
 function getTreeidForService() {
-	noglob git cat-file -p @^{tree} | \
+  noglob git cat-file -p @^{tree} | \
      grep "services$" | \
      awk '{ system("git cat-file -p " $3) }' | \
      egrep "$1$" | \

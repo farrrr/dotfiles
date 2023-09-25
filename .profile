@@ -20,8 +20,8 @@ fi
 export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
 export HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX"
 
-if [ -x "$(command -v code)" ]; then
-  export EDITOR="code -wr"
+if [ -x "$(command -v nvim)" ]; then
+  export EDITOR="nvim"
 else
   export EDITOR=vi
 fi
