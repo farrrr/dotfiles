@@ -1,0 +1,5 @@
+.gnupg/private-keys-v1.d/*.key filter=git-crypt diff=git-crypt
+.gnupg/pubring.kbx filter=git-crypt diff=git-crypt
+.gnupg/trustdb.gpg filter=git-crypt diff=git-crypt
+.local/share/atuin/key filter=git-crypt diff=git-crypt
+.ssh/**    filter=git-crypt diff=git-crypt
