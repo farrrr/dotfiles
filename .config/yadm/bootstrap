@@ -317,6 +317,10 @@ moom
   # Install NvChad if not installed
   if [ ! -d ~/.config/nvim ]; then
     git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+
+    pushd ~
+    ln -s -f .config/yadm/config/NvChad/custom .config/nvim/lua/custom
+    popd
   fi
 
   # this is needed to suppress zsh message "compinit: insecure directories""
