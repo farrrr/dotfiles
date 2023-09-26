@@ -378,26 +378,26 @@ unbind _
 bind | split-windows -h
 
 # unbind pane navigation
-unbind -r h
-unbind -r j
-unbind -r k
-unbind -r l
+unbind h
+unbind j
+unbind k
+unbind l
 unbind >
 unbind <
 
 # pane resizing
-unbind -r H
-unbind -r J
-unbind -r L
-unbind -r H
+unbind H
+unbind J
+unbind L
+unbind H
 bind -r > resize-pane -L 2
 bind -r < resize-pane -D 2
 bind -r + resize-pane -U 2
 bind -r - resize-pane -R 2
 
 # window navigation
-unbind -r C-h
-unbind -r C-l
+unbind C-h
+unbind C-l
 bind ^A last-window       # select to last active window
 
 # kill windows K k
