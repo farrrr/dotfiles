@@ -309,17 +309,10 @@ moom
 
   brew link --overwrite ugit
 
-  if [ -d ~/.tmux/plugins ]; then
-    for plugin in ~/.tmux/plugins/*; do
-      set +e
-      pushd "$plugin"
-      git pull
-      git submodule update --init --recursive
-      popd
-      set -e
-    done
-  fi
-
+  # Install `gpakosz/.tmux` if not installed
+  pushd ~
+  ln -s -f .tmux/.tmux.conf
+  popd
   # this is needed to suppress zsh message "compinit: insecure directories""
   chmod g-w "$HOMEBREW_PREFIX"/share ~/.zsh-personal-completions
 
