@@ -313,6 +313,12 @@ moom
   pushd ~
   ln -s -f .tmux/.tmux.conf
   popd
+
+  # Install NvChad if not installed
+  if [ ! -d ~/.config/nvim ]; then
+    git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+  fi
+
   # this is needed to suppress zsh message "compinit: insecure directories""
   chmod g-w "$HOMEBREW_PREFIX"/share ~/.zsh-personal-completions
 
