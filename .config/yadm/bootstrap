@@ -319,7 +319,7 @@ moom
     git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
 
     pushd ~
-    ln -s -f .config/yadm/config/NvChad/custom .config/nvim/lua/custom
+    ln -s -f ~/.config/yadm/config/NvChad/custom ~/.config/nvim/lua/custom
     popd
   fi
 
