@@ -375,7 +375,7 @@ bind / split-window -v
 
 # split current window vertically
 unbind _
-bind | split-windows -h
+bind | split-window -h
 
 # unbind pane navigation
 unbind h
