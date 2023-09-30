@@ -615,7 +615,7 @@ if [ -x "$(command -v bat)" ]; then
   }
 fi
 if [ -x "$(command -v lsd)" ]; then
-  alias ls=lsd
+  alias ls='lsd -A'
   alias ll='ls -l --date relative --blocks permission,size,date,name'
 fi
 
