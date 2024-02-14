@@ -238,6 +238,14 @@ else
   export FD=fd
 fi
 
+# google cloud sdk
+if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ]; then
+  zinit ice blockf
+  zinit snippet $(brew --prefix)/share/google-cloud-sdk/path.zsh.inc
+  zinit snippet $(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc
+fi
+
+
 # fuzzy completion: ^R, ^T, ⌥C, **
 export FZF_DEFAULT_COMMAND="$FD --type file"
 # --ansi makes fzf a bit slower, but I haven't really noticed, this preview is used for ** completion

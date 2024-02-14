@@ -52,19 +52,15 @@ if [[ $(uname) == 'Linux' ]]; then
     yadm
     vim
     tmux
-    tmux-next
     build-essential
     procps
     curl
     file
     highlight
     trash-cli
-    zoxide
     ripgrep
     fd-find
-    gh
     keychain
-    ugrep
     tree
     tig
     aptitude
@@ -114,12 +110,16 @@ choose-rust
 duf
 fd
 fx
+gh
 glances
 rich-cli
 sd
 shellcheck
 thefuck
 trippy
+ugrep
+zoxide
+
 "
 
     desiredApps=()
@@ -203,7 +203,6 @@ trippy
     fi
     sudo snap install core
     sudo snap refresh
-    sudo snap install croc
     if [ -n "$OS_UBUNTU" ]; then
       sudo snap install http --channel latest/candidate
       if [ -n "$UBUNTU_DESKTOP" ]; then

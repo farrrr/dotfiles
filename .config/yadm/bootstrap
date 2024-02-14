@@ -47,11 +47,11 @@ if [ -x "$(command -v ssh-agent)" ]; then
     ssh-add --apple-use-keychain ~/.ssh/id_rsa_github
   else
     if [ -f ~/.ssh/id_rsa_github ]; then
-      ssh-add -K ~/.ssh/id_rsa_github
+      ssh-add ~/.ssh/id_rsa_github
     fi
 
     if [ -f ~/.ssh/id_rsa_farrrr ]; then
-      ssh-add -K ~/.ssh/id_rsa_farrrr
+      ssh-add ~/.ssh/id_rsa_farrrr
     fi
   fi
 fi
