@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+
+# Initialize flags
+verbose=0
+install=0
+
+# Function to display messages if verbose mode is on
+log() {
+    if [[ $verbose -eq 1 ]]; then
+        echo "$@"
+    fi
+}
+
+# Parse command-line options
+while [[ "$1" =~ ^- ]]; do
+    case $1 in
+    -v)
+        verbose=1
+        ;;
+    -i)
+        install=1
+        ;;
+    *)
+        echo "Unknown option: $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+# Gather all installed plugins
+mapfile -t installed_plugins < <(asdf plugin list)
+
+# Function to remove asterisks and trim whitespaces
+clean_version() {
+    echo "$1" | sed 's/^\*//;s/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+# Function to check if a given string is an installed plugin
+is_installed_plugin() {
+    local plugin
+    for plugin in "${installed_plugins[@]}"; do
+        if [[ "$plugin" == "$1" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Function to check if an item is in an array
+contains_element() {
+    local element
+    for element in "${@:2}"; do
+        [[ "$element" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+# Initialize versions to keep array
+declare -A versions_to_keep
+
+# First, for each installed plugin, keep only the latest version
+for plugin in "${installed_plugins[@]}"; do
+    latest_version=$(asdf list "$plugin" | grep -v '^[[:space:]]*$' | sort -V | tail -n 1)
+    latest_version=$(clean_version "$latest_version")
+    versions_to_keep["$plugin"]="$latest_version"
+done
+
+# Parse arguments and append specified versions to keep for each plugin
+while [[ $# -gt 0 ]]; do
+    if is_installed_plugin "$1"; then
+        plugin="$1"
+        shift # remove the plugin name from the arguments list
+    fi
+    while [[ $# -gt 0 ]] && ! is_installed_plugin "$1" && ! [[ "$1" =~ ^- ]]; do
+        version=$(clean_version "$1")
+        versions_to_keep["$plugin"]+=" $version"
+        shift # remove this version from the arguments list
+    done
+done
+
+# Function to uninstall other versions and optionally install specified versions
+process_plugin_versions() {
+    local plugin="$1"
+    local version
+    local -a keep_versions
+
+    # Split versions_to_keep string into an array
+    IFS=' ' read -r -a keep_versions <<<"${versions_to_keep["$plugin"]}"
+
+    # Optionally install specified versions
+    if [[ $install -eq 1 ]]; then
+        for version in "${keep_versions[@]}"; do
+            cleaned_version=$(clean_version "$version")
+            # Check if version is already installed before installing
+            if ! asdf list "$plugin" | grep -q "\b$cleaned_version\$"; then
+                log "Installing $plugin version $cleaned_version"
+                asdf install "$plugin" "$cleaned_version"
+            fi
+        done
+    fi
+
+    # List installed versions for the plugin
+    mapfile -t installed_versions < <(asdf list "$plugin" | grep -v '^[[:space:]]*$')
+
+    # Loop through installed versions
+    for version in "${installed_versions[@]}"; do
+        version_cleaned=$(clean_version "$version")
+        if ! contains_element "$version_cleaned" "${keep_versions[@]}"; then
+            log "Uninstalling $plugin version $version_cleaned"
+            # Uncomment the next line to actually uninstall
+            asdf uninstall "$plugin" "$version_cleaned"
+        else
+            log "Skipping $plugin version $version_cleaned"
+        fi
+    done
+}
+
+# Process each installed plugin
+for plugin in "${installed_plugins[@]}"; do
+    process_plugin_versions "$plugin"
+done
