@@ -190,6 +190,7 @@ trippy
     #################################################################################
     # configuration specific for WSL
     #################################################################################
+    echo "IS WSL"
   else
     #################################################################################
     # configuration specific non-WSL, e.g. raspberry pi, and those that support snap
@@ -234,8 +235,9 @@ trippy
         # install Chromium
         sudo snap install chromium --channel latest/beta
       fi
-      if [ -x "$(command -v cargo)" ]; then
-      fi
+      #if [ -x "$(command -v cargo)" ]; then
+
+      #fi
     fi
   fi
 
