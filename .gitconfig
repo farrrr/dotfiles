@@ -26,7 +26,7 @@
     colorMoved = default
     submodule = log
 [merge]
-    tool = kdiff3
+    tool = vscode
     # Include summaries of merged commits in newly created merge commit messages
     log = true
 [status]

@@ -55,12 +55,12 @@ if [[ -n $UNAME_LINUX ]]; then
 fi
 
 # start tmux unless you are already in tmux, you have set NO_TMUX or you are starting up VSCode from Spotlight
-if [ -n "$PS1" ] && [ -z "$TMUX" ] && [ -z "$NO_TMUX" ] && command -v tmux &>/dev/null && [ -z "$VSCODE_PID" ]; then
-  # use this "if" to suppress tmux in *debugging* in vscode
-  if [ -z "$VSCODE_WORKSPACE_FOLDER" ]; then
-    exec "$HOME"/bin/tmux-attach-or-new
-  fi
-fi
+#if [ -n "$PS1" ] && [ -z "$TMUX" ] && [ -z "$NO_TMUX" ] && command -v tmux &>/dev/null && [ -z "$VSCODE_PID" ]; then
+#  # use this "if" to suppress tmux in *debugging* in vscode
+#  if [ -z "$VSCODE_WORKSPACE_FOLDER" ]; then
+#    exec "$HOME"/bin/tmux-attach-or-new
+#  fi
+#fi
 
 PROCESSOR_ARCHITECTURE=$(uname -p)
 export PROCESSOR_ARCHITECTURE
@@ -124,6 +124,8 @@ fi
 addFirstInPath "$HOME/.manually-installed/bin"
 addLastInPath "$HOME/.manually-installed/lsd"
 addFirstInPath "$HOME/.local/bin"
+# this is needed while we are using an old awscli
+addLastInPath "$HOMEBREW_PREFIX/opt/awscli@1/bin"
 addFirstInPath "$HOME"/.cargo/bin
 addFirstInPath "$HOME"/bin
 addFirstInPath "$HOME"/bin/mts

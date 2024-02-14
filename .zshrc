@@ -633,10 +633,6 @@ if [ -x "$(command -v bat)" ]; then
   }
   alias batgrep="noglob batgrep"
 fi
-if [ $(command -v _exa) ]; then
-  compdef x="exa"
-  compdef xl="exa"
-fi
 compdef lsd=ls
 if [ -x "$(command -v prettyping)" ]; then
   alias ping="prettyping --nolegend"

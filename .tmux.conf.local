@@ -13,6 +13,12 @@
 #   - disabled (do not modify new-session bindings)
 tmux_conf_new_session_prompt=false
 
+# new session retains current path, possible values are:
+#   - true
+#   - false (default)
+#   - disabled (do not modify new-session bindings)
+tmux_conf_new_session_retain_current_path=true
+
 
 # -- windows & pane creation ---------------------------------------------------
 
@@ -125,6 +131,9 @@ tmux_conf_theme_pane_border_style=thin
 # pane borders colours:
 tmux_conf_theme_pane_border="$tmux_conf_theme_colour_1"
 tmux_conf_theme_pane_active_border="$tmux_conf_theme_colour_11"
+%if #{>=:#{version},3.2}
+tmux_conf_theme_pane_active_border="#{?pane_in_mode,$tmux_conf_theme_colour_9,#{?synchronize-panes,$tmux_conf_theme_colour_16,$tmux_conf_theme_colour_4}}"
+%endif
 
 # pane indicator colours (when you hit <prefix> + q)
 tmux_conf_theme_pane_indicator="$tmux_conf_theme_colour_4"
@@ -481,6 +490,8 @@ set -g @cpu_high_bg_color "colour167"
 # then, use #{foo} in e.g. the 'tmux_conf_theme_status_left' or the
 # 'tmux_conf_theme_status_right' variables.
 
+# ------------------------------------------------------------------------------
+
 # # /!\ do not remove the following line
 # EOF
 #
@@ -497,3 +508,4 @@ set -g @cpu_high_bg_color "colour167"
 #
 # "$@"
 # # /!\ do not remove the previous line
+# #     do not write below this line
