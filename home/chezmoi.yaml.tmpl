@@ -38,7 +38,7 @@
 
 # template data
 data:
-  email: {{- $email | quote -}}
+  email: {{ $email | quote }}
   ephemeral: {{ $ephemeral }}
   headless: {{ $headless }}
   personal: {{ $personal }}
@@ -53,7 +53,7 @@ data:
       organization: "longshun-eco"
     git:
       name: "Far Tseng"
-      email: {{- $email | quote }}
+      email: {{ $email | quote }}
       signingKey: "ADFC5C75ED2320AAC2D400799725A67A8B5287C9"
 
 # Encryption type, either age or gpg
@@ -85,13 +85,13 @@ diff:
 edit:
   # Apply changes on exit
   apply: false
-{{- if or (eq .chassisType "laptop") (eq .chassisType "desktop") -}}
+{{-  if or (eq .chassisType "laptop") (eq .chassisType "desktop") }}
   command: "code"
   # Extra args to edit command
   args: ["--wait"]
-{{- else -}}
+{{-  else  }}
   command: "nvim"
-{{- end -}}
+{{-  end  }}
 
 git:
   # Add changes to the source state after any change

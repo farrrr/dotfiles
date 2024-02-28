@@ -7,7 +7,7 @@ set -eufo pipefail
 {{-   $sudo = "" -}}
 {{- end -}}
 
-{{- if or (eq .osid "linux-debian") (eq .osid "linux-ubuntu") -}}
+{{- if or (eq .osid "linux-debian") (eq .osid "linux-ubuntu") }}
 
 set +e
 # ----------------- #
@@ -29,28 +29,28 @@ fi
 
 # add-apt-repository
 {{-   range .packages.linux.aptrepo -}}
-{{-     if .name -}}
+{{-     if .name }}
 {{ $sudo }}apt-key adv --keyserver {{ .keyserver }} --recv-key {{ .recvkey }}
 {{ $sudo }}apt-add-repository -y {{ .repo }}
-{{-     else -}}
+{{-     else }}
 {{ $sudo }}add-apt-repository -y {{ . }}
-{{-     end -}}
-{{-   end -}}
+{{-     end }}
+{{-   end }}
 
 # update apt & full-upgrade
 {{ $sudo }}apt update
 {{ $sudo }}apt full-upgrade -y
 
-{{-   range .packages.linux.apt -}}
+{{    range .packages.linux.apt -}}
 install_apt_package {{ . }}
-{{-   end -}}
+{{    end -}}
 
-{{-   if eq .chezmoi.arch "amd64" -}}
+{{    if eq .chezmoi.arch "amd64" -}}
 # ----------------- #
 # Homebrew          #
 # ----------------- #
-{{-     template "homebrew" dict "os" .packages.linux -}}
-{{-   end -}}
+{{      template "homebrew" dict "os" .packages.linux }}
+{{-   end }}
 
 set -e
 

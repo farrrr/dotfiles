@@ -7,7 +7,7 @@
 {{-   $sudo = "" -}}
 {{- end -}}
 
-{{- if and (eq .chezmoi.os  "linux") (eq .chezmoi.arch "amd64") -}}
+{{- if and (eq .chezmoi.os  "linux") (eq .chezmoi.arch "amd64") }}
 if command -v gh &> /dev/null && gh auth status; then
   LATEST_TAG=$(gh release list --exclude-drafts -R lsd-rs/lsd -L 1 | awk '{print $1;}')
   LATEST_TAG_WITHOUT_V=${LATEST_TAG:1}
@@ -19,4 +19,4 @@ if command -v gh &> /dev/null && gh auth status; then
 
   {{ $sudo }}rm -f "$TEMP_DEB"
 fi
-{{- end -}}
+{{- end }}

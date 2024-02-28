@@ -5,34 +5,34 @@ set -eufo pipefail
 {{- $sudo := "sudo " -}}
 {{- if eq .chezmoi.username "root" -}}
 {{-   $sudo = "" -}}
-{{- end -}}
+{{- end }}
 
 # asdf
-{{- template "asdf" .plugins -}}
+{{ template "asdf" .plugins }}
 
 # .tmux.conf
-{{- template "ohmytmux" -}}
+{{ template "ohmytmux" }}
 
 # atuin
-{{- template "atuin" .atuin -}}
+{{ template "atuin" .atuin }}
 
 # tmux-256color
-{{- template "tmux256color" -}}
+{{ template "tmux256color" }}
 
 # gh
-{{- template "gh" .plugins -}}
+{{ template "gh" .plugins }}
 
 # zinit
-{{- template "zinit" -}}
+{{ template "zinit" }}
 
 # fzf
-{{- template "fzf" -}}
+{{ template "fzf" }}
 
 # npm
-{{- template "npm" .plugins -}}
+{{ template "npm" .plugins }}
 
 # lsd
-{{- template "lsd" . }}
+{{ template "lsd" . }}
 
 # zsh
 if ! grep -q "$USER:.*zsh" /etc/passwd; then

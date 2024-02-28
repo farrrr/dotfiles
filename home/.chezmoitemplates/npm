@@ -2,8 +2,8 @@
 # npm
 #
 
-{{- range .npm -}}
+{{- range .npm }}
 npm i -g {{ . }}
-{{- end -}}
+{{- end }}
 
 npm update -g

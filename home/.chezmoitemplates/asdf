@@ -8,11 +8,11 @@ asdf plugin update --all
 set +e
 
 {{- range .asdf -}}
-{{-   if .name -}}
+{{-  if .name }}
 asdf plguin add {{ .name }} {{ .url }}
-{{-   else -}}
+{{-   else }}
 asdf plugin add {{ . }}
-{{-   end -}}
-{{- end -}}
+{{-   end }}
+{{- end }}
 
 set -e

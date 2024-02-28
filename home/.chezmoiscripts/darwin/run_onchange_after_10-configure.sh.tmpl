@@ -3,28 +3,28 @@
 set -eufo pipefail
 
 # asdf
-{{- template "asdf" .plugins -}}
+{{ template "asdf" .plugins }}
 
 # .tmux.conf
-{{- template "ohmytmux" -}}
+{{ template "ohmytmux" }}
 
 # atuin
-{{- template "atuin" .atuin -}}
+{{ template "atuin" .atuin }}
 
 # tmux-256color
-{{- template "tmux256color" -}}
+{{ template "tmux256color" }}
 
 # gh
-{{- template "gh" .plugins -}}
+{{ template "gh" .plugins }}
 
 # zinit
-{{- template "zinit" -}}
+{{ template "zinit" }}
 
 # fzf
-{{- template "fzf" -}}
+{{ template "fzf" }}
 
 # npm
-{{- template "npm" .plugins -}}
+{{ template "npm" .plugins }}
 
 # save some disk
 xcrun simctl delete unavailable || true

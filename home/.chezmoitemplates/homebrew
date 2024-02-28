@@ -31,19 +31,19 @@ brew update
 brew upgrade
 
 # brew tap
-{{- $sortedTaps := sortAlpha (uniq (.os.taps)) -}}
-{{- range $sortedTaps -}}
+{{ $sortedTaps := sortAlpha (uniq (.os.taps)) -}}
+{{ range $sortedTaps -}}
 brew tap {{ . }}
-{{- end -}}
+{{ end -}}
 
 # brew packages
-{{- $sortedBrews := sortAlpha (uniq (.os.brews)) -}}
-{{- range $sortedBrews }}
+{{ $sortedBrews := sortAlpha (uniq (.os.brews)) -}}
+{{ range $sortedBrews -}}
 install_brew_package {{ . }}
-{{- end -}}
+{{ end -}}
 
 # brew casks
-{{- $sortedCasks := sortAlpha (uniq (.os.casks)) -}}
-{{- range $sortedCasks }}
+{{ $sortedCasks := sortAlpha (uniq (.os.casks)) -}}
+{{ range $sortedCasks -}}
 install_brew_cask {{ . }}
-{{- end -}}
+{{ end -}}

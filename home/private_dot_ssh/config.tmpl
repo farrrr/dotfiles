@@ -2,8 +2,7 @@ HashKnownHosts no
 ServerAliveCountMax 3
 ServerAliveInterval 10
 
-
-{{- if or (eq .chezmoi.os "darwin") .personal -}}
+{{- if or (eq .chezmoi.os "darwin") .personal }}
 Host *
   AddKeysToAgent yes
   UseKeychain yes
@@ -20,7 +19,7 @@ Host *.far.sh
 Host *.farlab.cc
   User far
   ForwardAgent yes
-{{- end -}}
+{{- end }}
 
 Host github.com
 	User git

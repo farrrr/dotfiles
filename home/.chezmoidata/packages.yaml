@@ -11,7 +11,7 @@ packages:
       - "bash"
       - "bash-completion"
       - "bat"
-      - "choost-rust"
+      - "choose-rust"
       - "coreutils"
       - "diff-so-fancy"
       - "duf"
