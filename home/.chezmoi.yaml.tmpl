@@ -8,25 +8,31 @@
 {{- $osID := .chezmoi.os -}}
 {{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
 {{-   $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
-{{- else if (.chezmoi.kernel.osrelease | regexMatch "-microsoft-standard-WSL2$") -}}
-{{-   $osID = printf "%s-%s" .chezmoi.os "wsl" -}}
+{{-   if (.chezmoi.kernel.osrelease | regexMatch "-microsoft-standard-WSL2$") -}}
+{{-     $osID = printf "%s-%s" .chezmoi.os "wsl" -}}
+{{-   end -}}
 {{- end -}}
+
 
 {{/* work around unreliable hostname on darwin */}}
 {{- $hostname := .chezmoi.hostname -}}
 {{- if eq .chezmoi.os "darwin" -}}
-{{-   $hostname = promptString "hostname" "Computer Name" -}}
+{{-   $hostname = promptStringOnce . "hostname" "Computer Name" -}}
 {{-   $personal = true -}}
 {{- end -}}
 
 
 {{- $chassisChoices := list "desktop" "laptop" "server" -}}
+{{- $email := "farrrr@gmail.com" -}}
+{{- $chassisType := "server" -}}
+{{- $githubOrg := "longshun-eco" -}}
 {{- if stdinIsATTY -}}
-{{-   $email := promptString "email" "Email Address" -}}
-{{-   $headless = promptBool "headless" "is Headless" -}}
-{{-   $personal = promptBool "personal" "personal use" -}}
-{{-   $devEnv = promptBool "devEnv" "is development Env" -}}
-{{-   $chassisType := promptChoiceOnce . "chassisType" "What type of host?" $chassisChoices -}}
+{{-   $email = promptStringOnce . "email" "Your Email Address:" -}}
+{{-   $headless = promptBoolOnce . "headless" "Headless machine:" -}}
+{{-   $personal = promptBoolOnce . "personal" "Personal Use:" -}}
+{{-   $devEnv = promptBoolOnce . "devEnv" "Dev Environment:" -}}
+{{-   $chassisType = promptChoiceOnce . "chassisType" "Machine type:" $chassisChoices -}}
+{{-   $githubOrg = promptStringOnce . "services.github.organization" "Github organization:" -}}
 {{- else -}}
 {{-   $headless = true -}}
 {{-   $personal = false -}}
@@ -39,7 +45,6 @@
 # template data
 data:
   email: {{ $email | quote }}
-  ephemeral: {{ $ephemeral }}
   headless: {{ $headless }}
   personal: {{ $personal }}
   osid: {{ $osID | quote }}
@@ -47,10 +52,11 @@ data:
   chassisType: {{ $chassisType | quote }}
   devEnv: {{ $devEnv }}
   onepasswordAccount: "SQAYKGUCVJCWHFUFZJ4QUKXU6Q"
-  autin.user: "far"
+  atuin:
+    user: "far"
   services:
     github:
-      organization: "longshun-eco"
+      organization: {{ $githubOrg | quote }}
     git:
       name: "Far Tseng"
       email: {{ $email | quote }}
@@ -85,7 +91,7 @@ diff:
 edit:
   # Apply changes on exit
   apply: false
-{{-  if or (eq .chassisType "laptop") (eq .chassisType "desktop") }}
+{{-  if or (eq $chassisType "laptop") (eq $chassisType "desktop") }}
   command: "code"
   # Extra args to edit command
   args: ["--wait"]
@@ -107,7 +113,11 @@ gitHub:
 
 merge:
   command: "nvim"
-  args: ["-d", {{ "{{" }} .Destination {{ "}}" }}, {{ "{{" }} .Source {{ "}}" }}, {{ "{{" }} .Target {{ "}}" }}]
+  args:
+    - -d
+    - "{{ "{{ .Source }}" }}"
+    - "{{ "{{ .Destination }}" }}"
+    - "{{ "{{ .Target }}" }}"
 
 update:
   # Apply after pulling

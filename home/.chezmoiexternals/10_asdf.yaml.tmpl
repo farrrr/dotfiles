@@ -3,3 +3,5 @@
   url: "https://github.com/asdf-vm/asdf.git/"
   clone:
     args: [ "--branch", "v{{ .asdfVersionTag }}" ]
+  pull:
+    args: [ "origin", "v{{ .asdfVersionTag }}" ]

@@ -4,6 +4,7 @@ plugins:
     - "java"
     - "ruby"
     - "bundler"
+    - "python"
     - name: 'lazydocker'
       url: 'https://github.com/comdotlinux/asdf-lazydocker.git'
   gh:

@@ -1,6 +1,7 @@
 HashKnownHosts no
 ServerAliveCountMax 3
 ServerAliveInterval 10
+IdentityFile ~/.ssh/id_rsa_farrrr
 
 {{- if or (eq .chezmoi.os "darwin") .personal }}
 Host *
@@ -22,5 +23,6 @@ Host *.farlab.cc
 {{- end }}
 
 Host github.com
-	User git
-	HostName github.com
+  User git
+  HostName github.com
+  IdentityFile ~/.ssh/id_rsa_github

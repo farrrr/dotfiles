@@ -23,9 +23,9 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 source "${ZINIT_HOME}/zinit.zsh"
 
 fpath=(~/.zfunctions ~/.zcompletions $fpath $GENCOMPL_FPATH)
-autoload -U zmv
+#autoload -U zmv
 # personal functions in ~/.zfunctions
-autoload -Uz $(ls ~/.zfunctions)
+#autoload -Uz $(ls ~/.zfunctions)
 
 # helping brew completion is needed if HOMEBREW_PREFIX is not /usr/local
 # curl is here to enable curlie to get to curls completions
@@ -183,8 +183,7 @@ fpath=(${ASDF_DIR:-$HOME/.asdf}/completions $fpath)
 zinit wait'1' lucid for supercrabtree/k
 
 zinit wait'1' lucid light-mode for lukechilds/zsh-better-npm-completion
-zinit wait'1' ice atload'zpcdreplay' atclone'./zplug.zsh'
-zinit wait'1' light g-plane/zsh-yarn-autocompletions
+zinit wait'1' atclone'./zplug.zsh' lucid for g-plane/zsh-yarn-autocompletions
 zinit wait'1' lucid light-mode for favware/zsh-lerna
 
 if [ ! -x "$(command -v dircolors)" ]; then
@@ -311,13 +310,13 @@ zinit wait'2' lucid atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' lig
 # make text copy operations generic: clipcopy/clippaste
 zinit wait'2' lucid for OMZL::clipboard.zsh
 
-{{- if eq .chezmoi.os "linux" -}}
-{{-   if .chezmoi.arch "amd64" -}}
+{{- if eq .chezmoi.os "linux" }}
+{{-   if .chezmoi.arch "amd64" }}
 zinit wait'2' lucid light-mode from"gh-r" as"program" bpick"*Linux_arm64*" for jesseduffield/lazygit
-{{-   else -}}
+{{-   else }}
 zinit wait'2' lucid light-mode from"gh-r" as"program" bpick"*Linux_armv*" for jesseduffield/lazygit
-{{-   end -}}
-{{- end -}}
+{{-   end }}
+{{- end }}
 
 ###############################################################################
 # fun functions
@@ -444,7 +443,7 @@ bindkey '^X^a' globalias
 
 
 # make most kill commands in zsh copy to global pastboard as well as zsh clipboard
-{{- if eq .chezmoi.os "darwin" -}}
+{{- if eq .chezmoi.os "darwin" }}
 # M-w copies to global pasteboard as well as zsh clipboard
 pb-copy-region-as-kill () {
   zle copy-region-as-kill
@@ -474,7 +473,7 @@ pb-kill-buffer () {
 }
 zle -N pb-kill-buffer
 bindkey -e '^x^k' pb-kill-buffer
-{{- end -}}
+{{- end }}
 
 ###############################################################################
 # Syntax highlighting for the shell
@@ -571,8 +570,3 @@ compdef __zoxide_z_complete __zoxide_zi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-#echo ".zshrc finished:"
-#END=$(gdate +%s.%N)
-#echo "$END - $START" | bc
-#zprof
