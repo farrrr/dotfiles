@@ -1,0 +1,14 @@
+#
+# gh
+#
+
+if [ -x "$(command -v gh)" ] && ! gh auth status; then
+  gh auth login -p ssh -h github.com -w || true
+fi
+
+set +e
+{{- range .gh -}}
+gh extension install {{ . }}
+{{- end -}}
+set -e
+gh extension upgrade --all

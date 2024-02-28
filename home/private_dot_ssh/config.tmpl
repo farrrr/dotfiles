@@ -1,0 +1,27 @@
+HashKnownHosts no
+ServerAliveCountMax 3
+ServerAliveInterval 10
+
+
+{{- if or (eq .chezmoi.os "darwin") .personal -}}
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+
+Host admin
+  User far
+  HostName 34.80.65.191
+  ForwardAgent yes
+
+Host *.far.sh
+  User far
+  ForwardAgent yes
+
+Host *.farlab.cc
+  User far
+  ForwardAgent yes
+{{- end -}}
+
+Host github.com
+	User git
+	HostName github.com

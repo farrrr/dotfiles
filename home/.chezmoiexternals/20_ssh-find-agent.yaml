@@ -1,0 +1,5 @@
+bin/ssh-find-agent.sh:
+  type: file
+  url: https://raw.githubusercontent.com/wwalker/ssh-find-agent/master/ssh-find-agent.sh
+  refreshPeriod: "672h"
+  executable: true

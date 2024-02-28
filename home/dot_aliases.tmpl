@@ -1,0 +1,32 @@
+# from oh-my-zsh
+alias ...='cd ../..'
+alias d='dirs -v | head -10'
+
+alias cat='bat'
+
+#personal
+alias cp='cp -v'
+alias g='noglob git'
+alias glances='TERM=xterm-256color glances --process-short-namTERM=xterm-256color glances --process-short-namee'
+alias gn='git number --column' # note that command line completion does not work well for this alias
+alias gr='cd $(git rev-parse --show-toplevel)'
+alias grep='grep --color=auto'
+{{- if eq .chezmoi.os "linux" -}}
+alias ls="ls --color=auto"
+{{- end -}}
+alias ls='ls -AF'
+alias ll='ls -AFl'
+alias more=less
+alias mv='mv -v'
+alias tig='TERM=xterm-256color tig'
+alias weather='curl -s v2.wttr.in'
+alias vi='vim'
+alias vim='vim'
+command -v nvim &> /dev/null && alias vi='nvim' && alias vim='nvim'
+
+# ugrep is a drop-in replacement for grep
+alias grep='ugrep -G --color=auto --config'  # search with basic regular expressions (BRE)
+alias egrep='ugrep -E --color=auto --config' # search with extended regular expressions (ERE)
+alias fgrep='ugrep -F --color=auto --config' # find string(s)
+
+alias artisan='php artisan'

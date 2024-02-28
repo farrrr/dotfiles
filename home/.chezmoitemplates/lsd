@@ -1,0 +1,17 @@
+#
+# lsd
+#
+
+{{- if and (eq .chezmoi.os  "linux") (eq .chezmoi.arch "amd64") -}}
+if command -v gh &> /dev/null && gh auth status; then
+  LATEST_TAG=$(gh release list --exclude-drafts -R lsd-rs/lsd -L 1 | awk '{print $1;}')
+  LATEST_TAG_WITHOUT_V=${LATEST_TAG:1}
+  TEMP_DEB="/tmp/lsd_${LATEST_TAG_WITHOUT_V}_amd64.deb"
+
+  if gh release download "$LATEST_TAG" -R lsd-rs/lsd -p "lsd_${LATEST_TAG_WITHOUT_V}_amd64.deb" --skip-existing -D "/tmp"; then
+    {{ $sudo }}dpkg --skip-same-version -i "$TEMP_DEB"
+  fi
+
+  {{ $sudo }}rm -f "$TEMP_DEB"
+fi
+{{- end -}}

@@ -1,0 +1,22 @@
+#
+# atuin
+#
+
+if [[ -x "$(command -v autin)" ]]; then
+  # atuin completion
+  if [ -n "$GENCOMPL_FPATH" ]; then
+    [ ! -d "$GENCOMPL_FPATH" ] && mkdir -p "$GENCOMPL_FPATH"
+    atuin gen-completions --shell zsh --out-dir "$GENCOMPL_FPATH"
+  fi
+
+  # atuin auth
+  if ! atuin sync; then
+    login_status=$(autin login -u {{ .user }} 2>&1)
+    if [[ $login_status == *"You are already logged in! Please run 'atuin logout' if you wish to login again"* ]]; then
+      atuin logout
+      atuin login -u {{ .user }}
+    fi
+
+    atuin import auto
+  fi
+fi

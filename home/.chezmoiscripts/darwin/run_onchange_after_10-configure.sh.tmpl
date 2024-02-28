@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+# asdf
+{{- template "asdf" .plugins -}}
+
+# .tmux.conf
+{{- template "ohmytmux" -}}
+
+# atuin
+{{- template "atuin" .atuin -}}
+
+# tmux-256color
+{{- template "tmux256color" -}}
+
+# gh
+{{- template "gh" .plugins -}}
+
+# zinit
+{{- template "zinit" -}}
+
+# fzf
+{{- template "fzf" -}}
+
+# npm
+{{- template "npm" .plugins -}}
+
+# save some disk
+xcrun simctl delete unavailable || true
+
+if [ -d "/Applications/Xcode.app/Contents/Developer" ]; then
+  sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+fi
+
+sudo git-lfs install --system || true
+
+sudo xcodebuild -license accept
+
+# bash4
+if ! grep -q "$HOMEBREW_PREFIX/bin/bash" "/etc/shells"; then
+  sudo sh -c "echo $HOMEBREW_PREFIX/bin/bash >> /etc/shells"
+fi
+
+# zsh
+if ! grep -q "$HOMEBREW_PREFIX/bin/zsh" "/etc/shells"; then
+  sudo sh -c "echo $HOMEBREW_PREFIX/bin/zsh >> /etc/shells"
+fi
+sudo chsh -s $HOMEBREW_PREFIX/bin/zsh "$(whoami)"
+
+# disable guest user
+sudo sysadminctl -guestAccount off

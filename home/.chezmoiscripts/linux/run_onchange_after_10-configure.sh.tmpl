@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+{{- $sudo := "sudo " -}}
+{{- if eq .chezmoi.username "root" -}}
+{{-   $sudo = "" -}}
+{{- end -}}
+
+# asdf
+{{- template "asdf" .plugins -}}
+
+# .tmux.conf
+{{- template "ohmytmux" -}}
+
+# atuin
+{{- template "atuin" .atuin -}}
+
+# tmux-256color
+{{- template "tmux256color" -}}
+
+# gh
+{{- template "gh" .plugins -}}
+
+# zinit
+{{- template "zinit" -}}
+
+# fzf
+{{- template "fzf" -}}
+
+# npm
+{{- template "npm" .plugins -}}
+
+# lsd
+{{- template "lsd" . }}
+
+# zsh
+if ! grep -q "$USER:.*zsh" /etc/passwd; then
+  {{ $sudo }}chsh -s "$(which zsh)" "$(whoami)"
+fi

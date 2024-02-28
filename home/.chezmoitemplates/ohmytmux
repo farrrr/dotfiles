@@ -1,0 +1,7 @@
+#
+# Oh-my-tmux
+#
+
+pushd ~
+ln -s -f .tmux/.tmux.conf
+popd

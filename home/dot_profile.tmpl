@@ -1,0 +1,37 @@
+# shellcheck shell=bash
+
+[ -x "$(command -v brew)" ] && HOMEBREW_PREFIX=$(brew --prefix)
+
+if [ -z "$HOMEBREW_PREFIX" ]; then
+  if [ -d "/opt/homebrew" ]; then
+    HOMEBREW_PREFIX="/opt/homebrew"
+  elif [ -d "/home/linuxbrew/.linuxbrew" ]; then
+    HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+  else
+    HOMEBREW_PREFIX="/usr/local"
+  fi
+
+  export HOMEBREW_PREFIX
+fi
+
+# Remove any existing occurrences of $HOMEBREW_PREFIX/bin from PATH to avoid duplicates
+cleaned_path=$(echo ":$PATH:" | sed "s~:$HOMEBREW_PREFIX/bin:~:~g")
+# Remove leading and trailing colons to restore the original format of PATH
+cleaned_path=${cleaned_path#:}
+cleaned_path=${cleaned_path%:}
+
+# If the $HOMEBREW_PREFIX/bin directory exists, prepend it to PATH
+if [ -d "$HOMEBREW_PREFIX/bin" ]; then
+  PATH="$HOMEBREW_PREFIX/bin:$cleaned_path"
+else
+  PATH="$cleaned_path"
+fi
+
+# Set Homebrew's Cellar and Repository environment variables
+export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+export HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX"
+
+# setup $EDITOR
+EDITOR="vi"
+[ -x "$(command -v nvim)" ] && EDITOR="nvim"
+export EDITOR

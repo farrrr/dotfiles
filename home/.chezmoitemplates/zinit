@@ -1,0 +1,7 @@
+#
+# zinit
+#
+
+if [ -x "$(command -v zsh)" ]; then
+  zsh -ic "zinit self-update; zinit update --all; zinit cclear"
+fi

@@ -1,0 +1,7 @@
+#
+# fzf
+#
+
+if ! [ -f ~/.fzf."$SHELLNAME" ]; then
+  "$HOMEBREW_PREFIX"/opt/fzf/install --key-bindings --completion --no-update-rc
+fi

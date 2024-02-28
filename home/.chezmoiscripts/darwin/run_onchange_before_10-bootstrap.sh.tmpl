@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+xcode-select --install || true
+
+# Homebrew
+{{- template "homebrew" dict "os" .packages.darwin -}}

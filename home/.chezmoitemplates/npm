@@ -1,0 +1,9 @@
+#
+# npm
+#
+
+{{- range .npm -}}
+npm i -g {{ . }}
+{{- end -}}
+
+npm update -g

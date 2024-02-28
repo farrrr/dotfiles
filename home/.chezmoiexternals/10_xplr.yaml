@@ -1,0 +1,23 @@
+.config/xplr/plugins/icons:
+  type: "archive"
+  url: "https://github.com/prncss-xyz/icons.xplr/archive/main.tar.gz"
+  stripComponents: 1
+  refreshPeriod: "168h"
+
+.config/xplr/plugins/map:
+  type: "archive"
+  url: "https://github.com/sayanarijit/map.xplr/archive/main.tar.gz"
+  stripComponents: 1
+  refreshPeriod: "168h"
+
+.config/xplr/plugins/zoxide:
+  type: "archive"
+  url: "https://github.com/sayanarijit/zoxide.xplr/archive/main.tar.gz"
+  stripComponents: 1
+  refreshPeriod: "168h"
+
+.config/xplr/plugins/fzf:
+  type: "archive"
+  url: "https://github.com/sayanarijit/fzf.xplr/archive/main.tar.gz"
+  stripComponents: 1
+  refreshPeriod: "168h"

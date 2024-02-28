@@ -1,0 +1,49 @@
+#
+# Homebrew
+#
+
+install_brew_package() {
+  if [ -n "$1" ]; then
+    if ! brew list --formula | grep -Fqx "$1"; then
+      echo "Homebrew Package '$1' installing..."
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
+    fi
+  fi
+}
+
+install_brew_cask() {
+  if [ -n "$1" ]; then
+    if ! brew list --cask | grep -Fqx "$1"; then
+      echo "Homebrew Cask '$1' installing..."
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask "$1"
+    fi
+  fi
+}
+
+if ! command -v brew > /dev/null 2>&1; then
+  echo "Homebrew not found. Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Update Homebrew, upgrade all packages, and clean up obsolete
+brew cleanup
+brew update
+brew upgrade
+
+# brew tap
+{{- $sortedTaps := sortAlpha (uniq (.os.taps)) -}}
+{{- range $sortedTaps -}}
+brew tap {{ . }}
+{{- end -}}
+
+# brew packages
+{{- $sortedBrews := sortAlpha (uniq (.os.brews)) -}}
+{{- range $sortedBrews }}
+install_brew_package {{ . }}
+{{- end -}}
+
+# brew casks
+{{- $sortedCasks := sortAlpha (uniq (.os.casks)) -}}
+{{- range $sortedCasks }}
+install_brew_cask {{ . }}
+{{- end -}}

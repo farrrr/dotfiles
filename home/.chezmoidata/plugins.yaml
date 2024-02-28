@@ -1,0 +1,16 @@
+plugins:
+  asdf:
+    - "nodejs"
+    - "java"
+    - "ruby"
+    - "bundler"
+    - name: 'lazydocker'
+      url: 'https://github.com/comdotlinux/asdf-lazydocker.git'
+  gh:
+    - "dlvhdr/gh-dash"
+    - "gennaro-tedesco/gh-f"
+    - "meiji163/gh-notify"
+  npm:
+    - "zx"
+    - "tsx"
+    - "ts-node @swc/core"

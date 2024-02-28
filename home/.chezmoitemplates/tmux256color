@@ -1,0 +1,5 @@
+#
+# tmux-256color
+#
+
+curl -L https://invisible-island.net/datafiles/current/terminfo.src.gz | gunzip | /usr/bin/tic -xe tmux-256color /dev/stdin

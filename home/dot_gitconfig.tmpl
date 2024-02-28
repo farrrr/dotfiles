@@ -1,0 +1,146 @@
+[user]
+    name = {{ git.name }}
+    email = {{ git.email }}
+    signingkey = {{ git.signingkey }}
+
+{{- if eq .chezmoi.os "darwin" -}}
+# these commands are modern and not supported by older git
+[help]
+    autocorrect = prompt
+{{- end -}}
+
+{{- if eq .chezmoi.os "linux" "darwin" -}}
+# settings for diff-so-fancy
+[core]
+	pager = diff-so-fancy | less --tabs=4 -RFX -+W -+J
+[color "diff-highlight"]
+	oldNormal = red
+	newNormal = green
+	newHighlight = green 22
+	oldHighlight = red 52
+[color "diff"]
+	meta = yellow
+	frag = magenta
+	commit = yellow
+	old = red
+	new = green
+	whitespace = red reverse
+[diff-so-fancy]
+	useUnicodeRuler = false
+	stripLeadingSymbols = false
+
+{{- else -}}
+# settings for git-delta https://github.com/dandavison/delta
+[core]
+pager = delta
+
+[interactive]
+diffFilter = delta --color-only
+
+[delta]
+syntax-theme = Dracula
+navigate = true
+tabs = 2
+side-by-side = true
+line-numbers = false
+file-style = bold "#eee8aa"                     # pale golden rod
+file-decoration-style = ol "#b8860b"            # dark orange
+hunk-header-line-number-style = "#4169e1"       # royal blue
+hunk-header-decoration-style = ol "#000080"     # navy
+commit-decoration-style = bold "#00fa9a" box ul # medium spring green
+word-diff-regex = ''                            # weirdly, this makes the diff character level, which I prefer
+# plus-style = syntax "#004000"                   # added lines need to be a bit brighter green
+# plus-emph-style = syntax "#007500"              # added words now need to be even greener
+
+{{- end -}}
+[init]
+    defaultBranch = main
+[checkout]
+    workers = 0
+[commit]
+    gpgsign = true
+[mergetool]
+    keepbackup = false
+    prompt = false
+    trustExitCode = true
+[difftool]
+    prompt = true
+[diff]
+    algorithm = histogram
+    # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject instead of a/b/c/d as prefixes for patches
+    mnemonicPrefix = true
+    tool = vscode
+    colorMoved = default
+    submodule = log
+[merge]
+    tool = vscode
+    # Include summaries of merged commits in newly created merge commit messages
+    log = true
+[status]
+    submodulesummary = true
+[alias]
+    lol = log --graph --all
+    lo = log --graph
+    ci = commit -v
+    br = branch
+    st = status
+    mt = mergetool
+    dt = difftool
+    re = restore
+    sw = switch
+    d = diff --color-words=.
+    # fetch only current branch and main
+    f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'main' ]]; then git fetch --no-tags origin main; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) main:main; fi"
+    # pull only current branch, fetch nothing else
+    p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
+    pc = "!git push && gh cws"
+    puff = push --force-if-includes --force-with-lease
+    # logp and reflogp have been adjustd so that they are compatible with git-delta
+    logp = log -p --format='commit %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s'
+    reflogp = reflog -p --format='commit %C(auto)%h%d %gd: %gs (%s)'
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    worktree-skipped = !git ls-files -v | grep "^S"
+    unchange-assumed = !git ls-files -v | grep "^[[:lower:]]"
+    cleanup = "!git branch --merged | grep  -v '^\\*\\|master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | xargs -n 1 git branch -d"
+    cleanup-all = "!f(){\
+        git branch | grep -v 'master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | grep -v ^* | sh -c 'while read br; \
+        do git log -1 $br; \
+        git branch -D $br >> ~/temp/cleaned-branches.txt; \
+        done' ;\
+       }; f"
+    stash-rename = "!_() { if [ -z \"$1\" ] || [ -z \"$2\" ]; then echo \"git rename-stash 0 NewName\" && echo \"\" && git stash list && exit 1; else stash=\"stash@{$1}\"; rev=$(git rev-parse \"${stash}\"); git stash drop \"${stash}\" || exit 1; git stash store -m \"$2\" \"$rev\" || exit 1; git stash list; fi }; _"
+[fetch]
+    prune = true
+[log]
+    decorate = short
+    abbrevcommit = true
+    date = relative
+[rerere]
+    enabled = true
+[pull]
+    rebase = true
+[push]
+    autoSetupRemote = true
+[rebase]
+    autoStash = true
+[format]
+    pretty = "%C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s"
+[difftool "vscode"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+[mergetool "vscode"]
+    cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+# diff for binary Apple property list files
+[diff "plist"]
+    textconv = plutil -convert xml1 -o -
+    # this will redirect all http based remote URLs to the git protocol instead, fixing auth problems at github. But causing https://stackoverflow.com/questions/58596233/failed-to-fetch-https-github-com-rust-lang-crates-io-index, but when I comment these lines out I get https://stackoverflow.com/questions/10909221/why-is-github-asking-for-username-password-when-following-the-instructions-on-sc
+[url "git@github.com:"]
+	insteadOf = http://github.com/
+	insteadOf = https://github.com/
+[lfs]
+	locksverify = false
+[filter "lfs"]
+    process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f

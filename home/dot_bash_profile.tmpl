@@ -1,0 +1,102 @@
+# shellcheck shell=bash
+# shellcheck disable=SC1091
+
+# 加载其他配置文件
+[ -f "$HOME/.profile" ] && source "$HOME/.profile"
+
+export GITHUB_ORGANIZATION={{ .githubOrg }}
+
+SHELLNAME=$(basename "${SHELL:-$(ps -p $ -o comm=)}" | sed 's/-//')
+export SHELLNAME
+
+[ -f "$HOME/.protocol" ] && source "$HOME/.protocol"
+[ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc"
+[ -f "$HOME/.local_settings" ] && source "$HOME/.local_settings"
+
+addFirstInPath() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="$1${PATH:+":$PATH"}"
+  fi
+}
+addLastInPath() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="${PATH:+"$PATH:"}$1"
+  fi
+}
+
+export MANPATH="$HOMEBREW_PREFIX/share/man${MANPATH+:$MANPATH}:"
+export INFOPATH="$HOMEBREW_PREFIX/share/info:${INFOPATH:-}"
+[ -d /snap ] && addFirstInPath "/snap/croc/current"
+# XXX: add more path
+
+export CLICOLOR=1
+export GCAL='--starting-day=Monday --iso-week-number=yes --with-week-number --cc-holidays=SE'
+
+{{- if eq .chezmoi.os "darwin" -}}
+  # fix for ENFILE: file table overflow
+  ulimit -n 20000
+
+  # translated from LS_COLORS using https://geoff.greer.fm/lscolors/
+  export LSCOLORS=gxfxcxdxbxegedabagacad
+  # LS_COLORS now set by trapd00r/LS_COLORS
+  #export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
+{{- end -}}
+
+# less 相关配置
+if (($(command less --version | head -1 | cut -d ' ' -f2) >= 590)); then
+  export LESSOPEN="| $(which highlight) %s --quiet --force --out-format xterm256 --style darkplus"
+  # note: --file-size takes noticable extra startup time on large (100k) files
+  export LESS=" --LONG-PROMPT --RAW-CONTROL-CHARS --ignore-case --HILITE-UNREAD --status-column --quiet \
+    --no-histdups --save-marks --quit-if-one-screen --incsearch --use-color"
+else
+  export LESSOPEN="| $(which highlight) %s --quiet --force --out-format ansi"
+  export LESS=" --LONG-PROMPT --RAW-CONTROL-CHARS --ignore-case --HILITE-UNREAD --status-column --quiet"
+fi
+# git-delta can't handle a status column
+export DELTA_PAGER="less -+J -+W"
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+# make gpg prompt work, otherwise I get "Inappropriate ioctl for device"
+GPG_TTY=$(tty)
+export GPG_TTY
+export CHEATCOLORS=true
+# git checkout should only complete local branches (unless origin/), since I have fzf for more complex scenarios
+export GIT_COMPLETION_CHECKOUT_NO_GUESS=1
+export FLIPPER_ENABLED=1
+# GENCOMPL_FPATH is only used by zsh, but is needed by bootstrap
+export GENCOMPL_FPATH=~/.zcompletions/generated
+
+set -o emacs
+
+if [[ $SHELL == *bash ]]; then
+  # bash shell options
+  shopt -s autocd globstar
+  ### prompt
+  if [ -x "$(command -v brew)" ] && [ -f "$HOMEBREW_PREFIX"/etc/bash_completion ]; then
+    . "$HOMEBREW_PREFIX"/etc/bash_completion
+  fi
+
+  # ctrl-p and ctrl-n now searches history
+  bind '"":history-search-backward'
+  bind '"":history-search-forward'
+fi
+
+# Java and Android development
+if [ -d "$HOME/Library/Android/sdk" ]; then
+  ANDROID_HOME="$HOME/Library/Android/sdk"
+elif [ -d "$HOMEBREW_PREFIX/share/android-sdk" ]; then
+  ANDROID_HOME="$HOMEBREW_PREFIX/share/android-sdk"
+fi
+
+if [ -n "$ANDROID_HOME" ]; then
+  addLastInPath "$ANDROID_HOME/tools/bin"
+  addLastInPath "$ANDROID_HOME/platform-tools"
+  addFirstInPath "/Applications/Android Studio.app/Contents/jre/Contents/Home/bin"
+fi
+
+# bc settings
+export BC_ENV_ARGS="-l -q"
+
+### aliases
+. "$HOME/.aliases"
