@@ -1,7 +1,7 @@
 [user]
-    name = {{ git.name }}
-    email = {{ git.email }}
-    signingkey = {{ git.signingkey }}
+    name = {{ .services.git.name }}
+    email = {{ .services.git.email }}
+    signingkey = {{ .services.git.signingKey }}
 
 {{- if eq .chezmoi.os "darwin" -}}
 # these commands are modern and not supported by older git

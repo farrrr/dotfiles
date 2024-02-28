@@ -4,7 +4,7 @@
 # 加载其他配置文件
 [ -f "$HOME/.profile" ] && source "$HOME/.profile"
 
-export GITHUB_ORGANIZATION={{ .githubOrg }}
+export GITHUB_ORGANIZATION={{ .services.github.organization }}
 
 SHELLNAME=$(basename "${SHELL:-$(ps -p $ -o comm=)}" | sed 's/-//')
 export SHELLNAME

@@ -8,24 +8,24 @@
 {{- $osID := .chezmoi.os -}}
 {{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
 {{-   $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
-{{- else if (.chezmoi.kernel.osrelease | regexMath "-microsoft-standard-WSL2$") -}}
+{{- else if (.chezmoi.kernel.osrelease | regexMatch "-microsoft-standard-WSL2$") -}}
 {{-   $osID = printf "%s-%s" .chezmoi.os "wsl" -}}
 {{- end -}}
 
 {{/* work around unreliable hostname on darwin */}}
 {{- $hostname := .chezmoi.hostname -}}
 {{- if eq .chezmoi.os "darwin" -}}
-{{-   $hostname = promptStringOnce . "hostname" "Computer Name" -}}
+{{-   $hostname = promptString "hostname" "Computer Name" -}}
 {{-   $personal = true -}}
 {{- end -}}
 
 
 {{- $chassisChoices := list "desktop" "laptop" "server" -}}
 {{- if stdinIsATTY -}}
-{{-   $email := promptStringOnce . "email" "Email Address" -}}
-{{-   $headless = promptBoolOnce . "headless" "is Headless" -}}
-{{-   $personal = promptBoolOnce . "personal" "personal use" -}}
-{{-   $devEnv = promptBoolOnce . "devEnv" "is development Env" -}}
+{{-   $email := promptString "email" "Email Address" -}}
+{{-   $headless = promptBool "headless" "is Headless" -}}
+{{-   $personal = promptBool "personal" "personal use" -}}
+{{-   $devEnv = promptBool "devEnv" "is development Env" -}}
 {{-   $chassisType := promptChoiceOnce . "chassisType" "What type of host?" $chassisChoices -}}
 {{- else -}}
 {{-   $headless = true -}}
@@ -48,11 +48,13 @@ data:
   devEnv: {{ $devEnv }}
   onepasswordAccount: "SQAYKGUCVJCWHFUFZJ4QUKXU6Q"
   autin.user: "far"
-  githubOrg: "longshun-eco"
-  git:
-    name: "Far Tseng"
-    email: {{- $email | quote }}
-    signingKey: "ADFC5C75ED2320AAC2D400799725A67A8B5287C9"
+  services:
+    github:
+      organization: "longshun-eco"
+    git:
+      name: "Far Tseng"
+      email: {{- $email | quote }}
+      signingKey: "ADFC5C75ED2320AAC2D400799725A67A8B5287C9"
 
 # Encryption type, either age or gpg
 encryption: age

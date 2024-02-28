@@ -1,5 +1,5 @@
 .config/tmux/.tmux.conf:
   type: "archive-file"
   url: "https://github.com/gpakosz/.tmux/archive/master.tar.gz"
+  stripComponents: 1
   path: ".tmux.conf"
-  refreshPeriod: 0

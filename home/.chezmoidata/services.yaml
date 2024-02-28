@@ -1,0 +1,7 @@
+services:
+  github:
+    organization: "longshun-eco"
+  git:
+    name: "Far Tseng"
+    email: "farrr@gmail.com"
+    signingKey: "ADFC5C75ED2320AAC2D400799725A67A8B5287C9"

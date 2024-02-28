@@ -1,5 +1,6 @@
 .config/nvim:
-  type: "git-repo"
-  url: "https://github.com/NvChad/NvChad"
-  clone:
-    args: "--depth 1"
+  type: "archive"
+  url: "https://github.com/NvChad/NvChad/archive/refs/heads/v2.0.tar.gz"
+  exact: true
+  stripComponents: 1
+  refreshPeriod: "168h"
