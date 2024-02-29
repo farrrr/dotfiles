@@ -3,5 +3,5 @@
 #
 
 pushd ~
-ln -s -f .tmux/.tmux.conf
+ln -s -f ~/.config/tmux/.tmux.conf
 popd
