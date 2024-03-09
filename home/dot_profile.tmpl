@@ -1,3 +1,4 @@
+# vim: syntax=sh
 # shellcheck shell=bash
 
 [ -x "$(command -v brew)" ] && HOMEBREW_PREFIX=$(brew --prefix)
@@ -15,14 +16,14 @@ if [ -z "$HOMEBREW_PREFIX" ]; then
 fi
 
 # Remove any existing occurrences of $HOMEBREW_PREFIX/bin from PATH to avoid duplicates
-cleaned_path=$(echo ":$PATH:" | sed "s~:$HOMEBREW_PREFIX/bin:~:~g")
+cleaned_path=$(echo ":$PATH:" | sed "s~:$HOMEBREW_PREFIX/bin:~:~g" | sed "s~:$HOMEBREW_PREFIX/sbin:~:~g")
 # Remove leading and trailing colons to restore the original format of PATH
 cleaned_path=${cleaned_path#:}
 cleaned_path=${cleaned_path%:}
 
 # If the $HOMEBREW_PREFIX/bin directory exists, prepend it to PATH
 if [ -d "$HOMEBREW_PREFIX/bin" ]; then
-  PATH="$HOMEBREW_PREFIX/bin:$cleaned_path"
+  PATH="$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:$cleaned_path"
 else
   PATH="$cleaned_path"
 fi

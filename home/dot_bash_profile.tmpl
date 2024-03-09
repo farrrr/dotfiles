@@ -1,3 +1,4 @@
+# vim: syntax=sh
 # shellcheck shell=bash
 # shellcheck disable=SC1091
 
@@ -93,6 +94,10 @@ if [ -n "$ANDROID_HOME" ]; then
   addLastInPath "$ANDROID_HOME/tools/bin"
   addLastInPath "$ANDROID_HOME/platform-tools"
   addFirstInPath "/Applications/Android Studio.app/Contents/jre/Contents/Home/bin"
+fi
+
+if [ -d "$HOME/.local/bin" ]; then
+  addLastInPath "$HOME/.local/bin"
 fi
 
 # bc settings
