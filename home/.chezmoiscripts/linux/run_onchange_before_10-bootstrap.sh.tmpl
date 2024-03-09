@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# vim: syntax=sh
 
 set -eufo pipefail
 
@@ -29,11 +30,11 @@ fi
 
 # add-apt-repository
 {{-   range .packages.linux.aptrepo -}}
-{{-     if .name }}
+{{-     if (kindIs "string" . ) }}
+{{ $sudo }}add-apt-repository -y {{ . }}
+{{-     else }}
 {{ $sudo }}apt-key adv --keyserver {{ .keyserver }} --recv-key {{ .recvkey }}
 {{ $sudo }}apt-add-repository -y {{ .repo }}
-{{-     else }}
-{{ $sudo }}add-apt-repository -y {{ . }}
 {{-     end }}
 {{-   end }}
 
