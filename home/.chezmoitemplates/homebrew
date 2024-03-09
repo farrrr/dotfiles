@@ -31,10 +31,12 @@ brew update
 brew upgrade
 
 # brew tap
-{{ $sortedTaps := sortAlpha (uniq (.os.taps)) -}}
-{{ range $sortedTaps -}}
+{{  if ne .chezmoi.os "linux" -}}
+{{    $sortedTaps := sortAlpha (uniq (.os.taps)) -}}
+{{    range $sortedTaps -}}
 brew tap {{ . }}
-{{ end -}}
+{{    end -}}
+{{  end -}}
 
 # brew packages
 {{ $sortedBrews := sortAlpha (uniq (.os.brews)) -}}
@@ -43,7 +45,9 @@ install_brew_package {{ . }}
 {{ end -}}
 
 # brew casks
-{{ $sortedCasks := sortAlpha (uniq (.os.casks)) -}}
-{{ range $sortedCasks -}}
+{{  if ne .chezmoi.os "linux" -}}
+{{    $sortedCasks := sortAlpha (uniq (.os.casks)) -}}
+{{    range $sortedCasks -}}
 install_brew_cask {{ . }}
-{{ end -}}
+{{    end -}}
+{{  end -}}
