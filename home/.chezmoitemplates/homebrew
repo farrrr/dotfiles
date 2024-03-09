@@ -32,21 +32,21 @@ brew upgrade
 
 # brew tap
 {{  if ne .os "linux" -}}
-{{    $sortedTaps := sortAlpha (uniq (.os.taps)) -}}
+{{    $sortedTaps := sortAlpha (uniq (.packages.taps)) -}}
 {{    range $sortedTaps -}}
 brew tap {{ . }}
 {{    end -}}
 {{  end -}}
 
 # brew packages
-{{ $sortedBrews := sortAlpha (uniq (.os.brews)) -}}
+{{ $sortedBrews := sortAlpha (uniq (.packages.brews)) -}}
 {{ range $sortedBrews -}}
 install_brew_package {{ . }}
 {{ end -}}
 
 # brew casks
 {{  if ne .os "linux" -}}
-{{    $sortedCasks := sortAlpha (uniq (.os.casks)) -}}
+{{    $sortedCasks := sortAlpha (uniq (.packages.casks)) -}}
 {{    range $sortedCasks -}}
 install_brew_cask {{ . }}
 {{    end -}}

@@ -50,7 +50,7 @@ install_apt_package {{ . }}
 # ----------------- #
 # Homebrew          #
 # ----------------- #
-{{      template "homebrew" dict "os" .packages.linux }}
+{{      template "homebrew" dict "packages" .packages.linux "os" .chezmoi.os }}
 {{-   end }}
 
 set -e
