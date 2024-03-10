@@ -83,10 +83,6 @@ packages:
     aptrepo:
       - "ppa:git-core/ppa"
       - "ppa:pi-rho/dev"
-      - name: gh
-        keyserver: "keyserver.ubuntu.com"
-        recvkey: "C99B11DEB97541F0"
-        repo: "https://cli.github.com/packages"
     snap:
       - "diff-so-fancy"
     apt:
@@ -96,6 +92,7 @@ packages:
       - "fd-find"
       - "file"
       - "git"
+      - "gh"
       - "highlight"
       - "keychain"
       - "libssl-dev"
