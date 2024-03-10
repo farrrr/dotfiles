@@ -3,6 +3,35 @@
 
 set -eufo pipefail
 
+addFirstInPath() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="$1${PATH:+":$PATH"}"
+  fi
+}
+
+addLastInPath() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="${PATH:+"$PATH:"}$1"
+  fi
+}
+
+# Homebrew
+[ -x "$(command -v brew)" ] && HOMEBREW_PREFIX=$(brew --prefix)
+
+if [ -z "$HOMEBREW_PREFIX" ]; then
+  if [ -d "/opt/homebrew" ]; then
+    HOMEBREW_PREFIX="/opt/homebrew"
+  elif [ -d "/home/linuxbrew/.linuxbrew" ]; then
+    HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+  else
+    HOMEBREW_PREFIX="/usr/local"
+  fi
+  export HOMEBREW_PREFIX
+fi
+
+addFirstInPath "$HOMEBREW_PREFIX/sbin"
+addFirstInPath "$HOMEBREW_PREFIX/bin"
+
 {{- $sudo := "sudo " -}}
 {{- if eq .chezmoi.username "root" -}}
 {{-   $sudo = "" -}}

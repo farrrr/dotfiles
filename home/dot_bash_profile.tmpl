@@ -14,17 +14,6 @@ export SHELLNAME
 [ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc"
 [ -f "$HOME/.local_settings" ] && source "$HOME/.local_settings"
 
-addFirstInPath() {
-  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-    PATH="$1${PATH:+":$PATH"}"
-  fi
-}
-addLastInPath() {
-  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-    PATH="${PATH:+"$PATH:"}$1"
-  fi
-}
-
 export MANPATH="$HOMEBREW_PREFIX/share/man${MANPATH+:$MANPATH}:"
 export INFOPATH="$HOMEBREW_PREFIX/share/info:${INFOPATH:-}"
 [ -d /snap ] && addFirstInPath "/snap/croc/current"
