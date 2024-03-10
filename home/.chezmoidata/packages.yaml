@@ -87,6 +87,8 @@ packages:
         keyserver: "keyserver.ubuntu.com"
         recvkey: "C99B11DEB97541F0"
         repo: "https://cli.github.com/packages"
+    snap:
+      - "diff-so-fancy"
     apt:
       - "aptitude"
       - "build-essential"
