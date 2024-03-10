@@ -16,7 +16,7 @@ addLastInPath() {
 }
 
 # Homebrew
-set -u
+set +u
 [ -x "$(command -v brew)" ] && HOMEBREW_PREFIX=$(brew --prefix)
 
 if [ -z "$HOMEBREW_PREFIX" ]; then
@@ -32,7 +32,7 @@ fi
 
 addFirstInPath "$HOMEBREW_PREFIX/sbin"
 addFirstInPath "$HOMEBREW_PREFIX/bin"
-set +u
+set -u
 
 {{- $sudo := "sudo " -}}
 {{- if eq .chezmoi.username "root" -}}
