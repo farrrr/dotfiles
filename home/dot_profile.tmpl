@@ -2,14 +2,20 @@
 # shellcheck shell=bash
 
 addFirstInPath() {
-  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-    PATH="$1${PATH:+":$PATH"}"
+  if [ -d "$1" ]; then
+    if [[ ":$PATH:" == *":$1:"* ]]; then
+      PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "^$1$" | tr '\n' ':')
+    fi
+    export PATH="$1${PATH:+":$PATH"}"
   fi
 }
 
 addLastInPath() {
-  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-    PATH="${PATH:+"$PATH:"}$1"
+  if [ -d "$1" ]; then
+    if [[ ":$PATH:" == *":$1:"* ]]; then
+      PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "^$1$" | tr '\n' ':')
+    fi
+    export PATH="${PATH:+"$PATH:"}$1"
   fi
 }
 
