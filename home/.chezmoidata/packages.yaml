@@ -77,7 +77,6 @@ packages:
       - "docker"
       - "font-meslo-lg-nerd-font"
       - "font-sauce-code-pro-nerd-font"
-      - "google-chrome-beta"
       - "google-cloud-sdk"
       - "jetbrains-toolbox"
   linux:
