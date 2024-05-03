@@ -1,7 +1,12 @@
+{{- if or (eq .chezmoi.os "darwin") .personal }}
+Include ~/.orbstack/ssh/config
+{{- end }}
+
 HashKnownHosts no
 ServerAliveCountMax 3
 ServerAliveInterval 10
 IdentityFile ~/.ssh/id_rsa_farrrr
+ForwardAgent yes
 
 {{- if or (eq .chezmoi.os "darwin") .personal }}
 Host *

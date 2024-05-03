@@ -461,7 +461,6 @@ tmux_conf_uninstall_plugins_on_reload=false
 # to enable a plugin, use the 'set -g @plugin' syntax:
 # visit https://github.com/tmux-plugins for available plugins
 #set -g @plugin 'tmux-plugins/tmux-copycat'
-#set -g @plugin 'tmux-plugins/tmux-cpu'
 #set -g @plugin 'tmux-plugins/tmux-resurrect'
 #set -g @plugin 'tmux-plugins/tmux-continuum'
 #set -g @continuum-restore 'on'
@@ -470,6 +469,7 @@ set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'tmux-plugins/tmux-cpu'
 set -g @plugin 'dastergon/tmux-load-avg'
 set -g @plugin 'soyuka/tmux-current-pane-hostname'
+set -g @plugin 'joshmedeski/tmux-nerd-font-window-name'
 
 # --- tmux-cpu ---
 set -g @cpu_low_fg_color "#2E3440"

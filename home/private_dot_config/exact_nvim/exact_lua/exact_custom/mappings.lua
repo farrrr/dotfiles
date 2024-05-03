@@ -4,33 +4,36 @@ local fn = vim.fn
 local cwd = vim.fn.stdpath "config" .. "/"
 local config_dir = { cwd }
 
+--[[ Disabled
 M.Oil = {
   plugin = true,
   n = {
     ["<leader>O"] = { "<cmd>Oil --float<cr>", "Open Oil", opts = { silent = true } },
   },
 }
+]]
 
-M.SideBar = {
-  plugin = true,
-  n = {
-    ["<leader>e"] = {
-      function()
-        -- if vim.bo.filetype ~= "SidebarNvim" then
-        --   vim.cmd [[
-        --   SidebarNvimOpen
-        --   SidebarNvimFocus
-        --   ]]
-        -- else
-        --   vim.cmd "SidebarNvimClose"
-        -- end
-        vim.cmd "SidebarNvimToggle"
-      end,
-      "Toggle Explorer",
-      opts = { silent = true },
-    },
-  },
-}
+-- M.SideBar = {
+--   plugin = true,
+--   n = {
+--     ["<leader>e"] = {
+--       function()
+--         -- if vim.bo.filetype ~= "SidebarNvim" then
+--         --   vim.cmd [[
+--         --   SidebarNvimOpen
+--         --   SidebarNvimFocus
+--         --   ]]
+--         -- else
+--         --   vim.cmd "SidebarNvimClose"
+--         -- end
+--         vim.cmd "SidebarNvimToggle"
+--       end,
+--       "Toggle Explorer",
+--       opts = { silent = true },
+--     },
+--   },
+-- }
+-- ]]
 
 M.LspLens = {
   plugin = true,
@@ -409,13 +412,13 @@ M.General = {
     --   "Enter insert mode",
     -- },
 
-    ["<A-j>"] = {
+    ["<A-Up>"] = {
       "<Esc>:m .+1<CR>==gi",
       "Move the line up",
       opts = { silent = true },
     },
 
-    ["<A-k>"] = {
+    ["<A-Down>"] = {
       "<Esc>:m .-2<CR>==gi",
       "Move the line down",
       opts = { silent = true },
@@ -512,17 +515,17 @@ M.General = {
     -- opts = { silent = true },
     -- },
 
-    ["j"] = {
-      "v:count == 0 ? 'gj' : 'j'",
-      "Better Down",
-      opts = { expr = true, silent = true },
-    },
+    -- ["j"] = {
+    --   "v:count == 0 ? 'gj' : 'j'",
+    --   "Better Down",
+    --   opts = { expr = true, silent = true },
+    -- },
 
-    ["k"] = {
-      "v:count == 0 ? 'gk' : 'k'",
-      "Better Up",
-      opts = { expr = true, silent = true },
-    },
+    --- ["k"] = {
+    ---   "v:count == 0 ? 'gk' : 'k'",
+    ---   "Better Up",
+    ---   opts = { expr = true, silent = true },
+    --- },
 
     ["<C-j>"] = {
       "<C-w>j",
@@ -608,29 +611,29 @@ M.General = {
       opts = { silent = true },
     },
 
-    ["<Left>"] = {
-      "<cmd>tabprevious<CR>",
-      "Go to previous tab",
-      opts = { silent = true },
-    },
+    -- ["<Left>"] = {
+    --   "<cmd>tabprevious<CR>",
+    --   "Go to previous tab",
+    --   opts = { silent = true },
+    -- },
 
-    ["<Right>"] = {
-      "<cmd>tabnext<CR>",
-      "Go to next tab",
-      opts = { silent = true },
-    },
+    -- ["<Right>"] = {
+    --   "<cmd>tabnext<CR>",
+    --   "Go to next tab",
+    --   opts = { silent = true },
+    -- },
 
-    ["<Up>"] = {
-      "<cmd>tabnew<CR>",
-      "New tab",
-      opts = { silent = true },
-    },
+    -- ["<Up>"] = {
+    --   "<cmd>tabnew<CR>",
+    --   "New tab",
+    --   opts = { silent = true },
+    -- },
 
-    ["<Down>"] = {
-      "<cmd>tabclose<CR>",
-      "Close tab",
-      opts = { silent = true },
-    },
+    -- ["<Down>"] = {
+    --   "<cmd>tabclose<CR>",
+    --   "Close tab",
+    --   opts = { silent = true },
+    -- },
 
     ["<"] = {
       "<<",

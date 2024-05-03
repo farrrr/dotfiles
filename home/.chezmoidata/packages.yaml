@@ -70,6 +70,7 @@ packages:
       - "xplr"
       - "yarn"
       - "yazi"
+      - "yq"
       - "zoxide"
       - "zsh"
     casks:
@@ -128,3 +129,4 @@ packages:
       - "trippy"
       - "ugrep"
       - "zoxide"
+      - "yq"
