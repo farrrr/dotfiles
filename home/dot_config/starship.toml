@@ -1,2 +1,51 @@
+# 獲取編輯器狀態
+[git_status]
+disabled = false
+format = '([\[$all_status$ahead_behind\] ]($style) )'
+style = 'cyan bold'
+
+# 顯示當前目錄
+[directory]
+style = 'cyan bold'
+read_only = ' '
+
+# 顯示命令執行時間
+[cmd_duration]
+min_time = 500
+format = 'took [$duration](yellow)'
+
+# 顯示 Python 版本
 [python]
-python_binary = 'python'
+symbol = '🐍 '
+style = 'yellow bold'
+format = '[${symbol}${version}](yellow bold) '
+
+# 顯示 Node.js 版本
+[nodejs]
+symbol = '⬢ '
+style = 'green bold'
+format = '[${symbol}${version}](green bold) '
+
+# 顯示 Rust 版本
+[rust]
+symbol = '🦀 '
+style = 'red bold'
+format = '[${symbol}${version}](red bold) '
+
+# 顯示 Go 版本
+[golang]
+symbol = '🐹 '
+style = 'cyan bold'
+format = '[${symbol}${version}](cyan bold) '
+
+# 顯示 Docker 上下文
+[docker_context]
+symbol = '🐳 '
+style = 'blue bold'
+format = '[${symbol}${context}](blue bold) '
+
+# 顯示時間
+[time]
+disabled = false
+format = '🕒[\[ $time \]]($style) '
+style = 'bold dimmed'

@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   if eq .chezmoi.arch "arm64" }}
+pinentry-program /opt/homebrew/bin/pinentry-mac
+{{-   else -}}
+pinentry-program /usr/local/bin/pinentry-mac
+{{-   end -}}
+{{- end }}
+max-cache-ttl 60480000
+default-cache-ttl 60480000
