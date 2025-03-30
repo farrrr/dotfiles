@@ -1,0 +1,93 @@
+#!/usr/bin/env zsh
+
+# 設定嚴格模式
+setopt EXTENDED_GLOB
+setopt NO_CASE_GLOB
+setopt NULL_GLOB
+setopt NUMERIC_GLOB_SORT
+setopt RC_EXPAND_PARAM
+
+# 環境變數設定
+# ==============
+
+# 瀏覽器設定
+if [[ -z "$BROWSER" && "$OSTYPE" == darwin* ]]; then
+    export BROWSER='open'
+fi
+
+# 編輯器設定
+# EDITOR: 用於快速編輯的終端機編輯器
+if [[ -z "$EDITOR" ]]; then
+    export EDITOR='vim'
+fi
+# VISUAL: 用於完整視覺界面的編輯器
+if [[ -z "$VISUAL" ]]; then
+    export VISUAL='vim'
+fi
+if [[ -z "$PAGER" ]]; then
+    export PAGER='less'
+fi
+
+# 語言設定
+if [[ -z "$LANG" ]]; then
+    export LANG='en_US.UTF-8'
+fi
+
+# 路徑設定
+# =========
+
+# 確保路徑陣列不包含重複項目
+typeset -gU cdpath fpath mailpath path
+
+# 設定 cd 搜尋目錄
+# cdpath=(
+#     $cdpath
+# )
+
+# 設定程式搜尋路徑
+# 優先順序：
+# 1. 系統路徑
+# 2. Homebrew 路徑
+# 3. 本地路徑
+# 4. 使用者自訂路徑
+path=(
+    $path
+    # Homebrew 路徑
+    /opt/{homebrew,local}/{,s}bin(N-/)
+    # 系統路徑
+    /usr/local/{,s}bin(N-/)
+    # 使用者自訂路徑
+    ${HOME}/.local/bin(N-/)
+    ${HOME}/.local/bin/common(N-/)
+    ${HOME}/.local/bin/client(N-/)
+)
+
+# 設定函數搜尋路徑
+fpath=(
+    $fpath
+    # 使用者自訂函數路徑
+    ${HOME}/.local/bin/common(N-/)
+    ${HOME}/.local/bin/client(N-/)
+)
+
+# Less 設定
+# =========
+
+# 設定 Less 預設選項
+# -g: 只高亮最後一個搜尋結果
+# -i: 忽略大小寫
+# -M: 顯示更多資訊
+# -R: 允許 ANSI 顏色
+# -S: 截斷過長的行
+# -w: 暫停時顯示檔案資訊
+# -X: 禁用螢幕清除（禁用滑鼠滾輪）
+# -z-4: 設定滾動行數
+if [[ -z "$LESS" ]]; then
+    export LESS='-g -i -M -R -S -w -X -z-4'
+fi
+
+# 設定 Less 輸入預處理器
+# 嘗試使用 lesspipe 或 lesspipe.sh
+if [[ -z "$LESSOPEN" ]] && (( $#commands[(i)lesspipe(|.sh)] )); then
+    export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
+fi
