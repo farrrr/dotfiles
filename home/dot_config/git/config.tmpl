@@ -1,0 +1,194 @@
+# Git 基本設定
+# ==============
+
+[user]
+	name = Far Tseng
+	email = {{ .email | quote }}
+	signingkey = SQAYKGUCVJCWHFUFZJ4QUKXU6Q
+
+[color]
+	ui = auto
+
+[core]
+	quotepath = false
+	# 設定預設分支名稱
+
+# 提交相關設定
+# ==============
+
+[commit]
+	gpgsign = true
+
+# 分支操作設定
+# ==============
+
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[rebase]
+	autoStash = true
+
+# 合併與差異比較設定
+# ==================
+
+[merge]
+	tool = vscode
+	log = true
+[mergetool]
+	keepbackup = false
+	prompt = false
+	trustExitCode = true
+[mergetool "vscode"]
+	cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+
+[diff]
+	algorithm = histogram
+	mnemonicPrefix = true
+	tool = vscode
+	colorMoved = default
+	submodule = log
+[difftool]
+	prompt = true
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
+
+# 狀態與日誌設定
+# ==============
+
+[status]
+	submodulesummary = true
+[log]
+	decorate = short
+	abbrevcommit = true
+	date = relative
+[format]
+	pretty = "%C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s"
+
+# 遠端倉庫設定
+# ==============
+
+[url "git@github.com:"]
+	insteadOf = http://github.com/
+	insteadOf = https://github.com/
+	pushinsteadof = https://github.com/
+
+# 其他工具設定
+# ==============
+
+[ghq]
+	root = ~/codebase
+
+[pager]
+	branch = cat
+	config = cat
+
+# Git LFS 設定
+# ============
+
+[lfs]
+	locksverify = false
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
+# 別名設定
+# ========
+
+[alias]
+	# 基本操作別名
+	st = status
+	br = branch
+	ci = commit -v
+	mt = mergetool
+	dt = difftool
+	re = restore
+	sw = switch
+	d = diff --color-words=.
+
+	# 日誌相關別名
+	lol = log --graph --all
+	lo = log --graph
+	last = log -1 HEAD
+	logp = log -p --format='commit %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s'
+	reflogp = reflog -p --format='commit %C(auto)%h%d %gd: %gs (%s)'
+
+	# 分支操作別名
+	f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'main' ]]; then git fetch --no-tags origin main; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) main:main; fi"
+	p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
+	pc = "!git push && gh cws"
+	puff = push --force-if-includes --force-with-lease
+
+	# 分支清理別名
+	unstage = reset HEAD --
+	worktree-skipped = !git ls-files -v | grep "^S"
+	unchange-assumed = !git ls-files -v | grep "^[[:lower:]]"
+	cleanup = "!git branch --merged | grep  -v '^\\*\\|master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | xargs -n 1 git branch -d"
+	cleanup-all = "!f(){\
+		git branch | grep -v 'master\\|main\\|develop\\|hotfix\\|temp\\|[0-9]task' | grep -v ^* | sh -c 'while read br; \
+		do git log -1 $br; \
+		git branch -D $br >> ~/temp/cleaned-branches.txt; \
+		done' ;\
+	   }; f"
+	stash-rename = "!_() { if [ -z \"$1\" ] || [ -z \"$2\" ]; then echo \"git rename-stash 0 NewName\" && echo \"\" && git stash list && exit 1; else stash=\"stash@{$1}\"; rev=$(git rev-parse \"${stash}\"); git stash drop \"${stash}\" || exit 1; git stash store -m \"$2\" \"$rev\" || exit 1; git stash list; fi }; _"
+
+# 系統特定設定
+# ============
+
+{{- if eq .chezmoi.os "darwin" }}
+[help]
+	autocorrect = prompt
+
+# Git Delta 設定
+[core]
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	syntax-theme = Dracula
+	navigate = true
+	tabs = 2
+	side-by-side = true
+	line-numbers = false
+	file-style = bold "#eee8aa"                     # pale golden rod
+	file-decoration-style = ol "#b8860b"            # dark orange
+	hunk-header-line-number-style = "#4169e1"       # royal blue
+	hunk-header-decoration-style = ol "#000080"     # navy
+	commit-decoration-style = bold "#00fa9a" box ul # medium spring green
+	word-diff-regex = ''                            # character level diff
+{{- else }}
+# diff-so-fancy 設定
+[core]
+	pager = diff-so-fancy | less --tabs=4 -RFX -+W -+J
+[color "diff-highlight"]
+	oldNormal = red
+	newNormal = green
+	newHighlight = green 22
+	oldHighlight = red 52
+[color "diff"]
+	meta = yellow
+	frag = magenta
+	commit = yellow
+	old = red
+	new = green
+	whitespace = red reverse
+[diff-so-fancy]
+	useUnicodeRuler = false
+	stripLeadingSymbols = false
+{{- end }}
+
+# 其他設定
+# ========
+
+[fetch]
+	prune = true
+[rerere]
+	enabled = true
+
+# 二進制檔案差異比較
+[diff "plist"]
+	textconv = plutil -convert xml1 -o -
