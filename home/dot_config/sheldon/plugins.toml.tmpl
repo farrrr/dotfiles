@@ -22,9 +22,6 @@ apply = ['source']
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'
 
-[plugins.custom-commands]
-inline = 'autoload -Uz dev'
-
 [plugins.zsh-autosuggestions]
 github = 'zsh-users/zsh-autosuggestions'
 apply = ['defer']
@@ -50,8 +47,13 @@ local = '~/.local/bin/common'
 use = ['rust.sh']
 apply = ['source']
 
-[plugins.alias]
-local = '~/.local/bin/server'
+[plugins.common-aliases]
+local = '~/.local/bin/common'
+use = ['aliases.sh']
+apply = ['source']
+
+[plugins.system-aliases]
+local = '~/.local/bin/{{ if eq .system "client" }}client{{ else }}server{{ end }}'
 use = ['aliases.sh']
 apply = ['source']
 
@@ -60,17 +62,7 @@ local = '~/.config/fzf'
 use = ['config.zsh']
 apply = ['defer']
 
-[plugins.cuda]
-local = '~/.local/bin/server'
-use = ['cuda.sh']
-apply = ['source']
-
 [plugins.ssh-agent]
-local = "~/.local/bin/server"
+local = '~/.local/bin/common'
 use = ['ssh_agent.sh']
-apply = ['source']
-
-[plugins.history]
-local = '~/.local/bin/server'
-use = ['history.zsh']
 apply = ['source']
