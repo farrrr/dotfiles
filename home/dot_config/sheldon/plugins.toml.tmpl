@@ -13,7 +13,7 @@
 shell = "zsh"
 
 [templates]
-defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+defer = "{% for f in files %}zsh-defer source \"{{ f }}\"{% endfor %}"
 
 [plugins.zsh-defer]
 github = 'romkatv/zsh-defer'
