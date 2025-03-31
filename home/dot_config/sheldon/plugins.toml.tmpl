@@ -1,68 +1,161 @@
-# `sheldon` configuration file
-# ----------------------------
-#
-# You can modify this file directly or you can use one of the following
-# `sheldon` commands which are provided to assist in editing the config file:
-#
-# - `sheldon add` to add a new plugin to the config file
-# - `sheldon edit` to open up the config file in the default editor
-# - `sheldon remove` to remove a plugin from the config file
-#
-# See the documentation for more https://github.com/rossmacarthur/sheldon#readme
+# plugins.toml - Sheldon plugin configuration
 
 shell = "zsh"
 
-[plugins.zsh-defer]
-github = 'romkatv/zsh-defer'
-apply = ['source']
-
 [templates]
-defer = "{{`{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}`}}"
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% end %}"
+
+# --------------------------------------------
+# ⭐️ Core Plugins
+# --------------------------------------------
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+apply = ["source"]
+# 用來延遲載入其他 plugin，改善 zsh 啟動速度
 
 [plugins.compinit]
-inline = 'autoload -Uz compinit && zsh-defer compinit'
+inline = "autoload -Uz compinit && zsh-defer compinit"
+# 延遲執行 compinit，與 zsh-defer 搭配可加速 shell 啟動
+
+# --------------------------------------------
+# 🧠 智慧補全與提示
+# --------------------------------------------
 
 [plugins.zsh-autosuggestions]
-github = 'zsh-users/zsh-autosuggestions'
-apply = ['defer']
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+# 提供類似 fish shell 的指令自動建議
 
 [plugins.zsh-completions]
-github = 'zsh-users/zsh-completions'
-apply = ['defer']
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+# 提供額外的 zsh 補全功能
 
 [plugins.zsh-syntax-highlighting]
-github = 'zsh-users/zsh-syntax-highlighting'
-apply = ['defer']
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+# 根據語法高亮顯示 zsh 輸入行
+
+# --------------------------------------------
+# 🎨 Prompt / UI
+# --------------------------------------------
+
+# [plugins.powerlevel10k]
+# github = "romkatv/powerlevel10k"
+# 高度客製化、快速的 zsh prompt 主題
 
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
+# 使用 Rust 編寫的快速跨 shell prompt 工具
 
-[plugins.gpg]
-local = '~/.local/bin/common'
-use = ['gpg.sh']
-apply = ['source']
-
-[plugins.rust]
-local = '~/.local/bin/common'
-use = ['rust.sh']
-apply = ['source']
-
-[plugins.common-aliases]
-local = '~/.local/bin/common'
-use = ['aliases.sh']
-apply = ['source']
-
-[plugins.system-aliases]
-local = '~/.local/bin/{{ if eq .system "client" }}client{{ else }}server{{ end }}'
-use = ['aliases.sh']
-apply = ['source']
-
-[plugins.fzf]
-local = '~/.config/fzf'
-use = ['config.zsh']
-apply = ['defer']
+# --------------------------------------------
+# 🔐 SSH / GPG / Secrets
+# --------------------------------------------
 
 [plugins.ssh-agent]
-local = '~/.local/bin/common'
-use = ['ssh_agent.sh']
-apply = ['source']
+local = "~/.local/bin/common"
+use = ["ssh_agent.sh"]
+apply = ["source"]
+# 啟動 ssh-agent 並管理 ssh 金鑰
+
+[plugins.gpg]
+local = "~/.local/bin/common"
+use = ["gpg.sh"]
+apply = ["source"]
+# 自定 gpg 設定與快捷函數
+
+# --------------------------------------------
+# 🦀 語言開發支援
+# --------------------------------------------
+
+[plugins.rust]
+local = "~/.local/bin/common"
+use = ["rust.sh"]
+apply = ["source"]
+# 設定 Rust 環境（如 cargo path 等）
+
+[plugins.common-aliases]
+local = "~/.local/bin/common"
+use = ["aliases.sh"]
+apply = ["source"]
+# 常用 alias 集中管理
+
+[plugins.system-aliases]
+local = "~/.local/bin/{{ if eq .system "client" }}client{{ else }}server{{ end }}"
+use = ["aliases.sh"]
+apply = ["source"]
+# 根據系統類型載入對應的 aliases
+
+# --------------------------------------------
+# 🔍 fzf 整合
+# --------------------------------------------
+
+[plugins.fzf]
+local = "~/.config/fzf"
+use = ["config.zsh"]
+apply = ["defer"]
+# 載入 fzf 的 zsh 整合配置，提供 Ctrl+T, Alt+C, Ctrl+R 等功能
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+# 用於加強 zsh 補全整合 fzf 視覺預覽與群組支援
+
+# --------------------------------------------
+# 🛠 補全強化 / 工具
+# --------------------------------------------
+
+[plugins.zsh-you-should-use]
+github = "MichaelAquilina/zsh-you-should-use"
+# 提示使用者過去已定義但未使用的 alias 或 function
+
+[plugins.dircycle]
+github = "ohmyzsh/ohmyzsh"
+use = ["plugins/dircycle/dircycle.plugin.zsh"]
+# 使用 pushd/popd 方式來快速在歷史目錄間切換
+
+[plugins.zbell]
+github = "ohmyzsh/ohmyzsh"
+use = ["plugins/zbell/zbell.plugin.zsh"]
+# 長時間指令結束時發出提示聲
+
+[plugins.zsh-notify]
+github = "marzocchi/zsh-notify"
+# 非同步通知系統，命令完成後若 terminal 沒在前景會通知
+
+[plugins.zoxide]
+inline = 'eval "$(zoxide init zsh --hook prompt)"'
+# zoxide 是 cd 的智慧強化版，可快速跳轉常用目錄
+
+# --------------------------------------------
+# 🧰 git 整合
+# --------------------------------------------
+
+[plugins.forgit]
+github = "wfxr/forgit"
+apply = ["defer"]
+# fzf + git 指令整合，如 `glo`, `gst`, `gco`, `gsh` 等
+
+[plugins.git-extra-commands]
+github = "unixorn/git-extra-commands"
+# 許多實用 git 小工具集，如 git-undo、git-move 等
+
+[plugins.git-open]
+github = "paulirish/git-open"
+# `git open` 可快速打開目前 repo 的 GitHub 頁面
+
+[plugins.git-it-on]
+github = "peterhurford/git-it-on.zsh"
+# `git it-on` 開啟 GitHub PR 或 branch 網址
+
+[plugins.zsh-better-npm-completion]
+github = "lukechilds/zsh-better-npm-completion"
+# 加強 npm 命令的自動補全
+
+[plugins.zsh-yarn-autocompletions]
+github = "g-plane/zsh-yarn-autocompletions"
+# yarn 命令的補全強化
+
+[plugins.zsh-lerna]
+github = "favware/zsh-lerna"
+# lerna（monorepo 管理）專用補全支援
