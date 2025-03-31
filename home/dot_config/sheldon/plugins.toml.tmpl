@@ -12,7 +12,8 @@ apply = ["source"]
 # 用來延遲載入其他 plugin，改善 zsh 啟動速度
 
 [templates]
-defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% end %}"
+defer = "{{`{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}`}}"
+
 
 
 [plugins.compinit]
