@@ -2,9 +2,6 @@
 
 shell = "zsh"
 
-[templates]
-defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% end %}"
-
 # --------------------------------------------
 # ⭐️ Core Plugins
 # --------------------------------------------
@@ -13,6 +10,10 @@ defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% end %}"
 github = "romkatv/zsh-defer"
 apply = ["source"]
 # 用來延遲載入其他 plugin，改善 zsh 啟動速度
+
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% end %}"
+
 
 [plugins.compinit]
 inline = "autoload -Uz compinit && zsh-defer compinit"
