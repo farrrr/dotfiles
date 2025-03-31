@@ -87,6 +87,24 @@ use = ["aliases.sh"]
 apply = ["source"]
 # 根據系統類型載入對應的 aliases
 
+[plugins.options]
+local = "~/.local/bin/common"
+use = ["options.zsh"]
+apply = ["source"]
+# 載入通用設定
+
+[plugins.keybindings]
+local = "~/.local/bin/common"
+use = ["keybindings.zsh"]
+apply = ["source"]
+# 載入通用快捷鍵設定
+
+[plugins.functions]
+local = "~/.local/bin/common"
+use = ["functions.zsh"]
+apply = ["source"]
+# 載入通用函式
+
 # --------------------------------------------
 # 🔍 fzf 整合
 # --------------------------------------------
@@ -119,10 +137,6 @@ github = "ohmyzsh/ohmyzsh"
 use = ["plugins/zbell/zbell.plugin.zsh"]
 # 長時間指令結束時發出提示聲
 
-[plugins.zsh-notify]
-github = "marzocchi/zsh-notify"
-# 非同步通知系統，命令完成後若 terminal 沒在前景會通知
-
 [plugins.zoxide]
 inline = 'eval "$(zoxide init zsh --hook prompt)"'
 # zoxide 是 cd 的智慧強化版，可快速跳轉常用目錄
@@ -150,6 +164,7 @@ github = "lukechilds/zsh-better-npm-completion"
 
 [plugins.zsh-yarn-autocompletions]
 github = "g-plane/zsh-yarn-autocompletions"
+apply = ["defer"]
 # yarn 命令的補全強化
 
 [plugins.zsh-lerna]
