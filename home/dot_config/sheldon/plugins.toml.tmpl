@@ -14,8 +14,6 @@ apply = ["source"]
 [templates]
 defer = "{{`{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}`}}"
 
-
-
 [plugins.compinit]
 inline = "autoload -Uz compinit && zsh-defer compinit"
 # 延遲執行 compinit，與 zsh-defer 搭配可加速 shell 啟動
@@ -141,10 +139,6 @@ apply = ["defer"]
 [plugins.git-extra-commands]
 github = "unixorn/git-extra-commands"
 # 許多實用 git 小工具集，如 git-undo、git-move 等
-
-[plugins.git-open]
-github = "paulirish/git-open"
-# `git open` 可快速打開目前 repo 的 GitHub 頁面
 
 [plugins.git-it-on]
 github = "peterhurford/git-it-on.zsh"
