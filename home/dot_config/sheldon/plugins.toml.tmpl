@@ -63,3 +63,6 @@ apply = ['defer']
 local = '~/.local/bin/common'
 use = ['ssh_agent.sh']
 apply = ['source']
+
+[templates]
+defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
