@@ -1,51 +1,117 @@
-# 獲取編輯器狀態
-[git_status]
-disabled = false
-format = '([\[$all_status$ahead_behind\] ]($style) )'
-style = 'cyan bold'
+# ~/.config/starship.toml
+# 完整仿 Powerlevel10k 外觀的 starship 設定
 
-# 顯示當前目錄
+# ➕ 顯示兩行 prompt
+add_newline = true
+
+# 🔧 Prompt 結構：一行目錄與身份、一行狀態與工具鏈
+format = """
+[╭─](bold white)$os$username[@](dimmed green)$hostname$directory$git_branch$git_status
+[╰─](bold white)$character
+"""
+
+# ----- OS & 使用者資訊 -----
+[os]
+disabled = false
+style = "bold bg:blue fg:white"
+format = "[$name ]($style)"
+
+[username]
+show_always = true
+style_user = "yellow"
+style_root = "red"
+format = "[$user]($style)"
+
+[hostname]
+disabled = false
+ssh_only = false
+style = "green"
+format = "[$hostname]($style)"
+
+# ----- 目錄 -----
 [directory]
-style = 'cyan bold'
-read_only = ' '
+style = "bold blue"
+truncation_length = 3
+truncate_to_repo = false
+format = " [$path]($style)"
 
-# 顯示命令執行時間
-[cmd_duration]
-min_time = 500
-format = 'took [$duration](yellow)'
+# ----- Git 狀態 -----
+[git_branch]
+symbol = " "
+style = "purple"
+format = " [$symbol$branch]($style)"
 
-# 顯示 Python 版本
+[git_status]
+style = "red"
+format = "([$all_status]($style))"
+
+# ----- Python -----
 [python]
-symbol = '🐍 '
-style = 'yellow bold'
-format = '[${symbol}${version}](yellow bold) '
-
-# 顯示 Node.js 版本
-[nodejs]
-symbol = '⬢ '
-style = 'green bold'
-format = '[${symbol}${version}](green bold) '
-
-# 顯示 Rust 版本
-[rust]
-symbol = '🦀 '
-style = 'red bold'
-format = '[${symbol}${version}](red bold) '
-
-# 顯示 Go 版本
-[golang]
-symbol = '🐹 '
-style = 'cyan bold'
-format = '[${symbol}${version}](cyan bold) '
-
-# 顯示 Docker 上下文
-[docker_context]
-symbol = '🐳 '
-style = 'blue bold'
-format = '[${symbol}${context}](blue bold) '
-
-# 顯示時間
-[time]
 disabled = false
-format = '🕒[\[ $time \]]($style) '
-style = 'bold dimmed'
+format = " [${symbol}${version}]($style)"
+symbol = " "
+style = "yellow"
+
+# ----- Node.js -----
+[nodejs]
+disabled = false
+symbol = " "
+format = " [$symbol$version]($style)"
+style = "green"
+
+# ----- Rust -----
+[rust]
+symbol = "🦀 "
+format = " [$symbol$version]($style)"
+style = "red"
+
+# ----- Command Execution Time -----
+[cmd_duration]
+disabled = false
+min_time = 2000
+format = " took [$duration](bold yellow)"
+
+# ----- Exit Status -----
+[status]
+disabled = false
+style = "red"
+symbol = "✘"
+format = "[$symbol$status]($style)"
+
+# ----- Background Jobs -----
+[jobs]
+symbol = "✦"
+style = "blue"
+format = "[$symbol]($style)"
+
+# ----- Prompt Character -----
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](blue)"
+
+# ----- Battery (可選) -----
+[battery]
+disabled = false
+full_symbol = "🔋"
+charging_symbol = "⚡️"
+discharging_symbol = "🔌"
+format = " [$symbol$percentage]($style)"
+
+# ----- 額外工具鏈模組（開啟時啟用） -----
+[terraform]
+format = " [$symbol$workspace]($style)"
+symbol = "💠 "
+style = "bold 105"
+
+[aws]
+disabled = false
+format = " [$symbol$profile]($style)"
+symbol = "🅰 "
+style = "bold blue"
+
+[gcloud]
+disabled = false
+format = " [$symbol$project]($style)"
+symbol = "☁️ "
+style = "bold white"
