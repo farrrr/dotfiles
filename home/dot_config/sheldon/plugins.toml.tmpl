@@ -99,7 +99,7 @@ use = ["keybindings.zsh"]
 apply = ["source"]
 # 載入通用快捷鍵設定
 
-{{ if eq .system.os "darwin" }}
+{{ if eq .chezmoi.os "darwin" }}
 [plugins.client-keybindings]
 local = "~/.local/bin/client"
 use = ["keybindings.zsh"]
