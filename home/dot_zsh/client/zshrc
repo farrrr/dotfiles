@@ -1,19 +1,46 @@
+# ~/.zshrc - 主設定檔（模組化載入架構）
 #!/usr/bin/env zsh
+
+###############################################################################
+# 🧩 基本初始化
+###############################################################################
 
 typeset -gU path fpath
 
+# 設定 PATH（移除重複、保留唯一）
 path=(
     $path
     /usr/local/{,s}bin(N-/)
     ${HOME}/.local/bin(N-/)
     ${HOME}/.local/bin/common(N-/)
-    ${HOME}/.local/bin/client(N-/)
+    ${HOME}/.local/bin/server(N-/)
 )
 
+# 設定 fpath，供 functions、completions 使用
 fpath=(
     $fpath
     ${HOME}/.local/bin/common(N-/)
-    ${HOME}/.local/bin/client(N-/)
+    ${HOME}/.local/bin/server(N-/)
 )
 
-eval "$(sheldon source)"
+###############################################################################
+# 🧩 XDG 系列與 Homebrew 判斷（可選）
+###############################################################################
+
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+if [[ $(uname -m) == 'arm64' ]]; then
+  export HOMEBREW_PREFIX="/opt/homebrew"
+else
+  export HOMEBREW_PREFIX="/usr/local"
+fi
+
+###############################################################################
+# 📦 Sheldon 插件管理
+###############################################################################
+
+if command -v sheldon >/dev/null 2>&1; then
+  eval "$(sheldon source)"
+fi
