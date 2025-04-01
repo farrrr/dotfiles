@@ -42,12 +42,6 @@ export HISTFILE=~/.zsh_history   # 歷史紀錄檔案位置
 export SAVEHIST=$HISTSIZE        # 儲存的歷史筆數 = 記憶中大小
 
 # -------------------------------
-# 📝 游標移動與字元
-# -------------------------------
-WORDCHARS=${WORDCHARS:s:/}  # 把斜線從 WORDCHARS 移除，讓 Ctrl+← 停在目錄分隔處
-export WORDCHARS
-
-# -------------------------------
 # 🔧 補全設定
 # -------------------------------
 setopt nolistbeep                # 補全失敗時不發出嗶聲
