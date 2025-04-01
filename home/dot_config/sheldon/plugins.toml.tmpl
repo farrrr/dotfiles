@@ -11,12 +11,12 @@ github = "romkatv/zsh-defer"
 apply = ["source"]
 # 用來延遲載入其他 plugin，改善 zsh 啟動速度
 
+[plugins.compinit]
+inline = "autoload -Uz compinit && compinit"
+# 延遲執行 compinit，與 zsh-defer 搭配可加速 shell 啟動
+
 [templates]
 defer = "{{`{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}`}}"
-
-[plugins.compinit]
-inline = "autoload -Uz compinit && zsh-defer compinit"
-# 延遲執行 compinit，與 zsh-defer 搭配可加速 shell 啟動
 
 # --------------------------------------------
 # 🧠 智慧補全與提示
@@ -93,11 +93,19 @@ use = ["options.zsh"]
 apply = ["source"]
 # 載入通用設定
 
-[plugins.keybindings]
+[plugins.common-keybindings]
 local = "~/.local/bin/common"
 use = ["keybindings.zsh"]
 apply = ["source"]
 # 載入通用快捷鍵設定
+
+{{ if eq .system.os "darwin" }}
+[plugins.client-keybindings]
+local = "~/.local/bin/client"
+use = ["keybindings.zsh"]
+apply = ["source"]
+# 載入 darwin 專用快捷鍵設定
+{{ end }}
 
 [plugins.functions]
 local = "~/.local/bin/common"
@@ -164,7 +172,6 @@ github = "lukechilds/zsh-better-npm-completion"
 
 [plugins.zsh-yarn-autocompletions]
 github = "g-plane/zsh-yarn-autocompletions"
-apply = ["defer"]
 # yarn 命令的補全強化
 
 [plugins.zsh-lerna]

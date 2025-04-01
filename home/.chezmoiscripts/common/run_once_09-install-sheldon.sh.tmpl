@@ -1,0 +1,7 @@
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+{{   if eq .chezmoi.os "darwin" -}}
+{{     include "../install/macos/common/sheldon.sh" }}
+{{   else -}}
+{{     include "../install/linux/common/sheldon.sh" }}
+{{   end -}}
+{{ end -}}
