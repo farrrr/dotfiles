@@ -44,7 +44,8 @@ export SAVEHIST=$HISTSIZE        # 儲存的歷史筆數 = 記憶中大小
 # -------------------------------
 # 📝 游標移動與字元
 # -------------------------------
-export WORDCHARS=${WORDCHARS:s:/}  # 把斜線從 WORDCHARS 移除，讓 Ctrl+← 停在目錄分隔處
+WORDCHARS=${WORDCHARS:s:/}  # 把斜線從 WORDCHARS 移除，讓 Ctrl+← 停在目錄分隔處
+export WORDCHARS
 
 # -------------------------------
 # 🔧 補全設定
