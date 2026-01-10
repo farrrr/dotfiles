@@ -1,0 +1,5 @@
+# Additional Zsh Options
+# Loaded by sheldon plugin 'extra-options'
+
+# Add your custom zsh options here
+# setopt ...
