@@ -1,0 +1,12 @@
+{{- /*
+--------------------------------------------------------------------------------
+Ubuntu SSH Setup Template
+--------------------------------------------------------------------------------
+Phase: 10-base (Before)
+Sets up SSH keys environment.
+*/ -}}
+{{ if eq .chezmoi.os "linux" -}}
+{{   if eq .chezmoi.osRelease.idLike "debian" -}}
+{{     include "../install/ubuntu/common/ssh.sh" }}
+{{   end -}}
+{{ end -}}

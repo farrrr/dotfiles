@@ -1,0 +1,12 @@
+{{- $fontDir := "" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $fontDir = "Library/Fonts" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   $fontDir = ".local/share/fonts" -}}
+{{- end -}}
+
+"{{ $fontDir }}/MesloLGS_NF":
+  type: "archive"
+  url: {{ gitHubLatestReleaseAssetURL "ryanoasis/nerd-fonts" "Meslo.zip" | quote }}
+  exact: true
+  refreshPeriod: "168h"

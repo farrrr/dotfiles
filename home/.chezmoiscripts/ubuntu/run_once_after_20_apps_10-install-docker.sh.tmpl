@@ -1,0 +1,17 @@
+{{- /*
+--------------------------------------------------------------------------------
+Ubuntu Docker Installation Template
+--------------------------------------------------------------------------------
+Phase: 20-apps (After)
+Installs Docker Engine (if system is client or requested).
+Note: Previously this was restricted to client, but logic inside docker.sh can handle more if needed.
+Here preserving original restriction to client system for now, OR if specific logic requires it.
+Actually, let's allow it on all debian systems if desired, but user likely wants it on client.
+*/ -}}
+{{ if eq .chezmoi.os "linux" -}}
+{{   if eq .chezmoi.osRelease.idLike "debian" -}}
+{{     if eq .system "client" -}}
+{{       include "../install/ubuntu/client/docker.sh" }}
+{{     end -}}
+{{   end -}}
+{{ end -}}

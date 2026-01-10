@@ -1,0 +1,14 @@
+{{- /*
+--------------------------------------------------------------------------------
+Ubuntu SSH Server (Docker) Template
+--------------------------------------------------------------------------------
+Phase: 90-post (After)
+Sets up SSH Server (mostly for Docker environments).
+*/ -}}
+{{ if eq .chezmoi.os "linux" -}}
+{{   if eq .chezmoi.osRelease.idLike "debian" -}}
+{{     if eq .system "server" -}}
+{{       include "../install/ubuntu/server/ssh_server.sh" }}
+{{     end -}}
+{{   end -}}
+{{ end -}}

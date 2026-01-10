@@ -1,0 +1,176 @@
+# Git 設定檔
+# ===========
+# vim: ft=gitconfig
+
+# --- 使用者設定 (User) ---
+[user]
+	name = Far Tseng
+	email = {{ .email | quote }}
+	# 使用 SSH 簽署 Commit (搭配 1Password)
+	# 請將此處替換為您的 Public Key (ssh-ed25519 ...)
+	signingkey = {{ .git_signing_key | default "" }}
+
+# --- 核心設定 (Core) ---
+[core]
+	# 避免對路徑名稱進行轉譯 (顯示原始 UTF-8 字元)
+	quotepath = false
+	# 指定全域忽略檔案
+	excludesfile = ~/.gitignore
+	# 使用 Delta 作為分頁器 (Pager)
+	pager = delta
+
+# --- 初始化設定 (Init) ---
+[init]
+	# 設定新倉庫的預設分支名稱為 main
+	defaultBranch = main
+
+# --- 簽署設定 (GPG/SSH Signing) ---
+[gpg]
+	# 使用 SSH 格式進行簽署
+	format = ssh
+
+[gpg "ssh"]
+{{- if eq .chezmoi.os "darwin" }}
+	# macOS: 1Password SSH 簽署程式路徑
+	program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+{{- else }}
+	# Linux: 1Password SSH 簽署程式路徑 (預設值)
+	program = "/opt/1Password/op-ssh-sign"
+{{- end }}
+
+[commit]
+	# 預設啟用 Commit 簽署
+	gpgsign = true
+
+# --- 分支操作設定 (Branch Operations) ---
+[pull]
+	# Pull 時預設使用 rebase (避免產生不必要的 Merge Commit)
+	rebase = true
+[push]
+	# Push 時自動設定上游分支 (Tracking)
+	autoSetupRemote = true
+[rebase]
+	# Rebase 前自動 Stash 修改，完成後自動 Pop
+	autoStash = true
+
+# --- 合併與差異比較 (Merge & Diff) ---
+[merge]
+	# 衝突時顯示詳細日誌
+	log = true
+
+[diff]
+	# 使用 Histogram 演算法 (對代碼變更更準確)
+	algorithm = histogram
+	# 在 Diff 中顯示函式名稱等上下文
+	mnemonicPrefix = true
+	# 移動的程式碼使用預設顏色
+	colorMoved = default
+	# 顯示 Submodule 的詳細變更
+	submodule = log
+
+# --- 互動式介面 (Interactive) ---
+[interactive]
+	# 互動模式下使用 delta 顯示差異
+	diffFilter = delta --color-only
+
+# --- Delta 美化設定 (Delta Styling) ---
+[delta]
+	# 語法主題：Dracula
+	syntax-theme = Dracula
+	# 啟用瀏覽鍵支援
+	navigate = true
+	# Tab 寬度設為 2
+	tabs = 2
+	# 啟用並排顯示 (Side-by-side)
+	side-by-side = true
+	# 不顯示行號 (保持簡潔)
+	line-numbers = false
+
+	# 自訂樣式顏色 (參考 Dracula/Gruvbox 風格)
+	file-style = bold "#eee8aa"                     # pale golden rod
+	file-decoration-style = ol "#b8860b"            # dark orange
+	hunk-header-line-number-style = "#4169e1"       # royal blue
+	hunk-header-decoration-style = ol "#000080"     # navy
+	commit-decoration-style = bold "#00fa9a" box ul # medium spring green
+	word-diff-regex = ''                            # character level diff
+
+# --- 狀態與日誌 (Status & Log) ---
+[status]
+	# 在 status 中顯示 Submodule 摘要
+	submodulesummary = true
+[log]
+	# 簡化分支裝飾顯示
+	decorate = short
+	# 使用簡短的 Commit Hash
+	abbrevcommit = true
+	# 使用相對時間 (例如：2 hours ago)
+	date = relative
+[format]
+	# 自訂 Log 輸出格式 (Hash, Author, Date, Ref, Subject)
+	pretty = "%C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s"
+
+# --- 遠端倉庫 URL 覆寫 (URL Rewrites) ---
+# 強制使用 SSH 協定存取 GitHub (如果你希望的話)
+# 或者強制 Git CLI 使用 HTTPS (有時對防火牆較友善)，這裡保留原設定範本供參考
+[url "git@github.com:"]
+	insteadOf = http://github.com/
+	insteadOf = https://github.com/
+	pushinsteadof = https://github.com/
+
+# --- 其他工具設定 (Other Tools) ---
+[ghq]
+	# ghq 根目錄
+	root = ~/codebase
+
+[lfs]
+	# 停用 LFS 鎖定驗證 (加速操作)
+	locksverify = false
+
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
+[fetch]
+	# Fetch 時自動清理遠端已刪除的分支參照
+	prune = true
+[rerere]
+	# 啟用 reuse recorded resolution (自動記住衝突解決方式)
+	enabled = true
+
+# 二進制檔案差異比較 (macOS plist 轉換)
+[diff "plist"]
+	textconv = plutil -convert xml1 -o -
+
+# --- 別名設定 (Aliases) ---
+[alias]
+	# 基本操作縮寫
+	st = status
+	br = branch
+	ci = commit -v
+	co = checkout
+	sw = switch
+	re = restore
+
+	# 差異比較
+	d = diff --color-words=.
+	dt = difftool
+	mt = mergetool
+
+	# 日誌查看
+	lol = log --graph --all
+	lo = log --graph
+	last = log -1 HEAD
+	logp = log -p --format='commit %C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s'
+	reflogp = reflog -p --format='commit %C(auto)%h%d %gd: %gs (%s)'
+
+	# 分支操作簡化
+	# 如果在 main 分支則 fetch origin main，否則 fetch current branch
+	f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'main' ]]; then git fetch --no-tags origin main; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) main:main; fi"
+	# Pull current branch
+	p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
+	# Push 並開啟 GitHub PR 建立網頁 (需安裝 gh cli)
+	pc = "!git push && gh pr create -w"
+	# 安全強制推送 (檢查是否有人 push過)
+	puff = push --force-if-includes --force-with-lease

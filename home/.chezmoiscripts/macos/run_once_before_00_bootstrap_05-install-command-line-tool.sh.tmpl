@@ -1,0 +1,12 @@
+{{- /*
+--------------------------------------------------------------------------------
+macOS Command Line Tools 安裝腳本
+--------------------------------------------------------------------------------
+此腳本作為 Chezmoi 的 run_once_before hook 執行。
+它負責確保 macOS 開發者工具已安裝，這是安裝 Homebrew 的前置條件。
+優先級設定為 05 (Bootstrap 階段)，在 Homebrew 之前執行。
+*/ -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{   include "../install/macos/common/command_line_tool.sh" }}
+{{- end }}

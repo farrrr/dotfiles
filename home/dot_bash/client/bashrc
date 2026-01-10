@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+# ~/.bashrc: 由 bash(1) 為非登入 shell 執行。
+# 請參閱 /usr/share/doc/bash/examples/startup-files（位於 bash-doc 套件中）
+# 以獲取範例
+
+# 如果不是以互動模式執行，則不執行任何動作
+case $- in
+*i*) ;;
+*) return ;;
+esac
+
+
+
+# 在每個指令之後檢查視窗大小，並在必要時
+# 更新 LINES 和 COLUMNS 的值。
+shopt -s checkwinsize
+
+# 如果設定，路徑名稱擴展情境中使用的 "**" 模式將會
+# 比對所有檔案以及零個或多個目錄與子目錄。
+#shopt -s globstar
+
+# 讓 less 對非文字輸入檔案更友善，請參閱 lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# 設定變數以識別您所在的 chroot 環境（用於下方的提示字元）
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# 設定精緻的提示字元（無顏色，除非我們確定「想要」顏色）
+case "$TERM" in
+xterm-color | *-256color) color_prompt=yes ;;
+esac
+
+# 如果終端機支援，取消註解以啟用彩色提示字元；預設為關閉
+# 以免干擾使用者：終端機視窗的焦點
+# 應該在指令的輸出上，而不是提示字元
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # 我們有顏色支援；假設它符合 Ecma-48
+        # (ISO/IEC-6429) 標準。（缺乏此類支援的情況極為罕見，
+        # 這種情況通常會支援 setf 而不是 setaf。）
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# 如果這是 xterm，將標題設定為 user@host:dir
+case "$TERM" in
+xterm* | rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*) ;;
+
+esac
+
+# 啟用 ls 的顏色支援，並新增便利的別名
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# 彩色的 GCC 警告與錯誤
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# 更多 ls 別名
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# 為長時間執行的指令新增 "alert" 別名。使用方式如下：
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# 別名定義。
+# 您可能希望將所有新增的別名放入獨立的檔案，例如
+# ~/.bash_aliases，而不是直接在這裡新增。
+# 請參閱 bash-doc 套件中的 /usr/share/doc/bash-doc/examples。
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# 啟用可程式化補全功能（如果已經在 /etc/bash.bashrc 中啟用，
+# 且 /etc/profile 已經 source /etc/bash.bashrc，則不需要啟用此功能）。
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
+fi
+
+# # 用於 CUDA
+# # shellcheck source=../../dot_local/bin/server/cuda.sh
+# source "${HOME%/}/.local/bin/server/cuda.sh"
+
+# 用於提示字元
+# shellcheck source=../../dot_local/bin/server/prompt.sh
+source "${HOME%/}/.local/bin/server/prompt.sh"
+
+
+# # 用於 ssh agent
+# # shellcheck source=../../dot_local/bin/server/ssh_agent.sh
+source "${HOME%/}/.local/bin/server/ssh_agent.sh"
+
+# # 用於 golang
+# # shellcheck source=../../dot_local/bin/server/golang.sh
+# source "${HOME%/}/.local/bin/server/golang.sh"
+
+# 用於別名
+# shellcheck source=../../dot_local/bin/server/aliases.sh
+source "${HOME%/}/.local/bin/server/aliases.sh"
+
+# 用於機密資訊（例如 slack, wandb, zenodo API）
+# shellcheck source=../../dot_local/bin/server/secrets.sh
+source "${HOME%/}/.local/bin/server/secrets.sh"
+
+# 用於 dev 指令
+# shellcheck source=../../dot_local/bin/common/executable_dev
+# source "${HOME%/}/.local/bin/common/dev"
+
+# 用於 git-delete-merged-branches 指令
+# shellcheck source=../../dot_local/bin/common/executable_git-delete-merged-branches
+# source "${HOME%/}/.local/bin/common/git-delete-merged-branches"
+
+# # 用於 gpg
+# # shellcheck source=../../dot_local/bin/common/gpg.sh
+# source "${HOME%/}/.local/bin/common/gpg.sh"
+
+# # 用於 fzf
+# # shellcheck source=../../dot_config/fzf/config.bash
+# source "${HOME%/}/.config/fzf/config.bash"

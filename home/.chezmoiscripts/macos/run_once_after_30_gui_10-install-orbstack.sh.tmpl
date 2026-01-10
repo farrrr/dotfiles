@@ -1,0 +1,11 @@
+{{- /*
+--------------------------------------------------------------------------------
+OrbStack 安裝腳本
+--------------------------------------------------------------------------------
+此腳本作為 Chezmoi 的 run_once_after hook 執行 (30-GUI 階段)。
+OrbStack 是 macOS 上輕量級 Docker/Linux 虛擬化工具。
+*/ -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{   include "../install/macos/common/orbstack.sh" }}
+{{- end }}

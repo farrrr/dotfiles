@@ -1,0 +1,12 @@
+{{- /*
+--------------------------------------------------------------------------------
+macOS Defaults 系統設定腳本
+--------------------------------------------------------------------------------
+此腳本作為 Chezmoi 的 run_once_after hook 執行 (30-GUI 階段)。
+負責套用 macOS 的各項偏好設定 (Dock, Finder, Keyboard, etc.)。
+設定為 90 優先級，在所有應用安裝後執行 (重啟 Dock/Finder 以生效)。
+*/ -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{   include "../install/macos/common/defaults.sh" }}
+{{- end }}

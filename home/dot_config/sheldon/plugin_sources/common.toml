@@ -1,0 +1,214 @@
+# `sheldon` configuration file
+# ----------------------------
+#
+# 這是 Sheldon 的配置文件。您可以直接修改此檔案，或使用 `sheldon` 命令行工具進行管理：
+# - `sheldon add`: 添加新插件
+# - `sheldon edit`: 編輯配置文件
+# - `sheldon remove`: 移除插件
+#
+# 更多資訊請參考: https://github.com/rossmacarthur/sheldon#readme
+# vim: set syntax=toml
+
+shell = "zsh"
+
+# =============================================================================
+# 範本 (Templates)
+# =============================================================================
+
+[templates]
+# 延遲加載範本 (使用 zsh-defer)
+defer = """
+{% for file in files %}
+zsh-defer source "{{ file }}"
+{% endfor %}
+"""
+
+# FZF 安裝範本 (包含安裝腳本執行與路徑設定)
+fzf-install = """
+{{ hooks?.pre | nl }}
+{{ dir }}/install --bin > /dev/null
+path=($path {{ dir }}/bin(N-/))
+{{ hooks?.post | nl }}
+"""
+
+# FZF Source 範本
+fzf-source = "source <(fzf --zsh)"
+
+# =============================================================================
+# 核心插件 (Core Plugins)
+# =============================================================================
+
+# 延遲加載機制 (必須最先加載)
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+
+# =============================================================================
+# 補全系統 (Completion)
+# =============================================================================
+# 注意：補全相關插件建議在 compinit 之前加載以確保 fpath 正確
+
+# Zsh 額外補全庫
+[plugins.zsh-completions]
+github = 'zsh-users/zsh-completions'
+apply = ['defer']
+
+# 初始化補全系統 (延遲執行以加速啟動)
+[plugins.compinit]
+inline = 'autoload -Uz compinit && zsh-defer compinit'
+
+# =============================================================================
+# 使用者介面與體驗 (UI/UX)
+# =============================================================================
+
+# 自動建議 (根據歷史紀錄建議命令)
+[plugins.zsh-autosuggestions]
+github = 'zsh-users/zsh-autosuggestions'
+apply = ['defer']
+
+# 語法高亮 (輸入時即時高亮命令語法)
+[plugins.zsh-syntax-highlighting]
+github = 'zsh-users/zsh-syntax-highlighting'
+apply = ['defer']
+
+# 自動配對括號引號
+[plugins.zsh-autopair]
+github = 'hlissner/zsh-autopair'
+apply = ['defer']
+
+#
+# Prompt for Server Machine
+#
+
+[plugins.starship]
+inline = '''
+# 緩存 starship init 腳本以加速啟動 (避免每次開啟終端機都執行 starship init)
+local cache_file="${ZSH_CACHE_DIR:-$HOME/.cache}/starship_init.zsh"
+if [[ ! -f "$cache_file" || "$commands[starship]" -nt "$cache_file" ]]; then
+    starship init zsh >! "$cache_file"
+fi
+source "$cache_file"
+'''
+
+
+# =============================================================================
+# 歷史紀錄 (History)
+# =============================================================================
+
+# 僅記錄執行成功的命令 (保持標準加載以確保功能正常)
+[plugins.zsh-history-on-success]
+github = 'nyoungstudios/zsh-history-on-success'
+
+# 歷史紀錄選項設置
+[plugins.zsh-history-shell-options]
+inline = '''
+setopt INC_APPEND_HISTORY_TIME  # 記錄時間戳
+setopt INC_APPEND_HISTORY       # 立即追加到歷史檔案
+'''
+
+# =============================================================================
+# Oh My Zsh 模組 (Selective Load)
+# =============================================================================
+
+[plugins.oh-my-zsh]
+github = "ohmyzsh/ohmyzsh"
+use = [
+    # 核心函數
+    'lib/functions.zsh',
+    # 實用庫
+    'lib/completion.zsh',
+    'lib/history.zsh',
+    'lib/termsupport.zsh',
+    # 插件
+    'plugins/fzf/fzf.plugin.zsh',
+]
+
+# =============================================================================
+# 工具管理 (Tool Management)
+# =============================================================================
+
+# FZF 模糊搜尋工具
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install']
+hooks.post = '''
+export FZF_DEFAULT_OPTS="--reverse"
+'''
+
+# Mise 版本管理器 (取代 asdf/rtx)
+[plugins.mise]
+inline = 'eval "$(~/.local/bin/mise activate zsh)"'
+
+# 自定義命令 (透過 autoload 加載，減少啟動開銷)
+[plugins.custom-commands]
+inline = 'autoload -Uz chezmoi-cd setup-python-env'
+
+# =============================================================================
+# 語言環境配置 (Languages)
+# =============================================================================
+
+# 通用語言設定
+[plugins.lang]
+inline = '''
+function _lang() {
+    export LANG='en_US.UTF-8'
+}
+zsh-defer _lang
+'''
+
+# Go 語言環境
+[plugins.go]
+inline = '''
+function _go() {
+    export GOPATH="${HOME}/ghq"
+    export GOROOT=$(go env GOROOT)
+
+    typeset -gU path
+    path=(
+        $path
+        ${GOPATH}/bin(N-/)
+        ${HOME}/.go/bin(N-/)
+    )
+}
+zsh-defer _go
+'''
+
+# Rust 語言環境
+[plugins.rust]
+inline = '''
+function _rust() {
+    typeset -gU path
+    path=(
+        $path
+        ${HOME}/.cargo/bin(N-/)
+    )
+}
+zsh-defer _rust
+'''
+
+# =============================================================================
+# 密鑰與隱私 (Keys & Secrets)
+# =============================================================================
+
+# GPG 設定
+[plugins.gpg]
+inline = '''
+function _gpg() {
+    export GPG_TTY=$(tty)
+}
+zsh-defer _gpg
+'''
+
+# =============================================================================
+# 別名 (Aliases)
+# =============================================================================
+# 載入額外的 Zsh 選項設定
+[plugins.extra-options]
+local = '~/.local/bin/common'
+use = ['options']
+apply = ['source']
+
+[plugins.common-alias]
+local = '~/.config/alias'
+use = ['common.sh']
+apply = ['source']

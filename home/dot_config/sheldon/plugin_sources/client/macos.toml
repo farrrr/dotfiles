@@ -1,0 +1,54 @@
+# MacOS Client 配置
+# =============================================================================
+
+# =============================================================================
+# Homebrew 相關設定
+# =============================================================================
+
+[plugins.homebrew]
+inline = '''
+function _homebrew() {
+    # 執行 brew install 前不自動更新，加快速度
+    export HOMEBREW_NO_AUTO_UPDATE=1
+}
+zsh-defer _homebrew
+'''
+
+# =============================================================================
+# 路徑配置 (Path Settings)
+# =============================================================================
+
+[plugins.macos-path]
+inline = '''
+# 設定 MacOS 專用路徑 (如 Homebrew)
+# 立即執行以確保即時生效
+typeset -gU path
+path=(
+    $path
+    /opt/{homebrew,local}/{,s}bin(N-/)
+)
+'''
+
+# =============================================================================
+# 瀏覽器與應用程式
+# =============================================================================
+
+[plugins.macos-browser]
+inline = '''
+# 設定預設瀏覽器開啟方式
+function _macos_browser() {
+    if [[ -z "$BROWSER" && "$OSTYPE" == darwin* ]]; then
+        export BROWSER='open'
+    fi
+}
+zsh-defer _macos_browser
+'''
+
+[plugins.macos-command]
+inline = '''
+# MacOS 專用別名與命令
+function _macos_command() {
+    alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+}
+zsh-defer _macos_command
+'''

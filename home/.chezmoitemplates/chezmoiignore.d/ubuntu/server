@@ -1,0 +1,12 @@
+.zlogin
+.zpreztorc
+.zlogout
+
+.config/zsh
+.config/sheldon/plugin_sources/client.toml
+
+.local/bin/client
+.zsh/zshrc_client
+.zsh/zprofile_client
+
+.bash/client/bashrc

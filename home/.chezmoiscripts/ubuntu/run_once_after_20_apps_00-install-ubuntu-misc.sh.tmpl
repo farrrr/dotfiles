@@ -1,0 +1,12 @@
+{{- /*
+--------------------------------------------------------------------------------
+Ubuntu Common Misc Packages Template
+--------------------------------------------------------------------------------
+Phase: 20-apps (After)
+Installs common utilities (vim, curl, etc.) on Ubuntu.
+*/ -}}
+{{ if eq .chezmoi.os "linux" -}}
+{{   if eq .chezmoi.osRelease.idLike "debian" -}}
+{{     include "../install/ubuntu/common/misc.sh" }}
+{{   end -}}
+{{ end -}}

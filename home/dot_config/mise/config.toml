@@ -1,0 +1,35 @@
+[tools]
+# --- 核心執行環境 (Runtimes) ---
+go = "latest"     # Go 語言最新版
+node = "lts"      # Node.js 長期支援版 (LTS)
+rust = "latest"   # Rust 語言最新版
+python = "3.11"   # Python 3.11 (穩定版)
+
+# --- 系統與管理 (System & Management) ---
+chezmoi = "latest" # Dotfiles 管理器
+uv = "latest"      # 極速 Python 套件管理器
+
+# --- 雲端與開發 (Cloud & Dev) ---
+aws-cli = "latest" # AWS 命令列工具
+dotenvx = "latest" # 跨平台環境變數管理工具
+
+# --- CLI 增強工具 (Modern Unix Tools) ---
+eza = "latest"     # ls 的現代化替代品 (更美觀、支援圖示)
+jq = "latest"      # JSON 處理工具
+yazi = "latest"    # 終端機檔案管理器 (支援預覽)
+
+# --- 格式化與檢查 (Linters & Formatters) ---
+shellcheck = "latest" # Shell 腳本靜態分析
+shfmt = "latest"      # Shell 腳本格式化工具
+
+# --- NPM 全域套件 (NPM Global Packages) ---
+"npm:bash-language-server" = "latest"
+
+# --- GitHub 來源工具 (GitHub Release) ---
+"github:x-motemen/ghq" = "latest"
+"github:cli/cli" = "latest"              # GitHub 官方 CLI
+
+[settings]
+# 啟用對特定語言版本檔 (.python-version) 的支援
+# 讓 mise 能讀取原本由 pyenv 建立的版本檔案
+idiomatic_version_file_enable_tools = ["python"]

@@ -1,0 +1,21 @@
+{{- /* 檢查 OS 類型 */ -}}
+{{- $is_mac := eq .chezmoi.os "darwin" -}}
+{{- $is_linux := eq .chezmoi.os "linux" -}}
+
+{{- /* 設定 Email 地址 (若未設定則詢問) */ -}}
+{{- $email := promptStringOnce . "email" "請輸入 Email 地址" -}}
+
+{{- /* 設定系統類型 (若為 macOS 預設為 client，否則詢問) */ -}}
+{{- $system := "" -}}
+{{- if $is_mac -}}
+{{-   $system = "client" -}}
+{{- else -}}
+{{-   $system = promptStringOnce . "system" "請輸入系統類型 (client 或 server)" -}}
+{{- end -}}
+
+data:
+    email: {{ $email | quote }}
+    system: {{ $system | quote }}
+    is_mac: {{ $is_mac }}
+    is_linux: {{ $is_linux }}
+    git_signing_key: {{ onepasswordRead "op://Private/id_rsa_github/public key" | quote }}

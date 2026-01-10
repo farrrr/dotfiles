@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# 
+# vim: syntax=sh
+
+# 檢查終端機類型是否為 "dumb"（功能受限的終端，如 scp/sftp 傳輸或 IDE 終端）
+if [ "$TERM" = "dumb" ]; then
+	# 若為 dumb terminal，不做任何輸出，避免干擾非互動式連線
+	echo -n
+else
+	# 若系統有安裝 zsh，則將目前的 shell 替換 (exec) 為 zsh
+	# 這能讓你在無法使用 chsh 更改預設 shell 的伺服器上直接使用 zsh
+	command -v zsh > /dev/null && exec zsh
+fi

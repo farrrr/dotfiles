@@ -1,0 +1,13 @@
+{{- /*
+--------------------------------------------------------------------------------
+macOS 系統準備腳本 (Bootstrap)
+--------------------------------------------------------------------------------
+此腳本作為 Chezmoi 的 run_once_before hook 執行。
+目前主要負責在 Apple Silicon (arm64) 機器上安裝 Rosetta 2。
+*/ -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{   if eq .chezmoi.arch "arm64" -}}
+{{     include "../install/macos/arm64/prepare_arm64_system.sh" }}
+{{   end -}}
+{{ end -}}

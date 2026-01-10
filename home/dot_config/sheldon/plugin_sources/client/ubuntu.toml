@@ -1,0 +1,8 @@
+# Ubuntu Client 配置
+# =============================================================================
+
+# 加載 Ubuntu 專用腳本
+[plugins.ubuntu-command]
+local = '~/.local/bin/client'
+use = ['ubuntu.sh']
+apply = ['source']

@@ -1,0 +1,12 @@
+{{- /*
+--------------------------------------------------------------------------------
+雜項套件 (Misc) 安裝腳本
+--------------------------------------------------------------------------------
+此腳本作為 Chezmoi 的 run_once_after hook 執行 (20-Apps 階段)。
+負責安裝 `install/macos/common/misc.sh` 中列出的各類 Brew Packages 與 Casks。
+這些套件屬於一般應用程式與 CLI 工具。
+*/ -}}
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{   include "../install/macos/common/misc.sh" }}
+{{- end }}
