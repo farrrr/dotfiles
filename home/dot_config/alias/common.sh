@@ -29,7 +29,7 @@ alias gcloud='docker run --platform linux/amd64 --rm -it -v "${HOME%/}"/.config/
 alias bash-language-server="docker run --platform linux/amd64 --rm -i ghcr.io/shunk031/bash-language-server:latest"
 
 # dircolors: 修正部分系統缺少 dircolors 指令的問題
-if [[ ! -x =dircolors ]]; then
+if (( ! $+commands[dircolors] )); then
   if (( $+commands[gdircolors] )); then
     alias dircolors=gdircolors
   fi

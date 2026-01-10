@@ -1,2 +1,7 @@
-eval "$(mise activate zsh)"
+# Add ~/.local/bin to PATH
+# typeset -U path ensures no duplicates in PATH
+path=("$HOME/.local/bin" $path)
+typeset -U path
+export PATH
 
+eval "$(mise activate zsh)"
