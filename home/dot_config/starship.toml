@@ -128,7 +128,7 @@ format = "[$symbol$version]($style) "
 [python]
 symbol = " "
 style = "bold yellow"
-format = "[$symbol$version(\($virtualenv\))]($style) "
+format = "[$symbol$version(\\($virtualenv\\))]($style) "
 
 [nodejs]
 symbol = " "
@@ -162,12 +162,12 @@ format = "[$symbol$workspace]($style) "
 [aws]
 symbol = "☁️  "
 style = "bold yellow"
-format = "[$symbol($profile )(\($region\) )]($style) "
+format = "[$symbol($profile )(\\($region\\) )]($style) "
 
 [gcloud]
 symbol = "🇬️ "
 style = "bold blue"
-format = "[$symbol$project(\($region\))]($style) "
+format = "[$symbol$project(\\($region\\))]($style) "
 
 [azure]
 symbol = "🇦 "
