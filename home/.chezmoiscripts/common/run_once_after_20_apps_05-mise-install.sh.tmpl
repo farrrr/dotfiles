@@ -1,0 +1,31 @@
+{{- if eq .chezmoi.os "darwin" "linux" -}}
+#!/usr/bin/env bash
+
+# run_once_after_20_apps_05-mise-install.sh.tmpl
+# =============================================================================
+# 此腳本會在 chezmoi apply 階段執行 `mise install`
+# 確保 config.toml 中定義的所有工具 (Node, Python, Go etc.) 都被安裝
+# =============================================================================
+
+set -Eeuo pipefail
+
+function main() {
+    local mise_bin="${HOME}/.local/bin/mise"
+
+    # 確保 mise 已安裝
+    if [ ! -x "${mise_bin}" ]; then
+        echo "⚠️  Mise binary not found at ${mise_bin}. Skipping mise install."
+        return 0
+    fi
+
+    echo "📦 Running 'mise install' to install tools defined in ~/.config/mise/config.toml..."
+
+    # 執行安裝
+    "${mise_bin}" install -y
+
+    # 清理舊版本 (可選)
+    # "${mise_bin}" prune -y
+}
+
+main
+{{- end -}}
