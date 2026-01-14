@@ -80,15 +80,18 @@ apply = ['defer']
 # Prompt for Server Machine
 #
 
-[plugins.starship]
-inline = '''
-# 緩存 starship init 腳本以加速啟動 (避免每次開啟終端機都執行 starship init)
-local cache_file="${ZSH_CACHE_DIR:-$HOME/.cache}/starship_init.zsh"
-if [[ ! -f "$cache_file" || "$commands[starship]" -nt "$cache_file" ]]; then
-    starship init zsh >! "$cache_file"
-fi
-source "$cache_file"
-'''
+# [plugins.starship]
+# inline = '''
+# # 緩存 starship init 腳本以加速啟動 (避免每次開啟終端機都執行 starship init)
+# local cache_file="${ZSH_CACHE_DIR:-$HOME/.cache}/starship_init.zsh"
+# if [[ ! -f "$cache_file" || "$commands[starship]" -nt "$cache_file" ]]; then
+#     starship init zsh >! "$cache_file"
+# fi
+# source "$cache_file"
+# '''
+
+[plugins.oh-my-posh]
+inline = 'eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.omp.yaml)"'
 
 
 # =============================================================================
