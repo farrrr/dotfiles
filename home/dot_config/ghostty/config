@@ -32,5 +32,6 @@ palette = 14=#6bd7ca
 palette = 15=#bac2de
 font-size = 14
 font-family = MesloLGS Nerd Font Mono DZ
+adjust-cell-height = 15%
 auto-update = check
 auto-update-channel = stable
