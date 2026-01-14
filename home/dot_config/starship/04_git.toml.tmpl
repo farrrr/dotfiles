@@ -1,0 +1,106 @@
+# vim: ft=toml
+# 版本控制 (Version Control)
+
+[git_branch]
+format = "[ $symbol$branch ]($style)"
+symbol = " "
+style = "bold fg:#769ff0 bg:#394260"
+truncation_symbol = "…"
+only_attached = false
+always_show_remote = false
+ignore_branches = []
+ignore_bare_repo = false
+disabled = false
+
+[git_commit]
+commit_hash_length = 7
+format = '[\($hash$tag\)]($style) '
+style = "green bold"
+only_detached = true
+disabled = false
+tag_symbol = " 🏷  "
+tag_disabled = true
+tag_max_candidates = 0
+
+[git_state]
+rebase = "REBASING"
+merge = "MERGING"
+revert = "REVERTING"
+cherry_pick = "CHERRY-PICKING"
+bisect = "BISECTING"
+am = "AM"
+am_or_rebase = "AM/REBASE"
+style = "bold yellow"
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+disabled = false
+
+[git_metrics]
+added_style = "bold green"
+deleted_style = "bold red"
+only_nonzero_diffs = true
+format = "([+$added]($added_style) )([-$deleted]($deleted_style) )"
+disabled = false
+ignore_submodules = false
+
+[git_status]
+format = "([$all_status$ahead_behind ]($style))[](fg:#394260)"
+style = "fg:mauve bg:#394260"
+stashed = "󱞞 "
+ahead = "⇡ ${count}"
+behind = "⇣ ${count}"
+up_to_date = "✓ "
+diverged = "⇕⇡ ${ahead_count}⇣ ${behind_count}"
+conflicted = "󰡌 "
+deleted = "✘ "
+renamed = "» "
+modified = "! "
+staged = "+ "
+untracked = "? "
+typechanged = ""
+ignore_submodules = false
+disabled = false
+use_git_executable = false
+
+[hg_branch]
+symbol = " "
+style = "bold purple"
+format = "on [$symbol$branch(:$topic)]($style) "
+truncation_length = 9223372036854775807
+truncation_symbol = "…"
+disabled = true
+
+[hg_state]
+merge = "MERGING"
+rebase = "REBASING"
+update = "UPDATING"
+bisect = "BISECTING"
+shelve = "SHELVING"
+graft = "GRAFTING"
+transplant = "TRANSPLANTING"
+histedit = "HISTEDITING"
+style = "bold yellow"
+format = '\([$state]($style)\) '
+disabled = true
+
+[pijul_channel]
+symbol = " "
+style = "bold purple"
+format = "on [$symbol$channel]($style) "
+truncation_length = 9223372036854775807
+truncation_symbol = "…"
+disabled = true
+
+[fossil_branch]
+format = "on [$symbol$branch]($style) "
+symbol = " "
+style = "bold purple"
+truncation_length = 9223372036854775807
+truncation_symbol = "…"
+disabled = true
+
+[fossil_metrics]
+format = "([+$added]($added_style) )([-$deleted]($deleted_style) )"
+added_style = "bold green"
+deleted_style = "bold red"
+only_nonzero_diffs = true
+disabled = true

@@ -1,0 +1,72 @@
+# vim: ft=toml
+# 雲端與基礎設施 (Cloud & Infra)
+# AWS, GCP, Azure, Terraform 等設定
+
+[aws]
+format = '[$symbol($profile )(\($region\) )]($style) '
+symbol = "  "
+style = "bold yellow"
+disabled = false
+expiration_symbol = "X"
+force_display = true
+
+[aws.region_aliases]
+
+[aws.profile_aliases]
+
+[azure]
+format = "[$symbol$subscription]($style) "
+symbol = "🇦 "
+style = "bold blue"
+disabled = true
+
+[azure.subscription_aliases]
+
+[gcloud]
+format = '[$symbol$project(\($region\))]($style) '
+symbol = "🇬️ "
+style = "bold blue"
+disabled = false
+detect_env_vars = []
+
+[gcloud.region_aliases]
+
+[gcloud.project_aliases]
+
+[openstack]
+format = 'on [$symbol$cloud(\($project\))]($style) '
+symbol = "☁️  "
+style = "bold yellow"
+disabled = false
+
+[terraform]
+format = "[$symbol$workspace]($style) "
+version_format = "v${raw}"
+symbol = "💠 "
+style = "bold purple"
+disabled = false
+detect_extensions = [
+    "tf",
+    "tfplan",
+    "tfstate",
+]
+detect_files = []
+detect_folders = [".terraform"]
+commands = [
+    [
+    "terraform",
+    "version",
+    ],
+    [
+    "tofu",
+    "version",
+    ],
+]
+
+[pulumi]
+format = "via [$symbol($username@)$stack]($style) "
+version_format = "v${raw}"
+symbol = " "
+style = "bold 5"
+disabled = false
+search_upwards = true

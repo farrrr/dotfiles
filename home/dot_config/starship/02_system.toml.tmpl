@@ -1,0 +1,172 @@
+# vim: ft=toml
+# 系統資訊 (System Info)
+
+# os 模組顯示目前的作業系統
+[os]
+format = "[░▒▓](inverted $style fg:overlay1)[  $symbol  ]($style)[]($style bold fg:overlay1)"
+style = 'bg:surface1 fg:text'
+disabled = false
+
+[os.symbols]
+AlmaLinux = ""
+Alpine = ""
+ALTLinux = "Ⓐ"
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CentOS = ""
+Debian = "󰣚"
+DragonFly = ""
+Elementary = ""
+EndeavourOS = ""
+Fedora = "󰣛"
+FreeBSD = ""
+Garuda = ""
+Gentoo = "󰣨"
+Illumos = ""
+Ios = ""
+Kali = ""
+Linux = "󰌽"
+Macos = "󰀵"
+Manjaro = ""
+Mint = "󰣭"
+NetBSD = ""
+NixOS = ""
+OpenBSD = ""
+openSUSE = ""
+OracleLinux = ""
+Pop = ""
+Raspbian = "󰐿"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+Redox = "🧪"
+RockyLinux = ""
+Solus = ""
+SUSE = ""
+Ubuntu = "󰕈"
+Unknown = ""
+Void = ""
+Windows = ""
+Zorin = ""
+
+[username]
+format = "[$user]($style) in "
+style_root = "red bold"
+style_user = "yellow bold"
+show_always = true
+disabled = false
+
+[hostname]
+ssh_only = false
+format = "[$ssh_symbol$hostname]($style) in "
+style = "green dimmed bold"
+disabled = false
+ssh_symbol = "🌐 "
+trim_at = "."
+
+[time]
+format = "[](fg:#769FF0 bg:#394260)[ 󰥔 $time ]($style) "
+style = "bold bg:#769FF0 fg:#E3E5E5"
+use_12hr = false
+disabled = false
+utc_time_offset = "local"
+time_range = "-"
+time_format = "%R"
+
+[battery]
+full_symbol = "🔋 "
+charging_symbol = "⚡️ "
+discharging_symbol = "🔌 "
+unknown_symbol = "󰁽 "
+empty_symbol = "󰂎 "
+disabled = false
+format = "[$symbol$percentage]($style) "
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[cmd_duration]
+min_time = 2000
+format = "took [$duration]($style)"
+style = "bold yellow"
+show_milliseconds = false
+disabled = false
+show_notifications = false
+min_time_to_notify = 45000
+
+[jobs]
+threshold = 1
+symbol_threshold = 1
+number_threshold = 2
+format = " [$symbol$number]($style)"
+symbol = "✦"
+style = "bold blue"
+disabled = false
+
+[status]
+format = "[$symbol$status]($style) "
+symbol = "❌"
+success_symbol = ""
+not_executable_symbol = "🚫"
+not_found_symbol = "🔍"
+sigint_symbol = "🧱"
+signal_symbol = "⚡"
+style = "bold red"
+map_symbol = false
+recognize_signal_code = true
+pipestatus = false
+disabled = false
+
+[shell]
+format = "[$indicator]($style) "
+bash_indicator = "bsh"
+fish_indicator = "fsh"
+zsh_indicator = "zsh"
+powershell_indicator = "psh"
+ion_indicator = "ion"
+elvish_indicator = "esh"
+tcsh_indicator = "tsh"
+nu_indicator = "nu"
+xonsh_indicator = "xsh"
+cmd_indicator = "cmd"
+unknown_indicator = ""
+style = "white bold"
+disabled = true
+
+[shlvl]
+threshold = 2
+format = "[$symbol$shlvl]($style) "
+symbol = "↕️  "
+repeat = false
+repeat_offset = 0
+style = "bold yellow"
+disabled = true
+
+[memory_usage]
+threshold = 75
+format = "via $symbol[$ram( | $swap)]($style) "
+style = "white bold dimmed"
+symbol = "🐏 "
+disabled = true
+
+[localip]
+ssh_only = true
+format = "[$localipv4]($style) "
+style = "yellow bold"
+disabled = true
+
+[env_var]
+disabled = false
+
+[custom]
+disabled = false
+
+[line_break]
+disabled = false

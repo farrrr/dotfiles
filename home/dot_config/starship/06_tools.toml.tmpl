@@ -1,0 +1,279 @@
+# vim: ft=toml
+# 工具鏈 (Tools)
+# Package, Docker, Sudo 等設定
+
+[container]
+format = "[$symbol($name )]($style)"
+symbol = "⬢"
+style = "red bold dimmed"
+disabled = false
+
+[docker_context]
+symbol = " "
+style = "blue"
+format = "[$symbol$context]($style) "
+only_with_files = true
+disabled = false
+detect_extensions = []
+detect_files = [
+    "compose.yml",
+    "compose.yaml",
+    "docker-compose.yml",
+    "docker-compose.yaml",
+    "Dockerfile",
+]
+detect_folders = []
+
+[singularity]
+symbol = ""
+format = '[$symbol\[$env\]]($style) '
+style = "blue bold dimmed"
+disabled = false
+
+[kubernetes]
+symbol = "☸ "
+format = '[$symbol$context( \($namespace\))]($style) in '
+style = "cyan bold"
+disabled = true
+detect_extensions = []
+detect_files = []
+detect_folders = []
+detect_env_vars = []
+contexts = []
+
+[helm]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "⎈ "
+style = "bold white"
+disabled = false
+detect_extensions = []
+detect_files = [
+    "helmfile.yaml",
+    "Chart.yaml",
+]
+detect_folders = []
+
+[vagrant]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "⍱ "
+style = "cyan bold"
+disabled = false
+detect_extensions = []
+detect_files = ["Vagrantfile"]
+detect_folders = []
+
+[vcsh]
+symbol = ""
+style = "bold yellow"
+format = "vcsh [$symbol$repo]($style) "
+disabled = false
+
+[package]
+format = "[$symbol$version]($style) "
+symbol = "📦 "
+style = "dimmed white"
+display_private = false
+disabled = false
+version_format = "v${raw}"
+
+[cmake]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "△ "
+style = "bold blue"
+disabled = false
+detect_extensions = []
+detect_files = [
+    "CMakeLists.txt",
+    "CMakeCache.txt",
+]
+detect_folders = []
+
+[meson]
+truncation_length = 4294967295
+truncation_symbol = "…"
+format = "via [$symbol$project]($style) "
+symbol = "⬢ "
+style = "blue bold"
+disabled = false
+
+[gradle]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "🅶 "
+style = "bold bright-cyan"
+disabled = false
+recursive = false
+detect_extensions = [
+    "gradle",
+    "gradle.kts",
+]
+detect_files = []
+detect_folders = ["gradle"]
+
+[maven]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "🥣 "
+style = "bold blue"
+disabled = true
+detect_extensions = ["pom"]
+detect_files = ["pom.xml"]
+detect_folders = []
+
+[spack]
+truncation_length = 1
+format = "via [$symbol$environment]($style) "
+symbol = "🅢 "
+style = "blue bold"
+disabled = false
+
+[nix_shell]
+format = 'via [$symbol$state( \($name\))]($style) '
+symbol = "❄️  "
+style = "bold blue"
+impure_msg = "impure"
+pure_msg = "pure"
+unknown_msg = ""
+disabled = false
+heuristic = false
+
+[conda]
+truncation_length = 1
+format = "via [$symbol$environment]($style) "
+symbol = "🅒 "
+style = "green bold"
+ignore_base = true
+detect_env_vars = ["!PIXI_ENVIRONMENT_NAME"]
+disabled = false
+
+[pixi]
+pixi_binary = ["pixi"]
+show_default_environment = true
+format = 'via [$symbol($version )(\($environment\) )]($style)'
+version_format = "v${raw}"
+symbol = "🧚 "
+style = "yellow bold"
+disabled = false
+detect_extensions = []
+detect_files = [
+    "pixi.toml",
+    "pixi.lock",
+]
+detect_folders = []
+
+[direnv]
+format = "[$symbol$loaded/$allowed]($style) "
+symbol = "direnv "
+style = "bold bright-yellow"
+disabled = false
+detect_extensions = []
+detect_env_vars = ["DIRENV_FILE"]
+detect_files = [".envrc"]
+detect_folders = []
+allowed_msg = "allowed"
+not_allowed_msg = "not allowed"
+denied_msg = "denied"
+loaded_msg = "loaded"
+unloaded_msg = "not loaded"
+
+[sudo]
+format = "[$symbol]($style)"
+symbol = "🧙 "
+style = "bold red"
+allow_windows = false
+disabled = false
+
+[bun]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "🥟 "
+style = "bold red"
+disabled = false
+detect_extensions = []
+detect_files = [
+    "bun.lock",
+    "bun.lockb",
+    "bunfig.toml",
+]
+detect_folders = []
+
+[guix_shell]
+format = "via [$symbol]($style) "
+symbol = "🐃 "
+style = "yellow bold"
+disabled = false
+
+[mise]
+format = "on [$symbol$health]($style) "
+symbol = "mise "
+style = "bold purple"
+disabled = true
+detect_extensions = []
+detect_files = [
+    "mise.toml",
+    "mise.local.toml",
+    ".mise.toml",
+    ".mise.local.toml",
+]
+detect_folders = [".mise"]
+healthy_symbol = "healthy"
+unhealthy_symbol = "unhealthy"
+
+[nats]
+format = "[$symbol($name )]($style)"
+symbol = "✉️ "
+style = "bold purple"
+disabled = true
+
+[netns]
+format = '[$symbol \[$name\]]($style) '
+symbol = "🛜"
+style = "blue bold dimmed"
+disabled = false
+
+[buf]
+format = "with [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "🐃 "
+style = "bold blue"
+disabled = false
+detect_extensions = []
+detect_files = [
+    "buf.yaml",
+    "buf.gen.yaml",
+    "buf.work.yaml",
+]
+detect_folders = []
+
+[quarto]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "⨁ "
+style = "bold #75AADB"
+disabled = false
+detect_extensions = ["qmd"]
+detect_files = ["_quarto.yml"]
+detect_folders = []
+
+[typst]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "t "
+style = "bold #0093A7"
+disabled = false
+detect_extensions = ["typ"]
+detect_files = ["template.typ"]
+detect_folders = []
+
+[xmake]
+format = "via [$symbol($version )]($style)"
+version_format = "v${raw}"
+symbol = "△ "
+style = "bold green"
+disabled = false
+detect_extensions = []
+detect_files = ["xmake.lua"]
+detect_folders = []

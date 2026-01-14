@@ -1,0 +1,65 @@
+# vim: ft=toml
+# 核心設定 (Core)
+# 包含全域設定與 Prompt 格式
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# 在命令提示符之間插入空白行。
+add_newline = true
+
+# 設定命令超時時間 (毫秒)
+command_timeout = 500
+
+# 設定掃描超時時間 (毫秒)
+scan_timeout = 30
+
+# 是否跟隨符號連結
+follow_symlinks = true
+
+continuation_prompt = ' 󰇘  '
+# 使用 Catppuccin Mocha 配色
+palette = "catppuccin_mocha"
+
+# Left Prompt
+format = """
+$os\
+$directory\
+$git_branch\
+$git_status\
+$fill\
+$status\
+$cmd_duration\
+$jobs\
+$direnv\
+$container\
+$terraform\
+$deno\
+$go\
+$java\
+$lua\
+$nodejs\
+$package\
+$php\
+$python\
+$ruby\
+$rust\
+$aws\
+$azure\
+$gcloud\
+$time\
+$line_break\
+$character\
+"""
+
+# Right Prompt
+right_format = """
+$sudo\
+$username\
+ @ \
+$hostname\
+"""
+
+[fill]
+symbol = ""
+style = "overlay1"
+disabled = false
