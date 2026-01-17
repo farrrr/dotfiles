@@ -17,6 +17,8 @@ dotenvx = "latest" # 跨平台環境變數管理工具
 eza = "latest"     # ls 的現代化替代品 (更美觀、支援圖示)
 jq = "latest"      # JSON 處理工具
 yazi = "latest"    # 終端機檔案管理器 (支援預覽)
+zellij = "latest"  # 終端機多路復用器
+
 
 # --- 格式化與檢查 (Linters & Formatters) ---
 shellcheck = "latest" # Shell 腳本靜態分析

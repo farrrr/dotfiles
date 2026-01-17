@@ -53,6 +53,14 @@ apply = ['source']
 github = 'zsh-users/zsh-completions'
 apply = ['defer']
 
+# 額外補全插件 (Extra Completions)
+# 只要放在 [plugins.compinit] 之前，這裡的插件可以使用 defer (會排在 compinit 之前執行)
+# If placed before [plugins.compinit], plugins here can use defer.
+
+[plugins.zsh-artisan]
+github = "jessarcher/zsh-artisan"
+apply = ["defer"]
+
 # 初始化補全系統 (延遲執行以加速啟動)
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'

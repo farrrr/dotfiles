@@ -37,3 +37,16 @@ apply = ['source']
 [plugins.git-open]
 github = "paulirish/git-open"
 apply = ["defer"]
+
+# =============================================================================
+# 補全差件 (Completion Plugins)
+# =============================================================================
+# 注意：此處的補全插件 **不能** 使用 `apply = ["defer"]`。
+# 因為 common.toml 中的 compinit 已經使用 defer，若這裡也用 defer，
+# 會導致插件在 compinit 之後加載，補全將無法生效。
+# 請直接使用標準方式加載 (不寫 apply 或 apply = ["source"])。
+
+# 範例 (Example):
+# [plugins.docker-completion]
+# github = "docker/cli"
+# use = ["contrib/completion/zsh/_docker"]
