@@ -4,7 +4,7 @@ shell-integration-features = cursor,no-sudo,title,ssh-env,ssh-terminfo
 quick-terminal-position = bottom
 clipboard-read = allow
 clipboard-write = allow
-window-title-font-family = MesloLGS Nerd Font Mono DZ
+window-title-font-family = MesloLGS Nerd Font Mono
 window-colorspace = display-p3
 theme = Catppuccin Mocha
 bold-is-bright = true
@@ -30,8 +30,8 @@ palette = 12=#74a8fc
 palette = 13=#f2aede
 palette = 14=#6bd7ca
 palette = 15=#bac2de
-font-size = 14
-font-family = MesloLGS Nerd Font Mono DZ
+font-size = 16
+font-family = MesloLGS Nerd Font Mono
 adjust-cell-height = 15%
 auto-update = check
 auto-update-channel = stable
