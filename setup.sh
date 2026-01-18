@@ -132,6 +132,14 @@ function initialize_os_macos() {
         echo "Homebrew is already installed."
     fi
 
+    # 檢查並安裝 1Password CLI
+    if ! command -v op &>/dev/null; then
+        echo "1Password CLI not found. Installing via Homebrew..."
+        brew install --cask 1password-cli
+    else
+        echo "1Password CLI is already installed."
+    fi
+
     # 設定 Homebrew 環境變數 (供後續指令使用)
     if [[ $(arch) == "arm64" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
