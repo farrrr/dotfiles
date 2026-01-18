@@ -168,7 +168,6 @@ function initialize_os_linux() {
             # 確保有 sudo 權限 (假設 keepalive_sudo 已經處理，或此處會觸發 sudo)
             if sudo apt-get update && sudo apt-get install -y "${missing_deps[@]}"; then
                 echo "Successfully installed dependencies."
-                return 0
             else
                 echo "Failed to install dependencies automatically."
             fi
