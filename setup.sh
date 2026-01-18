@@ -158,6 +158,7 @@ function initialize_os_linux() {
     if ! command -v curl &>/dev/null; then missing_deps+=("curl"); fi
     if ! command -v git &>/dev/null; then missing_deps+=("git"); fi
     if ! command -v gpg &>/dev/null; then missing_deps+=("gpg"); fi
+    if ! command -v unzip &>/dev/null; then missing_deps+=("unzip"); fi
 
     if [ ${#missing_deps[@]} -gt 0 ]; then
         echo "Missing required dependencies: ${missing_deps[*]}"
