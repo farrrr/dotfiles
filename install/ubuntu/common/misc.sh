@@ -11,6 +11,7 @@ readonly PACKAGES=(
     btop            # 資源監控儀表板
     bat             # cat 的現代化替代品
     curl            # 網頁傳輸工具
+    git             # 版本控制系統
     neovim          # 現代化 Vim
     unzip           # Zip 解壓工具
     vim             # 文字編輯器
@@ -41,11 +42,16 @@ function install_gcloud_sdk() {
     # 安裝依賴
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https ca-certificates gnupg
 
-    # Add the gcloud CLI distribution URI as a package source
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    # 匯入 Google Cloud 公鑰 (若不存在則下載)
+    # 使用 gpg --dearmor 替代過時的 apt-key
+    if [ ! -f /usr/share/keyrings/cloud.google.gpg ]; then
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+    fi
 
-    # Import the Google Cloud public key
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+    # 新增套件來源 (若不存在則建立)
+    if [ ! -f /etc/apt/sources.list.d/google-cloud-sdk.list ]; then
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
+    fi
 
     # Update and install
     sudo apt-get update

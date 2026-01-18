@@ -152,6 +152,19 @@ function initialize_os_linux() {
 
     if [ ${#missing_deps[@]} -gt 0 ]; then
         echo "Missing required dependencies: ${missing_deps[*]}"
+
+        # 嘗試自動安裝 (僅支援 apt/Ubuntu/Debian)
+        if command -v apt-get &>/dev/null; then
+            echo "Attempting to install missing dependencies via apt-get..."
+            # 確保有 sudo 權限 (假設 keepalive_sudo 已經處理，或此處會觸發 sudo)
+            if sudo apt-get update && sudo apt-get install -y "${missing_deps[@]}"; then
+                echo "Successfully installed dependencies."
+                return 0
+            else
+                echo "Failed to install dependencies automatically."
+            fi
+        fi
+
         echo "Please install them manually using your package manager (apt, pacman, etc.) and run this script again."
         exit 1
     fi
