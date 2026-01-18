@@ -176,6 +176,28 @@ function initialize_os_linux() {
         echo "Please install them manually using your package manager (apt, pacman, etc.) and run this script again."
         exit 1
     fi
+
+    # 安裝 1Password CLI
+    if ! command -v op &>/dev/null; then
+        echo "Installing 1Password CLI..."
+        # 設定 Keyring 目錄
+        export GNUPGHOME="${HOME}/.gnupg"
+        mkdir -p "${GNUPGHOME}"
+        chmod 700 "${GNUPGHOME}"
+
+        # 下載並加入 1Password GPG Key
+        curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+            sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
+
+        # 加入 1Password Apt Repository
+        echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main' | \
+            sudo tee /etc/apt/sources.list.d/1password.list
+
+        # 安裝 op
+        sudo apt-get update && sudo apt-get install -y 1password-cli
+    else
+        echo "1Password CLI is already installed."
+    fi
 }
 
 # 根據 OS 執行對應的初始化
