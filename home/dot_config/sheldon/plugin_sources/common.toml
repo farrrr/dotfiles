@@ -134,6 +134,27 @@ use = [
     'plugins/fzf/fzf.plugin.zsh',
 ]
 
+# Google Cloud SDK (gcloud)
+[plugins.gcloud-sdk]
+inline = '''
+# 根據不同平台檢查可能的 Google Cloud SDK 安裝路徑
+local gcloud_paths=(
+    "/opt/homebrew/share/google-cloud-sdk"  # macOS arm64
+    "/usr/local/share/google-cloud-sdk"     # macOS intel / Linux brew
+    "/usr/share/google-cloud-sdk"           # Linux apt
+    "/snap/google-cloud-sdk/current"        # Linux snap
+)
+
+for gcloud_path in $gcloud_paths; do
+    if [[ -d "$gcloud_path" ]]; then
+        # 載入 gcloud 路徑與補全
+        [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
+        [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
+        break # 找到後即停止
+    fi
+done
+'''
+
 # =============================================================================
 # 工具管理 (Tool Management)
 # =============================================================================

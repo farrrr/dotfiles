@@ -22,8 +22,8 @@ else
   alias ll="ls -al"
 fi
 
-# gcloud: 以容器方式執行 Google Cloud SDK
-alias gcloud='docker run --platform linux/amd64 --rm -it -v "${HOME%/}"/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/cloud-sdk gcloud'
+
+
 
 # Bash LSP: 使用容器版 bash-language-server
 alias bash-language-server="docker run --platform linux/amd64 --rm -i ghcr.io/shunk031/bash-language-server:latest"

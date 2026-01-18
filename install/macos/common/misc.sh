@@ -38,6 +38,7 @@ readonly CASK_PACKAGES=(
     antigravity           # https://antigravity.google/ (需確認 Cask 是否存在)
     chatgpt               # OpenAI ChatGPT Desktop
     google-chrome         # Chrome 瀏覽器
+    google-cloud-sdk      # Google Cloud CLI (含 gcloud, gsutil, bq)
     google-drive          # Google 雲端硬碟
     notion                # 筆記與協作工具
     raycast               # 系統啟動器 (替代 Spotlight)
