@@ -159,6 +159,8 @@ function initialize_os_linux() {
     if ! command -v git &>/dev/null; then missing_deps+=("git"); fi
     if ! command -v gpg &>/dev/null; then missing_deps+=("gpg"); fi
     if ! command -v unzip &>/dev/null; then missing_deps+=("unzip"); fi
+    # libicu-dev is required for Git Credential Manager
+    if ! dpkg -s libicu-dev &>/dev/null; then missing_deps+=("libicu-dev"); fi
 
     if [ ${#missing_deps[@]} -gt 0 ]; then
         echo "Missing required dependencies: ${missing_deps[*]}"
