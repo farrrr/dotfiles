@@ -1,0 +1,119 @@
+"$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
+version: 3
+final_space: true
+console_title_template: "{{ .Folder }}"
+
+palette:
+  base: "#1e1e2e"
+  mantle: "#181825"
+  surface0: "#313244"
+  surface1: "#45475a"
+  text: "#cdd6f4"
+  blue: "#89b4fa"
+  green: "#a6e3a1"
+  yellow: "#f9e2af"
+  red: "#f38ba8"
+  mauve: "#cba6f7"
+  peach: "#fab387"
+  teal: "#94e2d5"
+  lavender: "#b4befe"
+
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      - type: os
+        style: diamond
+        foreground: "p:text"
+        background: "p:surface1"
+        leading_diamond: ""
+        template: "{{ .Icon }} "
+
+      - type: path
+        style: powerline
+        foreground: "p:text"
+        background: "p:surface1"
+        powerline_symbol: ""
+        properties:
+          style: agnoster_short
+          max_depth: 3
+
+      - type: git
+        style: powerline
+        foreground: "p:base"
+        background: "p:green"
+        powerline_symbol: ""
+        template: " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} "
+        properties:
+          branch_icon: " "
+          fetch_status: true
+
+      - type: go
+        style: powerline
+        foreground: "p:base"
+        background: "p:blue"
+        powerline_symbol: ""
+        template: "  {{ .Full }} "
+
+      - type: node
+        style: powerline
+        foreground: "p:base"
+        background: "p:green"
+        powerline_symbol: ""
+        template: "  {{ .Full }} "
+
+      - type: python
+        style: powerline
+        foreground: "p:base"
+        background: "p:yellow"
+        powerline_symbol: ""
+        template: "  {{ .Full }} "
+
+      - type: rust
+        style: powerline
+        foreground: "p:base"
+        background: "p:peach"
+        powerline_symbol: ""
+        template: "  {{ .Full }} "
+
+      - type: aws
+        style: powerline
+        foreground: "p:base"
+        background: "p:yellow"
+        powerline_symbol: ""
+        template: "  {{ .Profile }}{{ if .Region }} ({{ .Region }}){{ end }} "
+
+      - type: gcp
+        style: powerline
+        foreground: "p:base"
+        background: "p:blue"
+        powerline_symbol: ""
+        template: " 󱇶 {{ .Project }} "
+
+      - type: executiontime
+        style: powerline
+        foreground: "p:text"
+        background: "p:surface0"
+        powerline_symbol: ""
+        template: " 󰔟 {{ .FormattedMs }} "
+        properties:
+          threshold: 2000
+          style: austin
+
+      - type: time
+        style: diamond
+        foreground: "p:text"
+        background: "p:surface0"
+        trailing_diamond: ""
+        template: "  {{ .CurrentDate | date \"15:04\" }} "
+
+  - type: prompt
+    alignment: left
+    newline: true
+    segments:
+      - type: text
+        style: plain
+        foreground: "p:green"
+        foreground_templates:
+          - "{{ if gt .Code 0 }}p:red{{ end }}"
+        template: "❯"

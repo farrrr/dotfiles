@@ -1,0 +1,56 @@
+# Ghostty 終端機設定
+
+# --- Shell 整合 ---
+shell-integration-features = cursor,no-sudo,title,ssh-env,ssh-terminfo
+
+# --- 視窗 ---
+quick-terminal-position = bottom
+clipboard-read = allow
+clipboard-write = allow
+window-colorspace = display-p3
+
+# --- 主題：Catppuccin Mocha ---
+theme = Catppuccin Mocha
+bold-is-bright = true
+background = #1e1e2e
+foreground = #cdd6f4
+selection-background = #585b70
+selection-foreground = #cdd6f4
+cursor-color = #f5e0dc
+cursor-text = #1e1e2e
+palette = 0=#45475a
+palette = 1=#f38ba8
+palette = 2=#a6e3a1
+palette = 3=#f9e2af
+palette = 4=#89b4fa
+palette = 5=#f5c2e7
+palette = 6=#94e2d5
+palette = 7=#a6adc8
+palette = 8=#585b70
+palette = 9=#f37799
+palette = 10=#89d88b
+palette = 11=#ebd391
+palette = 12=#74a8fc
+palette = 13=#f2aede
+palette = 14=#6bd7ca
+palette = 15=#bac2de
+
+# --- 字型 ---
+font-size = 16
+font-family = MesloLGS Nerd Font Mono
+window-title-font-family = MesloLGS Nerd Font Mono
+font-codepoint-map = U+E000-U+F8FF=MesloLGS Nerd Font
+font-codepoint-map = U+F0000-U+FFFFF=MesloLGS Nerd Font
+adjust-cell-height = 15%
+
+# --- macOS 設定 ---
+macos-option-as-alt = true
+
+# --- 更新 ---
+auto-update = check
+auto-update-channel = stable
+
+# --- 快捷鍵 ---
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+keybind = alt+n=unbind

@@ -1,0 +1,39 @@
+[tools]
+# --- 核心執行環境 ---
+go = "latest"
+node = "lts"
+pnpm = "latest"
+rust = "latest"
+python = "3.11"
+
+# --- 系統與管理 ---
+chezmoi = "latest"
+uv = "latest"
+
+# --- 雲端與開發 ---
+aws-cli = "latest"
+dotenvx = "latest"
+
+# --- CLI 增強工具 ---
+eza = "latest"
+fd = "latest"
+jq = "latest"
+lazygit = "latest"
+ripgrep = "latest"
+tree-sitter = "latest"
+yazi = "latest"
+zellij = "latest"
+
+# --- 格式化與檢查 ---
+shellcheck = "latest"
+shfmt = "latest"
+
+# --- Node 全域套件 ---
+"npm:bash-language-server" = "latest"
+
+# --- GitHub 來源工具 ---
+"github:x-motemen/ghq" = "latest"
+"github:cli/cli" = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["python"]

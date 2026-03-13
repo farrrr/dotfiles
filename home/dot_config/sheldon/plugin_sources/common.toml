@@ -1,0 +1,28 @@
+# 所有環境共用的 Sheldon 插件
+
+shell = "zsh"
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+[plugins.common-alias]
+local = "~/.config/alias"
+use = ["common.sh"]
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
