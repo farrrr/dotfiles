@@ -1,0 +1,8 @@
+# 根據 OS 忽略不適用的檔案
+{{- if ne .chezmoi.os "darwin" }}
+Library/
+{{- end }}
+{{- if ne .chezmoi.os "windows" }}
+AppData/
+Documents/
+{{- end }}

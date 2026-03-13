@@ -1,0 +1,12 @@
+{{- $email := promptStringOnce . "email" "請輸入 Email 地址" -}}
+{{- $system := promptChoiceOnce . "system" "系統類型" (list "client" "server") -}}
+
+data:
+  email: {{ $email | quote }}
+  system: {{ $system | quote }}
+  is_mac: {{ eq .chezmoi.os "darwin" }}
+  is_linux: {{ eq .chezmoi.os "linux" }}
+
+encryption: age
+age:
+  passphrase: true
