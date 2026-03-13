@@ -8,10 +8,10 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fartseng/dotfiles/installer/internal/profile"
-	"github.com/fartseng/dotfiles/installer/internal/runner"
-	"github.com/fartseng/dotfiles/installer/internal/state"
-	"github.com/fartseng/dotfiles/installer/internal/tui"
+	"github.com/farrrr/dotfiles/installer/internal/profile"
+	"github.com/farrrr/dotfiles/installer/internal/runner"
+	"github.com/farrrr/dotfiles/installer/internal/state"
+	"github.com/farrrr/dotfiles/installer/internal/tui"
 )
 
 var version = "dev"

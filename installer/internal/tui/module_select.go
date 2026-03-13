@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fartseng/dotfiles/installer/internal/profile"
+	"github.com/farrrr/dotfiles/installer/internal/profile"
 )
 
 // moduleItem 代表一個可勾選的模組

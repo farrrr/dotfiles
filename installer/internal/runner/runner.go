@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/fartseng/dotfiles/installer/internal/profile"
+	"github.com/farrrr/dotfiles/installer/internal/profile"
 )
 
 // ModuleStatus 代表模組安裝狀態

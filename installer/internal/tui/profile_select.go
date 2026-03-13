@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fartseng/dotfiles/installer/internal/profile"
+	"github.com/farrrr/dotfiles/installer/internal/profile"
 )
 
 // profileSelectModel 處理 Profile 選擇畫面

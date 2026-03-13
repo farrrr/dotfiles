@@ -2,8 +2,8 @@ package tui
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fartseng/dotfiles/installer/internal/profile"
-	"github.com/fartseng/dotfiles/installer/internal/runner"
+	"github.com/farrrr/dotfiles/installer/internal/profile"
+	"github.com/farrrr/dotfiles/installer/internal/runner"
 )
 
 // AppState 代表 TUI 的畫面狀態

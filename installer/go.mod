@@ -1,4 +1,4 @@
-module github.com/fartseng/dotfiles/installer
+module github.com/farrrr/dotfiles/installer
 
 go 1.25.0
 

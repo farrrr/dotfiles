@@ -5,8 +5,8 @@ import (
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fartseng/dotfiles/installer/internal/profile"
-	"github.com/fartseng/dotfiles/installer/internal/runner"
+	"github.com/farrrr/dotfiles/installer/internal/profile"
+	"github.com/farrrr/dotfiles/installer/internal/runner"
 )
 
 // moduleProgressMsg 代表模組安裝進度更新
