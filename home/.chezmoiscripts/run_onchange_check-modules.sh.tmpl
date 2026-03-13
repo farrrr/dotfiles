@@ -1,0 +1,9 @@
+#!/bin/bash
+# 當安裝狀態與 profile 不一致時，觸發 installer 檢查
+set -euo pipefail
+
+INSTALLER="${HOME}/.local/bin/dotfiles-installer"
+
+if [[ -x "${INSTALLER}" ]]; then
+    "${INSTALLER}" --diff
+fi

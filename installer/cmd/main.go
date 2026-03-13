@@ -8,6 +8,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/farrrr/dotfiles/installer/internal/chezmoi"
 	"github.com/farrrr/dotfiles/installer/internal/profile"
 	"github.com/farrrr/dotfiles/installer/internal/runner"
 	"github.com/farrrr/dotfiles/installer/internal/state"
@@ -78,6 +79,32 @@ func main() {
 	if err := st.Save(state.DefaultPath()); err != nil {
 		fmt.Fprintf(os.Stderr, "警告：儲存狀態失敗: %v\n", err)
 	}
+
+	// --- Chezmoi 整合 ---
+	// 產生 .chezmoi.yaml
+	homeDir, _ := os.UserHomeDir()
+	chezmoiCfg := chezmoi.GenerateConfig(cfg.Email, cfg.System, profile.DetectOS())
+	if err := chezmoi.WriteConfig(chezmoiCfg, homeDir); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：產生 .chezmoi.yaml 失敗: %v\n", err)
+	}
+
+	// 確保 chezmoi 已安裝
+	if !chezmoi.IsInstalled() {
+		fmt.Println("安裝 chezmoi...")
+		if err := chezmoi.Install(); err != nil {
+			fmt.Fprintf(os.Stderr, "錯誤：安裝 chezmoi 失敗: %v\n", err)
+			os.Exit(1)
+		}
+	}
+
+	// 執行 chezmoi init --apply
+	sourceDir := filepath.Join(dotfilesDir, "home")
+	fmt.Println("執行 chezmoi apply...")
+	if err := chezmoi.InitAndApply(sourceDir); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：chezmoi apply 失敗: %v\n", err)
+	}
+
+	fmt.Println("\n安裝完成！請重新開啟終端機以套用設定。")
 }
 
 // findDotfilesDir 尋找 dotfiles 目錄
