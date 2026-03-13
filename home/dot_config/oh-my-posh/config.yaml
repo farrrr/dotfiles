@@ -50,13 +50,13 @@ blocks:
         style: diamond
         background: "p:Lynch"
         foreground: "p:Pumice"
-        template: "  {{.Icon}}  <p:Pumice,p:Lynch></>"
+        template: "  {{.Icon}}  <p:Pumice,p:Lynch></>"
         cache:
           duration: 1d
           strategy: device
       - type: path
         style: powerline
-        powerline_symbol: ""
+        powerline_symbol: ""
         background: "p:Lynch"
         foreground: "p:Pumice"
         template: " {{ .Path }} "
@@ -64,7 +64,7 @@ blocks:
           style: fish
       - type: git
         style: powerline
-        powerline_symbol: ""
+        powerline_symbol: ""
         background: "p:MossGreen"
         foreground: "p:MineShaft"
         background_templates:
@@ -72,7 +72,7 @@ blocks:
           - "{{ if and (gt .Ahead 0) (gt .Behind 0) }}p:Contessa{{ end }}"
           - "{{ if gt .Ahead 0 }}p:GlossyGrape{{ end }}"
           - "{{ if gt .Behind 0 }}p:GlossyGrape{{ end }}"
-        template: " {{ .UpstreamIcon }}{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }}"
+        template: " {{ .UpstreamIcon }}{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }}"
         options:
           fetch_status: true
           fetch_upstream_icon: false
@@ -93,14 +93,14 @@ blocks:
     segments:
       - type: session
         style: diamond
-        leading_diamond: ""
+        leading_diamond: ""
         background: "p:PewterBlue"
-        template: "<b>{{ if .SSHSession }} 󱘖 {{ else }}  {{ end }}{{ .UserName }}  {{ .HostName }}</b>"
+        template: "<b>{{ if .SSHSession }} 󱘖 {{ else }}  {{ end }}{{ .UserName }}  {{ .HostName }}</b>"
       - type: time
         style: diamond
         background: "p:Patina"
         foreground: "p:MineShaft"
-        leading_diamond: ""
+        leading_diamond: ""
         template: " \ue641 {{ .CurrentDate | date .Format }}"
         options:
           time_format: "15:04"
@@ -113,4 +113,4 @@ blocks:
         style: plain
         foreground: "p:PewterBlue"
         background: transparent
-        template: " "
+        template: " "
