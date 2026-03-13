@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Bash 設定檔
+
+# 非互動模式不載入
+case $- in
+    *i*) ;;
+    *) return ;;
+esac
+
+# --- Ghostty TERM fallback ---
+if [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
+    export TERM=xterm-256color
+fi
+
+# --- 基本設定 ---
+shopt -s checkwinsize
+shopt -s histappend
+
+HISTSIZE=100000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth:erasedups
+
+# --- 補全 ---
+if ! shopt -oq posix; then
+    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [[ -f /etc/bash_completion ]]; then
+        . /etc/bash_completion
+    fi
+fi
+
+# --- 顏色 ---
+if [[ -x /usr/bin/dircolors ]]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
+fi
+
+# --- 別名 ---
+alias ll='ls -alF'
+alias la='ls -A'
+
+if command -v nvim &>/dev/null; then
+    alias vim='nvim'
+fi
+
+if command -v eza &>/dev/null; then
+    alias ls='eza -F --icons -a --group-directories-first'
+    alias ll='ls --long --group --header --time-style=long-iso'
+fi
+
+if command -v bat &>/dev/null; then
+    alias cat='bat'
+fi
+
+# --- 環境變數 ---
+export LANG='en_US.UTF-8'
+export GPG_TTY=$(tty)
+
+# --- PATH ---
+typeset -U PATH
+PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+
+# --- Homebrew ---
+if [[ -f /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# --- Mise ---
+if command -v mise &>/dev/null; then
+    eval "$(mise activate bash)"
+fi
+
+# --- 提示字元 ---
+if command -v oh-my-posh &>/dev/null; then
+    eval "$(oh-my-posh init bash --config "$HOME/.config/oh-my-posh/config.yaml")"
+else
+    # Fallback：簡潔彩色提示字元
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+fi
+
+{{ if eq .system "server" -}}
+# --- Server：如果有 zsh 就自動切換 ---
+if [[ "$TERM" != "dumb" ]] && command -v zsh &>/dev/null; then
+    exec zsh
+fi
+{{ end -}}

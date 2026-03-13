@@ -1,0 +1,7 @@
+# 登入 Shell Profile（sh/bash 共用）
+export PATH="$HOME/.local/bin:$PATH"
+
+# Mise（bash shims 模式，相容 sh）
+if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate bash --shims)"
+fi

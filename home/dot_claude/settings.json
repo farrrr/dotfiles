@@ -1,0 +1,16 @@
+{
+  "enabledPlugins": {
+    "brave-search-skills@brave-search": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "superpowers@superpowers-marketplace": true
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y ccstatusline@latest",
+    "padding": 0
+  },
+  "effortLevel": "medium",
+  "remoteControl": true
+}
