@@ -38,8 +38,16 @@ install_sheldon() {
         return
     fi
 
-    curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
-        | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+    case "${DOTFILES_OS}" in
+        darwin)
+            ensure_brew
+            brew install sheldon
+            ;;
+        linux)
+            curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+                | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+            ;;
+    esac
     log_ok "Sheldon 安裝完成"
 }
 
