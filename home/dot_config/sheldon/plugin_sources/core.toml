@@ -82,6 +82,10 @@ zstyle ':fzf-tab:*' switch-group '<' '>'
 github = "zsh-users/zsh-autosuggestions"
 use = ["{{ name }}.zsh"]
 apply = ["defer"]
+hooks.post = '''
+# zsh-defer + async autosuggestions 會導致 fd 衝突，改用同步模式
+ZSH_AUTOSUGGEST_USE_ASYNC=false
+'''
 
 [plugins.zsh-history-substring-search]
 github = "zsh-users/zsh-history-substring-search"
