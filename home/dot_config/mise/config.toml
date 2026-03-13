@@ -36,11 +36,9 @@ shfmt = "latest"
 
 # --- GitHub 來源工具 ---
 ghq = "latest"
-# gh aqua backend 有 attestation bug，暫用 asdf backend
-"asdf:bartlomiejdanek/asdf-github-cli" = "latest"
 
 # --- 以下由 Homebrew / apt 管理（mise 不支援） ---
-# oh-my-posh, sheldon
+# gh, oh-my-posh, sheldon
 
 [settings]
 idiomatic_version_file_enable_tools = ["python"]
