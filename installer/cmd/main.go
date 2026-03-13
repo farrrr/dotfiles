@@ -7,9 +7,11 @@ import (
 	"path/filepath"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fartseng/dotfiles/installer/internal/profile"
 	"github.com/fartseng/dotfiles/installer/internal/runner"
 	"github.com/fartseng/dotfiles/installer/internal/state"
+	"github.com/fartseng/dotfiles/installer/internal/tui"
 )
 
 var version = "dev"
@@ -32,9 +34,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Dotfiles 目錄: %s\n", dotfilesDir)
-	fmt.Printf("作業系統: %s/%s\n", profile.DetectOS(), profile.DetectArch())
-
 	// 載入 profiles 和 modules
 	profiles, err := profile.LoadProfiles(filepath.Join(dotfilesDir, "profiles"))
 	if err != nil {
@@ -52,24 +51,32 @@ func main() {
 	availableProfiles := profile.FilterProfilesByOS(profiles)
 	availableModules := profile.FilterModulesByOS(modules)
 
-	fmt.Printf("可用 Profiles: %d\n", len(availableProfiles))
-	fmt.Printf("可用 Modules: %d\n", len(availableModules))
-
 	if *diffMode {
 		runDiffMode(dotfilesDir, availableProfiles, modules)
 		return
 	}
 
-	// TODO: Task 10 會在這裡加入 TUI 互動介面
-	// 目前先印出可用的 profiles 和 modules
-	fmt.Println("\n可用的 Profiles:")
-	for _, p := range availableProfiles {
-		fmt.Printf("  - %s: %s\n", p.Name, p.Description)
+	// 啟動 TUI
+	app := tui.NewApp(availableProfiles, availableModules, dotfilesDir)
+	p := tea.NewProgram(app, tea.WithAltScreen())
+	finalModel, err := p.Run()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "TUI 錯誤：%v\n", err)
+		os.Exit(1)
 	}
 
-	fmt.Println("\n可用的 Modules:")
-	for name, m := range availableModules {
-		fmt.Printf("  - %s: %s\n", name, m.Name)
+	// 取得使用者設定並儲存狀態
+	finalApp := finalModel.(tui.App)
+	cfg := finalApp.GetConfig()
+
+	// 儲存安裝狀態
+	st := &state.State{
+		Profile:          cfg.Profile.Name,
+		InstalledModules: cfg.SelectedModules,
+		InstalledAt:      time.Now(),
+	}
+	if err := st.Save(state.DefaultPath()); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：儲存狀態失敗: %v\n", err)
 	}
 }
 
