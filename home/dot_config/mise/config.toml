@@ -1,10 +1,9 @@
 [tools]
-# --- 核心執行環境 ---
+# --- 核心執行環境（Rust 改用 rustup 管理） ---
 go = "latest"
 node = "lts"
 pnpm = "latest"
-rust = "latest"
-python = "3.11"
+python = "3.13"
 
 # --- 系統與管理 ---
 chezmoi = "latest"
@@ -15,11 +14,18 @@ aws-cli = "latest"
 dotenvx = "latest"
 
 # --- CLI 增強工具 ---
+bat = "latest"
+curlie = "latest"
+delta = "latest"
 eza = "latest"
 fd = "latest"
+fzf = "latest"
 jq = "latest"
 lazygit = "latest"
+oh-my-posh = "latest"
+prettyping = "latest"
 ripgrep = "latest"
+sheldon = "latest"
 tree-sitter = "latest"
 yazi = "latest"
 zellij = "latest"
