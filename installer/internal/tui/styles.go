@@ -2,26 +2,28 @@ package tui
 
 import "github.com/charmbracelet/lipgloss"
 
-// Catppuccin Mocha 配色
+// Tokyo Night 配色
 var (
-	colorBase    = lipgloss.Color("#1e1e2e")
-	colorSurface = lipgloss.Color("#313244")
-	colorText    = lipgloss.Color("#cdd6f4")
-	colorBlue    = lipgloss.Color("#89b4fa")
-	colorGreen   = lipgloss.Color("#a6e3a1")
-	colorYellow  = lipgloss.Color("#f9e2af")
-	colorRed     = lipgloss.Color("#f38ba8")
-	colorMauve   = lipgloss.Color("#cba6f7")
+	colorBg        = lipgloss.Color("#1a1b26")
+	colorBgHighlight = lipgloss.Color("#292e42")
+	colorFg        = lipgloss.Color("#c0caf5")
+	colorBlue      = lipgloss.Color("#7aa2f7")
+	colorGreen     = lipgloss.Color("#9ece6a")
+	colorYellow    = lipgloss.Color("#e0af68")
+	colorRed       = lipgloss.Color("#f7768e")
+	colorMagenta   = lipgloss.Color("#bb9af7")
+	colorCyan      = lipgloss.Color("#7dcfff")
+	colorComment   = lipgloss.Color("#565f89")
 
 	// 標題樣式
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(colorMauve).
+			Foreground(colorMagenta).
 			MarginBottom(1)
 
 	// 描述文字樣式
 	descStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#a6adc8"))
+			Foreground(lipgloss.Color("#a9b1d6"))
 
 	// 選中項目樣式
 	selectedStyle = lipgloss.NewStyle().
@@ -30,24 +32,24 @@ var (
 
 	// 未選中項目樣式
 	normalStyle = lipgloss.NewStyle().
-			Foreground(colorText)
+			Foreground(colorFg)
 
 	// 勾選框樣式
 	checkedStyle = lipgloss.NewStyle().
 			Foreground(colorGreen)
 
 	uncheckedStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#585b70"))
+			Foreground(colorComment)
 
 	// 狀態指示
 	statusRunning = lipgloss.NewStyle().Foreground(colorYellow)
 	statusDone    = lipgloss.NewStyle().Foreground(colorGreen)
 	statusFailed  = lipgloss.NewStyle().Foreground(colorRed)
-	statusPending = lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70"))
+	statusPending = lipgloss.NewStyle().Foreground(colorComment)
 
 	// 提示文字
 	helpStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#585b70")).
+			Foreground(colorComment).
 			MarginTop(1)
 
 	// 輸入框
@@ -56,6 +58,7 @@ var (
 			Bold(true)
 )
 
-// 抑制未使用的變數警告（顏色常數供日後擴充使用）
-var _ = colorBase
-var _ = colorSurface
+// 抑制未使用的變數警告
+var _ = colorBg
+var _ = colorBgHighlight
+var _ = colorCyan
