@@ -1,0 +1,7 @@
+name: Minimal
+description: 最輕量環境，只有好看的 Prompt 和基本別名
+os: all
+system: any
+modules:
+  - fonts
+  - shell

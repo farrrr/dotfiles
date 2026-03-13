@@ -1,0 +1,5 @@
+name: macOS 系統偏好
+description: 鍵盤、觸控板、Finder、Dock 等系統設定
+os:
+  - darwin
+depends_on: []

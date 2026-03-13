@@ -1,0 +1,9 @@
+name: Linux Server
+description: 伺服器基本工具與 Shell 環境
+os: linux
+system: server
+modules:
+  - fonts
+  - shell
+  - git
+  - runtime

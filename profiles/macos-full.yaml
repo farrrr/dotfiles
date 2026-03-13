@@ -1,0 +1,13 @@
+name: macOS Full
+description: 完整 macOS 開發環境
+os: darwin
+system: client
+modules:
+  - fonts
+  - shell
+  - git
+  - editor
+  - runtime
+  - terminal
+  - macos-defaults
+  - docker

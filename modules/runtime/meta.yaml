@@ -1,0 +1,6 @@
+name: Runtime 管理
+description: Mise（Go、Node、Python、Rust 等版本管理）
+os:
+  - darwin
+  - linux
+depends_on: []

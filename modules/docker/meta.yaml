@@ -1,0 +1,6 @@
+name: Docker
+description: OrbStack (macOS) / Docker Engine (Linux)
+os:
+  - darwin
+  - linux
+depends_on: []

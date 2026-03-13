@@ -1,0 +1,7 @@
+name: Git 設定
+description: Git + Delta + ghq + SSH 簽署
+os:
+  - darwin
+  - linux
+  - windows
+depends_on: []

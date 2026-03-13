@@ -1,0 +1,7 @@
+name: 字型
+description: MesloLGS Nerd Font（Oh My Posh 和終端機所需）
+os:
+  - darwin
+  - linux
+  - windows
+depends_on: []

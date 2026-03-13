@@ -1,0 +1,7 @@
+name: 編輯器
+description: Neovim + LazyVim
+os:
+  - darwin
+  - linux
+  - windows
+depends_on: []

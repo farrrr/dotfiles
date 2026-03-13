@@ -1,0 +1,10 @@
+name: Windows
+description: PowerShell + Windows Terminal + Oh My Posh
+os: windows
+system: client
+modules:
+  - fonts
+  - shell
+  - git
+  - editor
+  - windows-terminal

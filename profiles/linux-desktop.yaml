@@ -1,0 +1,12 @@
+name: Linux Desktop
+description: Linux 桌面開發環境
+os: linux
+system: client
+modules:
+  - fonts
+  - shell
+  - git
+  - editor
+  - runtime
+  - terminal
+  - docker

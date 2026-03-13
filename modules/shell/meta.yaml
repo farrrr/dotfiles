@@ -1,0 +1,7 @@
+name: Shell 環境
+description: Zsh + Sheldon + Oh My Posh + 別名系統
+os:
+  - darwin
+  - linux
+depends_on:
+  - fonts

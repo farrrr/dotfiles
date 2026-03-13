@@ -1,0 +1,6 @@
+name: Windows Terminal
+description: Windows Terminal 設定與 PowerShell Profile
+os:
+  - windows
+depends_on:
+  - fonts
