@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -29,11 +30,17 @@ func main() {
 		os.Exit(0)
 	}
 
-	// 偵測 dotfiles 目錄位置
+	// --- 第一步：確保 dotfiles repo 存在 ---
 	dotfilesDir := findDotfilesDir()
 	if dotfilesDir == "" {
-		fmt.Fprintln(os.Stderr, "錯誤：找不到 dotfiles 目錄")
-		os.Exit(1)
+		// 獨立 binary 模式：先 clone repo
+		fmt.Println("下載 dotfiles repo...")
+		homeDir, _ := os.UserHomeDir()
+		dotfilesDir = filepath.Join(homeDir, ".local", "share", "chezmoi")
+		if err := cloneRepo(dotfilesDir); err != nil {
+			fmt.Fprintf(os.Stderr, "錯誤：clone dotfiles 失敗: %v\n", err)
+			os.Exit(1)
+		}
 	}
 
 	// 載入 profiles 和 modules
@@ -58,7 +65,7 @@ func main() {
 		return
 	}
 
-	// 啟動 TUI（dry-run 模式下跳過安裝步驟）
+	// --- 第二步：TUI 收集設定 ---
 	app := tui.NewApp(availableProfiles, availableModules, dotfilesDir, *dryRun)
 	p := tea.NewProgram(app, tea.WithAltScreen())
 	finalModel, err := p.Run()
@@ -67,17 +74,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 取得使用者設定
 	finalApp := finalModel.(tui.App)
 	cfg := finalApp.GetConfig()
 
-	// dry-run 模式：只顯示摘要
 	if *dryRun {
 		printDryRunSummary(cfg, dotfilesDir)
 		return
 	}
 
-	// --- 第一步：Chezmoi（先同步 config 檔，module 才能讀到最新設定） ---
+	// --- 第三步：Chezmoi apply（同步 config 到 $HOME） ---
 	homeDir, _ := os.UserHomeDir()
 	chezmoiCfg := chezmoi.GenerateConfig(cfg.Email, cfg.System, profile.DetectOS())
 	if err := chezmoi.WriteConfig(chezmoiCfg, homeDir); err != nil {
@@ -92,12 +97,12 @@ func main() {
 		}
 	}
 
-	fmt.Println("執行 chezmoi init --apply...")
-	if err := chezmoi.InitAndApply("farrrr/dotfiles"); err != nil {
-		fmt.Fprintf(os.Stderr, "警告：chezmoi init --apply 失敗: %v\n", err)
+	fmt.Println("執行 chezmoi apply...")
+	if err := chezmoi.Apply(); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：chezmoi apply 失敗: %v\n", err)
 	}
 
-	// --- 第二步：執行 modules（TUI 已收集完設定，這裡直接跑） ---
+	// --- 第四步：執行 modules ---
 	fmt.Println("\n開始安裝模組...")
 	r := runner.NewRunner(dotfilesDir, cfg.System)
 	allModules, _ := profile.LoadModules(filepath.Join(dotfilesDir, "modules"))
@@ -118,7 +123,7 @@ func main() {
 		}
 	})
 
-	// --- 第三步：儲存狀態 ---
+	// --- 第五步：儲存狀態 ---
 	st := &state.State{
 		Profile:          cfg.Profile.Name,
 		InstalledModules: cfg.SelectedModules,
@@ -129,6 +134,14 @@ func main() {
 	}
 
 	fmt.Println("\n安裝完成！請重新開啟終端機以套用設定。")
+}
+
+// cloneRepo 用 git clone 下載 dotfiles repo
+func cloneRepo(dest string) error {
+	cmd := exec.Command("git", "clone", "https://github.com/farrrr/dotfiles.git", dest)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 // findDotfilesDir 尋找 dotfiles 目錄
