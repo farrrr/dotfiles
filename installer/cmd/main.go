@@ -104,11 +104,10 @@ func main() {
 		}
 	}
 
-	// 執行 chezmoi init --apply
-	sourceDir := filepath.Join(dotfilesDir, "home")
-	fmt.Println("執行 chezmoi apply...")
-	if err := chezmoi.InitAndApply(sourceDir); err != nil {
-		fmt.Fprintf(os.Stderr, "警告：chezmoi apply 失敗: %v\n", err)
+	// 執行 chezmoi init --apply（從 GitHub clone）
+	fmt.Println("執行 chezmoi init --apply...")
+	if err := chezmoi.InitAndApply("farrrr/dotfiles"); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：chezmoi init --apply 失敗: %v\n", err)
 	}
 
 	fmt.Println("\n安裝完成！請重新開啟終端機以套用設定。")

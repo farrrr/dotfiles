@@ -45,14 +45,20 @@ func GenerateConfig(email, system, osName string) *ChezmoiConfig {
 	}
 }
 
-// WriteConfig 將 .chezmoi.yaml 寫入指定路徑
-func WriteConfig(config *ChezmoiConfig, destDir string) error {
+// WriteConfig 將 chezmoi.yaml 寫入 chezmoi 的設定目錄
+func WriteConfig(config *ChezmoiConfig, homeDir string) error {
 	data, err := yaml.Marshal(config)
 	if err != nil {
 		return fmt.Errorf("序列化 chezmoi 設定失敗: %w", err)
 	}
 
-	path := filepath.Join(destDir, ".chezmoi.yaml")
+	// chezmoi 預設讀取 ~/.config/chezmoi/chezmoi.yaml
+	configDir := filepath.Join(homeDir, ".config", "chezmoi")
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
+		return fmt.Errorf("建立 chezmoi 設定目錄失敗: %w", err)
+	}
+
+	path := filepath.Join(configDir, "chezmoi.yaml")
 	return os.WriteFile(path, data, 0o644)
 }
 
@@ -70,20 +76,18 @@ func Install() error {
 	return cmd.Run()
 }
 
-// InitAndApply 執行 chezmoi init --apply，首次初始化並套用 dotfiles
-func InitAndApply(sourceDir string) error {
-	args := []string{"init", "--apply", "--source", sourceDir}
-
-	cmd := exec.Command("chezmoi", args...)
+// InitAndApply 執行 chezmoi init --apply <repo>，clone 並套用 dotfiles
+func InitAndApply(repo string) error {
+	cmd := exec.Command("chezmoi", "init", "--apply", repo)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin // age passphrase 需要互動輸入
 	return cmd.Run()
 }
 
-// Apply 執行 chezmoi apply，套用最新變更
-func Apply(sourceDir string) error {
-	cmd := exec.Command("chezmoi", "apply", "--source", sourceDir)
+// Apply 執行 chezmoi apply
+func Apply() error {
+	cmd := exec.Command("chezmoi", "apply")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
