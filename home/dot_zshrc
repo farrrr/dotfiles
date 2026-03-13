@@ -17,6 +17,20 @@ if (( $+commands[sheldon] )); then
     eval "$(sheldon source)"
 fi
 
+# --- 歷史設定 ---
+HISTFILE="${HOME}/.zsh_history"
+HISTSIZE=100000
+SAVEHIST=100000
+setopt HIST_IGNORE_ALL_DUPS  # 去除重複
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_REDUCE_BLANKS    # 移除多餘空白
+setopt SHARE_HISTORY         # 跨 session 共享歷史
+setopt EXTENDED_HISTORY      # 記錄時間戳
+
+# --- history-substring-search 鍵綁定（上下鍵搜尋歷史） ---
+zsh-defer bindkey '^[[A' history-substring-search-up
+zsh-defer bindkey '^[[B' history-substring-search-down
+
 # --- Oh My Posh 提示符 ---
 if (( $+commands[oh-my-posh] )); then
     eval "$(oh-my-posh init zsh --config ${HOME}/.config/oh-my-posh/config.yaml)"

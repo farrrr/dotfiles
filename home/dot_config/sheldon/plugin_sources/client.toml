@@ -1,0 +1,41 @@
+# Client 模式專用插件（macOS / Linux Desktop）
+# =============================================================================
+
+# --- 路徑 ---
+[plugins.client-path]
+inline = '''
+typeset -gU path fpath
+path=( $path ${HOME}/.local/bin/client(N-/) )
+fpath=( $fpath ${HOME}/.local/bin/client(N-/) )
+'''
+
+# --- 別名 ---
+[plugins.client-alias]
+local = "~/.config/alias"
+use = ["client.sh"]
+
+# --- 自動配對括號引號 ---
+[plugins.zsh-autopair]
+github = "hlissner/zsh-autopair"
+apply = ["defer"]
+
+# --- Laravel Artisan 補全 ---
+[plugins.zsh-artisan]
+github = "jessarcher/zsh-artisan"
+apply = ["defer"]
+
+# --- 在瀏覽器開啟 Git repo ---
+[plugins.git-open]
+github = "paulirish/git-open"
+apply = ["defer"]
+
+# --- Zellij 補全自動產生 ---
+[plugins.zellij-setup]
+inline = '''
+if command -v zellij >/dev/null 2>&1; then
+    local completion_file="${HOME}/.local/bin/client/_zellij"
+    if [[ ! -f "$completion_file" || "$commands[zellij]" -nt "$completion_file" ]]; then
+        zellij setup --generate-completion zsh > "$completion_file"
+    fi
+fi
+'''

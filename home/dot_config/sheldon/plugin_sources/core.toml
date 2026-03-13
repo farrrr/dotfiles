@@ -1,0 +1,165 @@
+# 所有環境共用的 Sheldon 插件
+# =============================================================================
+
+shell = "zsh"
+
+# --- 自定義載入模板 ---
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+fpath = 'fpath=( "{{ dir }}" $fpath )'
+
+# =============================================================================
+# 核心（不可 defer，其他插件依賴它）
+# =============================================================================
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+# =============================================================================
+# 環境變數
+# =============================================================================
+
+[plugins.env]
+inline = '''
+function _env() {
+    export LANG='en_US.UTF-8'
+    export GPG_TTY=$(tty)
+}
+zsh-defer _env
+'''
+
+# =============================================================================
+# 別名
+# =============================================================================
+
+[plugins.common-alias]
+local = "~/.config/alias"
+use = ["common.sh"]
+
+# =============================================================================
+# 補全系統
+# =============================================================================
+
+# 補全函式集（只加到 fpath，不 source）
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+dir = "src"
+apply = ["fpath"]
+
+# Claude Code 補全
+[plugins.zsh-claudecode-completion]
+github = "wbingli/zsh-claudecode-completion"
+apply = ["fpath"]
+
+# 初始化 compinit（defer 避免拖慢啟動，-C 跳過安全檢查加速）
+[plugins.compinit]
+inline = 'zsh-defer autoload -Uz compinit && zsh-defer compinit -C'
+
+# fzf-tab（必須在 compinit 之後）
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+hooks.post = '''
+# git checkout 不排序，保留最近使用的分支在前
+zstyle ':completion:*:git-checkout:*' sort false
+# 啟用分組顯示
+zstyle ':completion:*:descriptions' format '[%d]'
+# 檔名顏色與 ls 一致
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# 停用原生選單，讓所有補全都經過 fzf-tab
+zstyle ':completion:*' menu no
+# cd 時預覽目錄內容
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# 用 < > 切換補全群組
+zstyle ':fzf-tab:*' switch-group '<' '>'
+'''
+
+# =============================================================================
+# 互動強化
+# =============================================================================
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+apply = ["defer"]
+
+# =============================================================================
+# 歷史紀錄
+# =============================================================================
+
+# 僅記錄執行成功的命令
+[plugins.zsh-history-on-success]
+github = "nyoungstudios/zsh-history-on-success"
+
+# 語法高亮（必須放最後，才能正確標記所有已知命令）
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+# =============================================================================
+# 語言與工具路徑
+# =============================================================================
+
+[plugins.go]
+inline = '''
+function _go() {
+    export GOPATH="${HOME}/ghq"
+    export GOROOT=$(go env GOROOT)
+    typeset -gU path
+    path=( $path ${GOPATH}/bin(N-/) ${HOME}/.go/bin(N-/) )
+}
+zsh-defer _go
+'''
+
+[plugins.rust]
+inline = '''
+function _rust() {
+    typeset -gU path
+    path=( $path ${HOME}/.cargo/bin(N-/) )
+}
+zsh-defer _rust
+'''
+
+[plugins.pnpm]
+inline = '''
+function _pnpm() {
+    export PNPM_HOME="$HOME/Library/pnpm"
+    case ":$PATH:" in
+      *":$PNPM_HOME:"*) ;;
+      *) export PATH="$PNPM_HOME:$PATH" ;;
+    esac
+}
+zsh-defer _pnpm
+'''
+
+[plugins.gcloud-sdk]
+inline = '''
+local gcloud_paths=(
+    "/opt/homebrew/share/google-cloud-sdk"
+    "/usr/local/share/google-cloud-sdk"
+    "/usr/share/google-cloud-sdk"
+    "/snap/google-cloud-sdk/current"
+)
+for gcloud_path in $gcloud_paths; do
+    if [[ -d "$gcloud_path" ]]; then
+        [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
+        [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
+        break
+    fi
+done
+'''
+
+[plugins.fzf-opts]
+inline = 'export FZF_DEFAULT_OPTS="--reverse"'
+
+[plugins.openclaw-completions]
+inline = '''
+if [[ -f "$HOME/.openclaw/completions/openclaw.zsh" ]]; then
+    source "$HOME/.openclaw/completions/openclaw.zsh"
+fi
+'''

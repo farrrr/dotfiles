@@ -1,11 +1,9 @@
-{{ include "dot_config/sheldon/plugin_sources/common.toml" }}
+{{ include "dot_config/sheldon/plugin_sources/core.toml" }}
 {{- if eq .system "client" }}
-{{- include "dot_config/sheldon/plugin_sources/client/common.toml" }}
+{{ include "dot_config/sheldon/plugin_sources/client.toml" }}
 {{-   if eq .chezmoi.os "darwin" }}
-{{      include "dot_config/sheldon/plugin_sources/client/macos.toml" }}
-{{-   else if eq .chezmoi.os "linux" }}
-{{      include "dot_config/sheldon/plugin_sources/client/ubuntu.toml" }}
+{{ include "dot_config/sheldon/plugin_sources/macos.toml" }}
 {{-   end }}
 {{- else if eq .system "server" }}
-{{    include "dot_config/sheldon/plugin_sources/server.toml" }}
+{{ include "dot_config/sheldon/plugin_sources/server.toml" }}
 {{- end -}}
