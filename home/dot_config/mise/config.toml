@@ -24,7 +24,6 @@ jq = "latest"
 lazygit = "latest"
 # oh-my-posh 不在 mise registry，用 github backend
 "github:JanDeDobbeleer/oh-my-posh" = "latest"
-prettyping = "latest"
 ripgrep = "latest"
 sheldon = "latest"
 tree-sitter = "latest"
