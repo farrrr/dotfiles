@@ -5,17 +5,13 @@
 ## 快速開始
 
 ```bash
-# 下載 installer（自動偵測 OS/Arch）— 需先發 GitHub Release
-curl -sL https://github.com/farrrr/dotfiles/releases/latest/download/dotfiles-installer-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') -o installer
-chmod +x installer
-./installer
+curl -sL https://raw.githubusercontent.com/farrrr/dotfiles/main/install.sh | sh
 ```
 
-> 若尚未建立 Release，可從 source 編譯後執行：
+> 從 source 編譯：
 > ```bash
 > git clone https://github.com/farrrr/dotfiles.git && cd dotfiles
-> cd installer && make build
-> ./bin/dotfiles-installer
+> cd installer && make build && ./bin/dotfiles-installer
 > ```
 
 ## 安裝流程
