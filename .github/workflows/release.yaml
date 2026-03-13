@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: installer/go.mod
+
+      - name: 交叉編譯所有平台
+        working-directory: installer
+        run: make all
+
+      - name: 建立 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/dist/*
+          generate_release_notes: true
