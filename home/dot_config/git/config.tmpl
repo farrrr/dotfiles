@@ -1,0 +1,109 @@
+# Git 設定檔
+# vim: ft=gitconfig
+
+# --- 使用者設定 ---
+[user]
+	name = Far Tseng
+	email = {{ .email | quote }}
+	signingkey = ~/.ssh/id_ed25519.pub
+
+# --- 核心設定 ---
+[core]
+	quotepath = false
+	excludesfile = ~/.gitignore
+	pager = delta
+
+# --- 初始化設定 ---
+[init]
+	defaultBranch = main
+
+# --- SSH 簽署設定 ---
+[gpg]
+	format = ssh
+
+[commit]
+	gpgsign = true
+
+# --- 分支操作設定 ---
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rebase]
+	autoStash = true
+
+# --- 合併與差異比較 ---
+[merge]
+	log = true
+
+[diff]
+	algorithm = histogram
+	mnemonicPrefix = true
+	colorMoved = default
+	submodule = log
+
+[interactive]
+	diffFilter = delta --color-only
+
+# --- Delta 美化設定 ---
+[delta]
+	syntax-theme = Dracula
+	navigate = true
+	tabs = 2
+	side-by-side = true
+	line-numbers = false
+	file-style = bold "#eee8aa"
+	file-decoration-style = ol "#b8860b"
+	hunk-header-line-number-style = "#4169e1"
+	hunk-header-decoration-style = ol "#000080"
+	commit-decoration-style = bold "#00fa9a" box ul
+	word-diff-regex = ''
+
+# --- 狀態與日誌 ---
+[status]
+	submodulesummary = true
+
+[log]
+	decorate = short
+	abbrevcommit = true
+	date = relative
+
+[format]
+	pretty = "%C(yellow)%h %C(magenta)%<(15,trunc)%an %C(cyan)%cd %C(auto)%d%Creset %s"
+
+# --- 遠端與快取 ---
+[fetch]
+	prune = true
+
+[rerere]
+	enabled = true
+
+# --- ghq ---
+[ghq]
+	root = ~/codebase
+
+# --- LFS ---
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
+# --- 別名 ---
+[alias]
+	st = status
+	br = branch
+	ci = commit -v
+	co = checkout
+	sw = switch
+	re = restore
+	d = diff --color-words=.
+	lol = log --graph --all
+	lo = log --graph
+	last = log -1 HEAD
+	f = "!if [[ $(git rev-parse --abbrev-ref HEAD) == 'main' ]]; then git fetch --no-tags origin main; else git fetch --no-tags origin $(git rev-parse --abbrev-ref HEAD) main:main; fi"
+	p = "!git pull --no-tags origin $(git rev-parse --abbrev-ref HEAD)"
+	pc = "!git push && gh pr create -w"
+	puff = push --force-if-includes --force-with-lease

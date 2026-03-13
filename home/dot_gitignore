@@ -1,0 +1,8 @@
+# 全域 Git 忽略規則
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
