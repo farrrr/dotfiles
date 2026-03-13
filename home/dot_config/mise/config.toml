@@ -46,5 +46,5 @@ ghq = "latest"
 idiomatic_version_file_enable_tools = ["python"]
 
 [env]
-# 避免 GitHub API rate limit（未認證 60 次/小時，認證 5000 次/小時）
-GITHUB_TOKEN = "{{exec(command='gh auth token')}}"
+# 避免 GitHub API rate limit（gh 已登入時自動帶 token，未登入則跳過）
+GITHUB_TOKEN = "{{exec(command='gh auth token 2>/dev/null || echo')}}"
