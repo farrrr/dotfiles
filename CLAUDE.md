@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 目錄結構
 
 - `.chezmoiroot` — 指定 `home/` 為 chezmoi source 目錄
+- `install.sh` — 一鍵安裝腳本（`curl | sh`）
 - `installer/` — bubbletea Go TUI 安裝器（編譯成零依賴 binary）
 - `profiles/` — Profile 定義（YAML），描述預設模組組合
 - `modules/` — 安裝腳本，每個模組一個目錄（meta.yaml + install.sh）
@@ -24,7 +25,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 安裝流程
 
-TUI 收集設定 → chezmoi init --apply（從 GitHub clone + 同步 config）→ 執行各 module install.sh
+1. `install.sh` 下載對應平台的 installer binary
+2. Installer 找不到本地 repo 時自動 `git clone` 到 `~/.local/share/chezmoi`
+3. TUI 收集設定（profile、modules、email、system）
+4. 寫入 chezmoi config → `chezmoi apply`（同步 config 到 $HOME）
+5. 依序執行各 module 的 `install.sh`
+6. 儲存安裝狀態到 `~/.config/dotfiles/state.yaml`
 
 ## 建置指令
 
