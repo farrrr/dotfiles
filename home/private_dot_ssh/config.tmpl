@@ -1,0 +1,22 @@
+# SSH 設定檔
+
+{{- if eq .chezmoi.os "darwin" }}
+# --- OrbStack（必須在最前面） ---
+Include ~/.orbstack/ssh/config
+{{- end }}
+
+# --- 全域設定 ---
+Host *
+    AddKeysToAgent yes
+    IdentitiesOnly yes
+    ForwardAgent yes
+    IdentityFile ~/.ssh/id_ed25519_farrrr
+    IdentityFile ~/.ssh/id_rsa_farrrr
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+# --- GitHub ---
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
