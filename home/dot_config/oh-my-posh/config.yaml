@@ -4,35 +4,47 @@ final_space: true
 console_title_template: "{{ .Folder }}"
 
 palette:
-  base: "#1e1e2e"
-  mantle: "#181825"
-  surface0: "#313244"
-  surface1: "#45475a"
-  text: "#cdd6f4"
-  blue: "#89b4fa"
-  green: "#a6e3a1"
-  yellow: "#f9e2af"
-  red: "#f38ba8"
-  mauve: "#cba6f7"
-  peach: "#fab387"
-  teal: "#94e2d5"
-  lavender: "#b4befe"
+  bg: "#1a1b26"
+  bg_dark: "#16161e"
+  bg_highlight: "#292e42"
+  fg: "#c0caf5"
+  blue: "#7aa2f7"
+  green: "#9ece6a"
+  yellow: "#e0af68"
+  red: "#f7768e"
+  magenta: "#bb9af7"
+  orange: "#ff9e64"
+  teal: "#73daca"
+  cyan: "#7dcfff"
 
 blocks:
+  # === 左側主提示 ===
   - type: prompt
     alignment: left
     segments:
+      - type: session
+        style: diamond
+        foreground: "p:bg"
+        background: "p:red"
+        leading_diamond: ""
+        template: " {{ .UserName }}@{{ .HostName }} "
+        properties:
+          ssh_icon: " "
+        include_conditions:
+          - type: session
+            content: "ssh"
+
       - type: os
         style: diamond
-        foreground: "p:text"
-        background: "p:surface1"
+        foreground: "p:fg"
+        background: "p:bg_highlight"
         leading_diamond: ""
         template: "{{ .Icon }} "
 
       - type: path
         style: powerline
-        foreground: "p:text"
-        background: "p:surface1"
+        foreground: "p:fg"
+        background: "p:bg_highlight"
         powerline_symbol: ""
         properties:
           style: agnoster_short
@@ -40,73 +52,75 @@ blocks:
 
       - type: git
         style: powerline
-        foreground: "p:base"
+        foreground: "p:bg"
         background: "p:green"
         powerline_symbol: ""
         template: " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} "
         properties:
           branch_icon: " "
           fetch_status: true
+          fetch_upstream_icon: true
+          cache_duration: 5m
 
       - type: go
         style: powerline
-        foreground: "p:base"
-        background: "p:blue"
+        foreground: "p:bg"
+        background: "p:cyan"
         powerline_symbol: ""
         template: "  {{ .Full }} "
 
       - type: node
         style: powerline
-        foreground: "p:base"
+        foreground: "p:bg"
         background: "p:green"
         powerline_symbol: ""
         template: "  {{ .Full }} "
 
       - type: python
         style: powerline
-        foreground: "p:base"
+        foreground: "p:bg"
         background: "p:yellow"
         powerline_symbol: ""
         template: "  {{ .Full }} "
 
       - type: rust
         style: powerline
-        foreground: "p:base"
-        background: "p:peach"
+        foreground: "p:bg"
+        background: "p:orange"
         powerline_symbol: ""
         template: "  {{ .Full }} "
 
       - type: aws
         style: powerline
-        foreground: "p:base"
+        foreground: "p:bg"
         background: "p:yellow"
         powerline_symbol: ""
         template: "  {{ .Profile }}{{ if .Region }} ({{ .Region }}){{ end }} "
 
       - type: gcp
         style: powerline
-        foreground: "p:base"
+        foreground: "p:bg"
         background: "p:blue"
         powerline_symbol: ""
         template: " 󱇶 {{ .Project }} "
 
+  # === 右側提示（時間與執行時間） ===
+  - type: rprompt
+    segments:
       - type: executiontime
-        style: powerline
-        foreground: "p:text"
-        background: "p:surface0"
-        powerline_symbol: ""
-        template: " 󰔟 {{ .FormattedMs }} "
+        style: plain
+        foreground: "p:yellow"
+        template: "󰔟 {{ .FormattedMs }}"
         properties:
           threshold: 2000
           style: austin
 
       - type: time
-        style: diamond
-        foreground: "p:text"
-        background: "p:surface0"
-        trailing_diamond: ""
-        template: "  {{ .CurrentDate | date \"15:04\" }} "
+        style: plain
+        foreground: "p:bg_highlight"
+        template: " {{ .CurrentDate | date \"15:04\" }}"
 
+  # === 第二行輸入提示 ===
   - type: prompt
     alignment: left
     newline: true
@@ -117,3 +131,10 @@ blocks:
         foreground_templates:
           - "{{ if gt .Code 0 }}p:red{{ end }}"
         template: "❯"
+
+# 歷史指令只顯示精簡提示，保持畫面乾淨
+transient_prompt:
+  foreground: "p:fg"
+  foreground_templates:
+    - "{{ if gt .Code 0 }}p:red{{ end }}"
+  template: "❯ "
