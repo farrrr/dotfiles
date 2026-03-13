@@ -1,5 +1,10 @@
 # 登入 Shell 初始化
 
+# 遠端 SSH 環境：如果 terminfo 不支援 xterm-ghostty 就自動 fallback
+if [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
+    export TERM=xterm-256color
+fi
+
 # Homebrew（macOS Apple Silicon）
 if [[ -f /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
