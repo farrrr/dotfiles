@@ -22,10 +22,7 @@ fd = "latest"
 fzf = "latest"
 jq = "latest"
 lazygit = "latest"
-# oh-my-posh 不在 mise registry，用 github backend
-"github:JanDeDobbeleer/oh-my-posh" = "latest"
 ripgrep = "latest"
-sheldon = "latest"
 tree-sitter = "latest"
 yazi = "latest"
 zellij = "latest"
@@ -38,8 +35,12 @@ shfmt = "latest"
 "npm:bash-language-server" = "latest"
 
 # --- GitHub 來源工具 ---
-"github:x-motemen/ghq" = "latest"
-"github:cli/cli" = "latest"
+ghq = "latest"
+# gh aqua backend 有 attestation bug，暫用 asdf backend
+"asdf:bartlomiejdanek/asdf-github-cli" = "latest"
+
+# --- 以下由 Homebrew / apt 管理（mise 不支援） ---
+# oh-my-posh, sheldon
 
 [settings]
 idiomatic_version_file_enable_tools = ["python"]
