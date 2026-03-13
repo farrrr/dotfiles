@@ -1,0 +1,13 @@
+# 編譯產物
+installer/bin/
+installer/dist/
+
+# OS 檔案
+.DS_Store
+Thumbs.db
+
+# age 私鑰（加密後的 .age 檔案可以 commit）
+*.age.key
+
+# chezmoi 狀態
+.chezmoistate.boltdb

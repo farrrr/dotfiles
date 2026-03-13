@@ -4,57 +4,56 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 語言
 
-所有回覆與文件使用繁體中文。
+所有回覆、註解與文件使用繁體中文。
 
 ## 專案概述
 
-個人 dotfiles 管理系統，使用 chezmoi 管理，從 `~/.local/share/chezmoi` 的舊版全面改寫。支援跨平台（macOS Apple Silicon/Intel、Ubuntu Linux）與雙模式（Client 個人電腦 / Server 遠端伺服器）。
+個人 dotfiles 管理系統。bubbletea TUI 安裝器 + chezmoi dotfile 同步 + 模組化安裝腳本。
 
-## 舊版架構參考
+支援環境：macOS Client、Linux Server、Linux Desktop、Windows WSL、Windows 原生。
 
-舊版位於 `~/.local/share/chezmoi`，改寫時可參考但不需保留所有設計：
+## 目錄結構
 
-### Chezmoi 結構
-- `.chezmoiroot` 指向 `home/` 目錄，所有 dotfile 放在 `home/` 下
-- `.chezmoi.yaml.tmpl` 定義模板變數：`email`、`system`（client/server）、`is_mac`、`is_linux`、`git_signing_key`
-- `.chezmoiexternal.yaml.tmpl` 管理外部資源（如 Nerd Font 自動下載）
-- `.chezmoiignore` 使用模板做條件式忽略
+- `installer/` — bubbletea Go TUI 安裝器（編譯成零依賴 binary）
+- `profiles/` — Profile 定義（YAML），描述預設模組組合
+- `modules/` — 安裝腳本，每個模組一個目錄（meta.yaml + install.sh）
+- `home/` — chezmoi 管理的 dotfiles（對應 $HOME）
+- `secrets/` — age 加密的機密檔案
+- `docs/plans/` — 設計文件與實作計畫
 
-### 五段式安裝流程
-腳本在 `home/.chezmoiscripts/`，命名格式：`run_once_<stage>_<number>_<category>_<priority>-<description>.sh.tmpl`
-1. **00-bootstrap**：Homebrew/Apt、1Password CLI、Xcode CLI Tools
-2. **10-base**：Zsh、Mise、Sheldon
-3. **20-apps**：FZF、Starship、Oh My Posh、Mise 語言工具
-4. **30-gui**：Mac App Store、OrbStack、Ghostty、macOS Defaults
-5. **90-post**：收尾工作（Docker SSH 等）
+## 建置指令
 
-安裝腳本實體放在 `install/{common,macos,ubuntu}/`，chezmoi scripts 呼叫它們。
+```bash
+# 編譯 installer
+cd installer && make build
 
-### 核心工具鏈
-- **Shell**：Zsh + Sheldon（插件管理）+ zsh-defer（延遲載入）
-- **Prompt**：Starship（模組化配置在 `.config/starship/`）
-- **Editor**：Neovim + LazyVim
-- **Terminal**：Ghostty（Catppuccin Mocha 主題）
-- **Runtime**：Mise（管理 Go、Node、Python、Rust 等版本）
-- **Git**：Delta（diff 美化）、histogram diff、SSH 簽署（1Password）、ghq（repo 管理，root: `~/codebase`）
-- **現代 CLI 替代品**：eza(ls)、bat(cat)、fd(find)、ripgrep(grep)、curlie(curl)、prettyping(ping)、btop(top)、lazygit、yazi、zellij
+# 交叉編譯所有平台
+cd installer && make all
 
-### Sheldon 多源插件配置
-模板化 `plugins.toml.tmpl` 引入多個來源：
-- `common.toml`：所有環境
-- `client/common.toml`、`client/macos.toml`、`client/ubuntu.toml`：Client 模式
-- `server.toml`：Server 模式
+# 語法檢查所有 install.sh
+for f in modules/*/install.sh; do bash -n "$f"; done
+```
 
-### 別名系統
-位於 `.config/alias/`，用 suffix alias（`alias -s`）做檔案關聯，`noglob` 包裝 fd/rg。
+## 慣例
 
-### 1Password 整合
-- Git commit SSH 簽署
-- `op` CLI 管理機密，不在本地存放私鑰
-- macOS 用 Keychain 存 sudo 密碼
+### Module 規範
+- 每個 module 目錄包含 `meta.yaml`（描述）+ `install.sh`（安裝腳本）
+- install.sh 一律使用 `#!/bin/bash` + `set -euo pipefail`
+- 透過環境變數接收：`DOTFILES_DIR`、`DOTFILES_OS`、`DOTFILES_ARCH`、`DOTFILES_SYSTEM`
+- 腳本必須冪等（重複執行不會壞）
+- 共用函式放在 `modules/_common.sh`
 
-### macOS LaunchAgents
-`Library/private_LaunchAgents/` 下管理背景服務（MLX embedding、TEI reranker 等）。
+### Profile 規範
+- YAML 格式，定義 name、description、os、system、modules
+- `os` 值：darwin / linux / windows / all
+- `system` 值：client / server / any
 
-### macOS Defaults
-`install/macos/common/defaults.sh` 設定系統偏好（深色模式、鍵盤重複速度、Finder 顯示隱藏檔、Dock 等）。
+### Chezmoi
+- `home/` 裡的檔案由 chezmoi 同步到 $HOME
+- 模板盡量精簡，安裝邏輯不放在 chezmoi scripts 裡
+- 機密管理使用 age passphrase 模式
+
+### 程式碼風格
+- 所有註解使用繁體中文
+- Shell script 遵循 shellcheck 規範
+- Go 程式碼遵循 gofmt 標準
