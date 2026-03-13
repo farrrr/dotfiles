@@ -3,7 +3,6 @@ package tui
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/farrrr/dotfiles/installer/internal/profile"
-	"github.com/farrrr/dotfiles/installer/internal/runner"
 )
 
 // AppState 代表 TUI 的畫面狀態
@@ -99,19 +98,9 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if a.configInput.done {
 			a.config.Email = a.configInput.email
-
-			if a.dryRun {
-				// dry-run 模式：跳過安裝，直接結束 TUI
-				a.state = StateDone
-				return a, tea.Quit
-			}
-
-			// 開始安裝
-			sorted, _ := profile.ResolveDependencies(a.config.SelectedModules, a.modules)
-			r := runner.NewRunner(a.dotfilesDir, a.config.System)
-			a.progress = newProgressModel(sorted, r, a.modules)
-			a.state = StateProgress
-			return a, a.progress.start()
+			// TUI 只負責收集設定，安裝流程由 main.go 控制
+			a.state = StateDone
+			return a, tea.Quit
 		}
 		return a, cmd
 

@@ -77,25 +77,13 @@ func main() {
 		return
 	}
 
-	// 儲存安裝狀態
-	st := &state.State{
-		Profile:          cfg.Profile.Name,
-		InstalledModules: cfg.SelectedModules,
-		InstalledAt:      time.Now(),
-	}
-	if err := st.Save(state.DefaultPath()); err != nil {
-		fmt.Fprintf(os.Stderr, "警告：儲存狀態失敗: %v\n", err)
-	}
-
-	// --- Chezmoi 整合 ---
-	// 產生 .chezmoi.yaml
+	// --- 第一步：Chezmoi（先同步 config 檔，module 才能讀到最新設定） ---
 	homeDir, _ := os.UserHomeDir()
 	chezmoiCfg := chezmoi.GenerateConfig(cfg.Email, cfg.System, profile.DetectOS())
 	if err := chezmoi.WriteConfig(chezmoiCfg, homeDir); err != nil {
-		fmt.Fprintf(os.Stderr, "警告：產生 .chezmoi.yaml 失敗: %v\n", err)
+		fmt.Fprintf(os.Stderr, "警告：產生 chezmoi.yaml 失敗: %v\n", err)
 	}
 
-	// 確保 chezmoi 已安裝
 	if !chezmoi.IsInstalled() {
 		fmt.Println("安裝 chezmoi...")
 		if err := chezmoi.Install(); err != nil {
@@ -104,10 +92,40 @@ func main() {
 		}
 	}
 
-	// 執行 chezmoi init --apply（從 GitHub clone）
 	fmt.Println("執行 chezmoi init --apply...")
 	if err := chezmoi.InitAndApply("farrrr/dotfiles"); err != nil {
 		fmt.Fprintf(os.Stderr, "警告：chezmoi init --apply 失敗: %v\n", err)
+	}
+
+	// --- 第二步：執行 modules（TUI 已收集完設定，這裡直接跑） ---
+	fmt.Println("\n開始安裝模組...")
+	r := runner.NewRunner(dotfilesDir, cfg.System)
+	allModules, _ := profile.LoadModules(filepath.Join(dotfilesDir, "modules"))
+	sorted, _ := profile.ResolveDependencies(cfg.SelectedModules, allModules)
+	r.RunAll(sorted, func(result runner.ModuleResult) {
+		meta := allModules[result.Name]
+		displayName := result.Name
+		if meta.Name != "" {
+			displayName = meta.Name
+		}
+		switch result.Status {
+		case runner.StatusRunning:
+			fmt.Printf("● 安裝 %s...\n", displayName)
+		case runner.StatusDone:
+			fmt.Printf("✓ %s\n", displayName)
+		case runner.StatusFailed:
+			fmt.Printf("✗ %s: %v\n", displayName, result.Error)
+		}
+	})
+
+	// --- 第三步：儲存狀態 ---
+	st := &state.State{
+		Profile:          cfg.Profile.Name,
+		InstalledModules: cfg.SelectedModules,
+		InstalledAt:      time.Now(),
+	}
+	if err := st.Save(state.DefaultPath()); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：儲存狀態失敗: %v\n", err)
 	}
 
 	fmt.Println("\n安裝完成！請重新開啟終端機以套用設定。")

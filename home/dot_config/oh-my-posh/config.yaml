@@ -5,7 +5,7 @@ enable_cursor_positioning: true
 console_title_template: "{{ .Username }}@{{ .Hostname }}"
 secondary_prompt:
   background: transparent
-  foreground: "p:comment"
+  foreground: "p:SpanishGray"
   template: "-> "
 transient_prompt:
   background: transparent
@@ -18,24 +18,22 @@ upgrade:
   interval: 168h
 async: true
 palette:
-  # Tokyo Night — mapped from original role
-  Jaguar: "#1a1b26"
-  MineShaft: "#292e42"
-  CopperRust: "#f7768e"
-  Contessa: "#f7768e"
-  MossGreen: "#9ece6a"
-  OliveGreen: "#9ece6a"
-  BrownYellow: "#e0af68"
-  Marzipan: "#e0af68"
-  Lynch: "#7aa2f7"
-  PewterBlue: "#7dcfff"
-  Rum: "#bb9af7"
-  GlossyGrape: "#bb9af7"
-  Patina: "#73daca"
-  ShadowGreen: "#73daca"
-  SpanishGray: "#565f89"
-  Pumice: "#c0caf5"
-  comment: "#565f89"
+  Jaguar: "#282A2E"
+  MineShaft: "#383B40"
+  CopperRust: "#994845"
+  Contessa: "#BF6B69"
+  MossGreen: "#8D944C"
+  OliveGreen: "#B6BD73"
+  BrownYellow: "#D39668"
+  Marzipan: "#E9C880"
+  Lynch: "#66809A"
+  PewterBlue: "#88A1BB"
+  Rum: "#80688C"
+  GlossyGrape: "#AD95B8"
+  Patina: "#688C87"
+  ShadowGreen: "#95BDB7"
+  SpanishGray: "#969896"
+  Pumice: "#C6C8C6"
 version: 4
 
 blocks:
