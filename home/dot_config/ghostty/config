@@ -8,6 +8,14 @@ quick-terminal-position = bottom
 clipboard-read = allow
 clipboard-write = allow
 window-colorspace = display-p3
+window-padding-x = 8
+window-padding-y = 4
+window-padding-balance = true
+window-padding-color = extend
+window-show-tab-bar = auto
+window-save-state = default
+window-inherit-font-size = true
+unfocused-split-opacity = 0.85
 
 # --- 主題：Catppuccin Mocha ---
 theme = Catppuccin Mocha
@@ -35,6 +43,11 @@ palette = 13=#f2aede
 palette = 14=#6bd7ca
 palette = 15=#bac2de
 
+# --- 游標 ---
+cursor-style = block
+cursor-style-blink = false
+cursor-click-to-move = true
+
 # --- 字型 ---
 font-size = 16
 font-family = MesloLGS Nerd Font Mono
@@ -42,6 +55,23 @@ window-title-font-family = MesloLGS Nerd Font Mono
 font-codepoint-map = U+E000-U+F8FF=MesloLGS Nerd Font
 font-codepoint-map = U+F0000-U+FFFFF=MesloLGS Nerd Font
 adjust-cell-height = 15%
+font-thicken = true
+font-shaping-break = cursor
+
+# --- Scrollback ---
+scrollback-limit = 100000000
+
+# --- 滑鼠 ---
+mouse-hide-while-typing = true
+
+# --- 剪貼簿 ---
+clipboard-trim-trailing-spaces = true
+clipboard-paste-protection = true
+clipboard-paste-bracketed-safe = true
+
+# --- 通知（長命令完成時提醒） ---
+notify-on-command-finish = unfocused
+notify-on-command-finish-after = 10s
 
 # --- macOS 設定 ---
 macos-option-as-alt = true
