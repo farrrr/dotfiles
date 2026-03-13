@@ -6,3 +6,10 @@ Library/
 AppData/
 Documents/
 {{- end }}
+
+# 不安裝 SSH 私鑰時忽略加密檔
+{{- if not .install_ssh_keys }}
+.ssh/id_ed25519_farrrr
+.ssh/id_ed25519_github
+.ssh/id_rsa_farrrr
+{{- end }}

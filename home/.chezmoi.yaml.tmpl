@@ -1,11 +1,13 @@
 {{- $email := promptStringOnce . "email" "請輸入 Email 地址" -}}
 {{- $system := promptChoiceOnce . "system" "系統類型" (list "client" "server") -}}
+{{- $installSSHKeys := promptBoolOnce . "install_ssh_keys" "安裝 SSH 私鑰" -}}
 
 data:
   email: {{ $email | quote }}
   system: {{ $system | quote }}
   is_mac: {{ eq .chezmoi.os "darwin" }}
   is_linux: {{ eq .chezmoi.os "linux" }}
+  install_ssh_keys: {{ $installSSHKeys }}
 
 encryption: age
 age:

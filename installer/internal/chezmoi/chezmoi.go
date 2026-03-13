@@ -18,10 +18,11 @@ type ChezmoiConfig struct {
 
 // ChezmoiData 儲存傳入 chezmoi 範本的使用者資料
 type ChezmoiData struct {
-	Email   string `yaml:"email"`
-	System  string `yaml:"system"`
-	IsMac   bool   `yaml:"is_mac"`
-	IsLinux bool   `yaml:"is_linux"`
+	Email          string `yaml:"email"`
+	System         string `yaml:"system"`
+	IsMac          bool   `yaml:"is_mac"`
+	IsLinux        bool   `yaml:"is_linux"`
+	InstallSSHKeys bool   `yaml:"install_ssh_keys"`
 }
 
 // ChezmoiAge 代表 age 加密設定
@@ -30,13 +31,14 @@ type ChezmoiAge struct {
 }
 
 // GenerateConfig 根據使用者設定產生 .chezmoi.yaml
-func GenerateConfig(email, system, osName string) *ChezmoiConfig {
+func GenerateConfig(email, system, osName string, installSSHKeys bool) *ChezmoiConfig {
 	return &ChezmoiConfig{
 		Data: ChezmoiData{
-			Email:   email,
-			System:  system,
-			IsMac:   osName == "darwin",
-			IsLinux: osName == "linux",
+			Email:          email,
+			System:         system,
+			IsMac:          osName == "darwin",
+			IsLinux:        osName == "linux",
+			InstallSSHKeys: installSSHKeys,
 		},
 		Encryption: "age",
 		Age: &ChezmoiAge{

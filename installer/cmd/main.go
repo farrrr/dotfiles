@@ -84,7 +84,7 @@ func main() {
 
 	// --- 第三步：Chezmoi apply（同步 config 到 $HOME） ---
 	homeDir, _ := os.UserHomeDir()
-	chezmoiCfg := chezmoi.GenerateConfig(cfg.Email, cfg.System, profile.DetectOS())
+	chezmoiCfg := chezmoi.GenerateConfig(cfg.Email, cfg.System, profile.DetectOS(), cfg.InstallSSHKeys)
 	if err := chezmoi.WriteConfig(chezmoiCfg, homeDir); err != nil {
 		fmt.Fprintf(os.Stderr, "警告：產生 chezmoi.yaml 失敗: %v\n", err)
 	}

@@ -22,6 +22,7 @@ type Config struct {
 	SelectedModules []string
 	Email           string
 	System          string
+	InstallSSHKeys  bool
 }
 
 // App 是主要的 bubbletea Model
@@ -98,6 +99,7 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if a.configInput.done {
 			a.config.Email = a.configInput.email
+			a.config.InstallSSHKeys = a.configInput.installSSHKeys
 			// TUI 只負責收集設定，安裝流程由 main.go 控制
 			a.state = StateDone
 			return a, tea.Quit
