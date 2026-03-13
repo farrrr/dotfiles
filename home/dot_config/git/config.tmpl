@@ -12,6 +12,8 @@
 	quotepath = false
 	excludesfile = ~/.gitignore
 	pager = delta
+	fsmonitor = true
+	untrackedcache = true
 
 # --- 初始化設定 ---
 [init]
@@ -24,19 +26,28 @@
 [commit]
 	gpgsign = true
 
+[tag]
+	gpgsign = true
+
 # --- 分支操作設定 ---
 [pull]
 	rebase = true
 
 [push]
 	autoSetupRemote = true
+	default = current
 
 [rebase]
 	autoStash = true
+	updateRefs = true
+
+[branch]
+	sort = -committerdate
 
 # --- 合併與差異比較 ---
 [merge]
 	log = true
+	conflictstyle = zdiff3
 
 [diff]
 	algorithm = histogram
@@ -49,17 +60,14 @@
 
 # --- Delta 美化設定 ---
 [delta]
-	syntax-theme = Dracula
+	syntax-theme = tokyonight_night
 	navigate = true
 	tabs = 2
 	side-by-side = true
-	line-numbers = false
-	file-style = bold "#eee8aa"
-	file-decoration-style = ol "#b8860b"
-	hunk-header-line-number-style = "#4169e1"
-	hunk-header-decoration-style = ol "#000080"
-	commit-decoration-style = bold "#00fa9a" box ul
-	word-diff-regex = ''
+	line-numbers = true
+	file-decoration-style = blue ol
+	hunk-header-decoration-style = blue box
+	commit-decoration-style = bold yellow box ul
 
 # --- 狀態與日誌 ---
 [status]
@@ -76,9 +84,24 @@
 # --- 遠端與快取 ---
 [fetch]
 	prune = true
+	pruneTags = true
+	writeCommitGraph = true
+
+[transfer]
+	fsckObjects = true
+
+[receive]
+	fsckObjects = true
 
 [rerere]
 	enabled = true
+
+# --- 輔助 ---
+[column]
+	ui = auto
+
+[help]
+	autocorrect = prompt
 
 # --- ghq ---
 [ghq]
