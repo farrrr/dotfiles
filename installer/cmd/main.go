@@ -21,6 +21,7 @@ func main() {
 	// 命令列參數
 	showVersion := flag.Bool("version", false, "顯示版本資訊")
 	diffMode := flag.Bool("diff", false, "差異模式：只安裝新增的模組")
+	dryRun := flag.Bool("dry-run", false, "預覽模式：只顯示會執行的動作，不實際安裝")
 	flag.Parse()
 
 	if *showVersion {
@@ -57,8 +58,8 @@ func main() {
 		return
 	}
 
-	// 啟動 TUI
-	app := tui.NewApp(availableProfiles, availableModules, dotfilesDir)
+	// 啟動 TUI（dry-run 模式下跳過安裝步驟）
+	app := tui.NewApp(availableProfiles, availableModules, dotfilesDir, *dryRun)
 	p := tea.NewProgram(app, tea.WithAltScreen())
 	finalModel, err := p.Run()
 	if err != nil {
@@ -66,9 +67,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 取得使用者設定並儲存狀態
+	// 取得使用者設定
 	finalApp := finalModel.(tui.App)
 	cfg := finalApp.GetConfig()
+
+	// dry-run 模式：只顯示摘要
+	if *dryRun {
+		printDryRunSummary(cfg, dotfilesDir)
+		return
+	}
 
 	// 儲存安裝狀態
 	st := &state.State{
@@ -152,6 +159,34 @@ func isValidDotfilesDir(dir string) bool {
 		}
 	}
 	return true
+}
+
+// printDryRunSummary 顯示 dry-run 摘要
+func printDryRunSummary(cfg tui.Config, dotfilesDir string) {
+	fmt.Println("\n========== Dry Run 摘要 ==========")
+	fmt.Printf("Profile:     %s\n", cfg.Profile.Name)
+	fmt.Printf("System:      %s\n", cfg.System)
+	fmt.Printf("Email:       %s\n", cfg.Email)
+	fmt.Printf("OS:          %s/%s\n", profile.DetectOS(), profile.DetectArch())
+	fmt.Printf("Dotfiles:    %s\n", dotfilesDir)
+
+	// 依賴排序
+	allModules, _ := profile.LoadModules(filepath.Join(dotfilesDir, "modules"))
+	sorted, _ := profile.ResolveDependencies(cfg.SelectedModules, allModules)
+
+	fmt.Printf("\n將安裝的模組（按執行順序）:\n")
+	for i, name := range sorted {
+		meta := allModules[name]
+		fmt.Printf("  %d. %-15s %s\n", i+1, name, meta.Description)
+	}
+
+	fmt.Printf("\n將執行的動作:\n")
+	fmt.Println("  1. 依序執行上述模組的 install.sh")
+	fmt.Println("  2. 產生 ~/.chezmoi.yaml")
+	fmt.Println("  3. 執行 chezmoi init --apply")
+	fmt.Println("  4. 儲存安裝狀態到 ~/.config/dotfiles/state.yaml")
+	fmt.Println("\n以上為預覽，未實際執行任何操作。")
+	fmt.Println("移除 --dry-run 參數以執行實際安裝。")
 }
 
 // runDiffMode 差異模式：比對 state 並安裝新增的模組

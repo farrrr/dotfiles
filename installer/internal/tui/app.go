@@ -31,6 +31,7 @@ type App struct {
 	profiles    []profile.Profile
 	modules     map[string]profile.ModuleMeta
 	dotfilesDir string
+	dryRun      bool
 
 	// 子畫面
 	profileSelect profileSelectModel
@@ -43,12 +44,13 @@ type App struct {
 }
 
 // NewApp 建立新的 TUI App
-func NewApp(profiles []profile.Profile, modules map[string]profile.ModuleMeta, dotfilesDir string) App {
+func NewApp(profiles []profile.Profile, modules map[string]profile.ModuleMeta, dotfilesDir string, dryRun bool) App {
 	return App{
 		state:         StateProfileSelect,
 		profiles:      profiles,
 		modules:       modules,
 		dotfilesDir:   dotfilesDir,
+		dryRun:        dryRun,
 		profileSelect: newProfileSelectModel(profiles),
 	}
 }
@@ -97,6 +99,13 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if a.configInput.done {
 			a.config.Email = a.configInput.email
+
+			if a.dryRun {
+				// dry-run 模式：跳過安裝，直接結束 TUI
+				a.state = StateDone
+				return a, tea.Quit
+			}
+
 			// 開始安裝
 			sorted, _ := profile.ResolveDependencies(a.config.SelectedModules, a.modules)
 			r := runner.NewRunner(a.dotfilesDir, a.config.System)
