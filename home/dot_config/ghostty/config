@@ -55,6 +55,7 @@ window-title-font-family = MesloLGS Nerd Font Mono
 font-codepoint-map = U+E000-U+F8FF=MesloLGS Nerd Font
 font-codepoint-map = U+F0000-U+FFFFF=MesloLGS Nerd Font
 adjust-cell-height = 15%
+font-thicken = true
 font-shaping-break = cursor
 
 # --- Scrollback ---
