@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +22,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: installer/go.mod
+          cache-dependency-path: installer/go.sum
 
       - name: 交叉編譯所有平台
         working-directory: installer
