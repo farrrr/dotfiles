@@ -66,7 +66,10 @@ func main() {
 	}
 
 	// --- 第二步：TUI 收集設定 ---
-	app := tui.NewApp(availableProfiles, availableModules, dotfilesDir, *dryRun)
+	// 嘗試從既有 chezmoi config 讀取 email 作為預設值
+	defaultEmail := chezmoi.ReadExistingEmail()
+
+	app := tui.NewApp(availableProfiles, availableModules, dotfilesDir, *dryRun, defaultEmail)
 	p := tea.NewProgram(app, tea.WithAltScreen())
 	finalModel, err := p.Run()
 	if err != nil {
@@ -75,6 +78,10 @@ func main() {
 	}
 
 	finalApp := finalModel.(tui.App)
+	if finalApp.Cancelled() {
+		fmt.Println("已取消安裝。")
+		os.Exit(0)
+	}
 	cfg := finalApp.GetConfig()
 
 	if *dryRun {

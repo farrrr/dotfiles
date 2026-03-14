@@ -16,17 +16,22 @@ type configInputModel struct {
 	email          string
 	installSSHKeys bool
 	// SSH 選項在文字輸入完成後顯示
-	showSSHOption bool
+	showSSHOption  bool
+	sshOptionIndex int // 0 = Yes, 1 = No
 }
 
-func newConfigInputModel() configInputModel {
+func newConfigInputModel(defaultEmail string) configInputModel {
 	emailInput := textinput.New()
 	emailInput.Placeholder = "your@email.com"
+	if defaultEmail != "" {
+		emailInput.SetValue(defaultEmail)
+	}
 	emailInput.Focus()
 
 	return configInputModel{
-		inputs: []textinput.Model{emailInput},
-		labels: []string{"Git Email"},
+		inputs:         []textinput.Model{emailInput},
+		labels:         []string{"Git Email"},
+		sshOptionIndex: 1, // 預設 No
 	}
 }
 
@@ -39,11 +44,12 @@ func (m configInputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// SSH 選項畫面
 		if m.showSSHOption {
 			switch keyMsg.String() {
-			case "y", "Y":
-				m.installSSHKeys = true
-				m.done = true
-			case "n", "N", "enter":
-				m.installSSHKeys = false
+			case "left", "h":
+				m.sshOptionIndex = 0
+			case "right", "l":
+				m.sshOptionIndex = 1
+			case "enter":
+				m.installSSHKeys = m.sshOptionIndex == 0
 				m.done = true
 			}
 			return m, nil
@@ -87,7 +93,19 @@ func (m configInputModel) View() string {
 	if m.showSSHOption {
 		s += inputLabelStyle.Render("安裝 SSH 私鑰？") + "\n"
 		s += descStyle.Render("選 No 則使用 SSH Agent Forwarding") + "\n\n"
-		s += helpStyle.Render("y 安裝  n/Enter 跳過  Ctrl+C 取消")
+
+		yes := "  Yes  "
+		no := "  No  "
+		if m.sshOptionIndex == 0 {
+			yes = selectedStyle.Render(yes)
+			no = normalStyle.Render(no)
+		} else {
+			yes = normalStyle.Render(yes)
+			no = selectedStyle.Render(no)
+		}
+		s += fmt.Sprintf("  %s    %s\n\n", yes, no)
+
+		s += helpStyle.Render("← → 切換  Enter 確認  Ctrl+C 取消")
 	} else {
 		s += helpStyle.Render("Enter 確認  Ctrl+C 取消")
 	}

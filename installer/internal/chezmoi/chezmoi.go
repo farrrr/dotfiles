@@ -64,6 +64,21 @@ func WriteConfig(config *ChezmoiConfig, homeDir string) error {
 	return os.WriteFile(path, data, 0o644)
 }
 
+// ReadExistingEmail 從既有的 chezmoi config 讀取 email（自動帶入）
+func ReadExistingEmail() string {
+	homeDir, _ := os.UserHomeDir()
+	path := filepath.Join(homeDir, ".config", "chezmoi", "chezmoi.yaml")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	var cfg ChezmoiConfig
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		return ""
+	}
+	return cfg.Data.Email
+}
+
 // IsInstalled 檢查 chezmoi 是否已安裝
 func IsInstalled() bool {
 	_, err := exec.LookPath("chezmoi")

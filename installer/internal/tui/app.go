@@ -32,6 +32,7 @@ type App struct {
 	modules     map[string]profile.ModuleMeta
 	dotfilesDir string
 	dryRun      bool
+	cancelled   bool
 
 	// 子畫面
 	profileSelect profileSelectModel
@@ -44,7 +45,7 @@ type App struct {
 }
 
 // NewApp 建立新的 TUI App
-func NewApp(profiles []profile.Profile, modules map[string]profile.ModuleMeta, dotfilesDir string, dryRun bool) App {
+func NewApp(profiles []profile.Profile, modules map[string]profile.ModuleMeta, dotfilesDir string, dryRun bool, defaultEmail string) App {
 	return App{
 		state:         StateProfileSelect,
 		profiles:      profiles,
@@ -52,7 +53,13 @@ func NewApp(profiles []profile.Profile, modules map[string]profile.ModuleMeta, d
 		dotfilesDir:   dotfilesDir,
 		dryRun:        dryRun,
 		profileSelect: newProfileSelectModel(profiles),
+		config:        Config{Email: defaultEmail},
 	}
+}
+
+// Cancelled 回傳使用者是否按了 Ctrl+C
+func (a App) Cancelled() bool {
+	return a.cancelled
 }
 
 func (a App) Init() tea.Cmd {
@@ -64,6 +71,7 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if keyMsg, ok := msg.(tea.KeyMsg); ok {
 		switch keyMsg.String() {
 		case "ctrl+c":
+			a.cancelled = true
 			return a, tea.Quit
 		}
 	}
@@ -88,7 +96,7 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if a.moduleSelect.done {
 			a.config.SelectedModules = a.moduleSelect.getSelected()
-			a.configInput = newConfigInputModel()
+			a.configInput = newConfigInputModel(a.config.Email)
 			a.state = StateConfigInput
 		}
 		return a, cmd
