@@ -77,13 +77,15 @@ function zj() {
         elif [[ -n "$selected" ]]; then
             local session_name
             session_name=$(echo "$selected" | awk '{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
-            zellij attach "$session_name"        fi
+            zellij attach "$session_name"
+        fi
     else
         local ZJ_SESSIONS=$(zellij list-sessions 2>/dev/null)
         if [[ -z "$ZJ_SESSIONS" ]]; then
             zellij
         elif [[ $(echo "$ZJ_SESSIONS" | wc -l | tr -d ' ') -eq 1 ]]; then
-            zellij attach        else
+            zellij attach
+        else
             echo "多個 Zellij session："
             echo "$ZJ_SESSIONS"
             echo "使用 'zellij attach <name>' 來連接。"
