@@ -28,8 +28,15 @@ jobs:
         working-directory: installer
         run: make all
 
+      - name: 取得 tag message
+        id: tag_info
+        run: |
+          TAG_MESSAGE=$(git tag -l --format='%(contents:subject)' ${GITHUB_REF_NAME})
+          echo "message=${TAG_MESSAGE}" >> "$GITHUB_OUTPUT"
+
       - name: 建立 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: "${{ github.ref_name }} — ${{ steps.tag_info.outputs.message }}"
           files: installer/dist/*
           generate_release_notes: true
