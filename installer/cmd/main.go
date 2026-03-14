@@ -97,9 +97,10 @@ func main() {
 		}
 	}
 
-	fmt.Println("執行 chezmoi apply...")
-	if err := chezmoi.Apply(); err != nil {
-		fmt.Fprintf(os.Stderr, "警告：chezmoi apply 失敗: %v\n", err)
+	// 用 init --apply 確保 config template 重新產生
+	fmt.Println("執行 chezmoi init --apply...")
+	if err := chezmoi.InitAndApply("farrrr/dotfiles"); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：chezmoi init --apply 失敗: %v\n", err)
 	}
 
 	// --- 第四步：執行 modules ---
