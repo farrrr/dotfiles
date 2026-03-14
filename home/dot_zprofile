@@ -10,6 +10,9 @@ if [[ -f /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+# ~/.local/bin（mise、chezmoi 等工具的安裝位置）
+export PATH="${HOME}/.local/bin:${PATH}"
+
 # Mise 啟動
 if command -v mise &>/dev/null; then
     eval "$(mise activate zsh)"
