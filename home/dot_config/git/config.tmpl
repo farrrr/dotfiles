@@ -5,7 +5,7 @@
 [user]
 	name = Far Tseng
 	email = {{ .email | quote }}
-	signingkey = ~/.ssh/id_ed25519.pub
+	signingkey = ~/.ssh/id_ed25519_farrrr.pub
 
 # --- 核心設定 ---
 [core]
@@ -22,6 +22,10 @@
 # --- SSH 簽署設定 ---
 [gpg]
 	format = ssh
+
+[gpg "ssh"]
+	program = /usr/bin/ssh-keygen
+	allowedSignersFile = ~/.ssh/allowed_signers
 
 [commit]
 	gpgsign = true
