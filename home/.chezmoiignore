@@ -13,3 +13,6 @@ Documents/
 .ssh/id_ed25519_github
 .ssh/id_rsa_farrrr
 {{- end }}
+
+# Claude Code — 由 claude-brain 管理跨機器同步，chezmoi 不介入
+.claude/
