@@ -65,6 +65,10 @@ install_oh_my_posh() {
             brew install jandedobbeleer/oh-my-posh/oh-my-posh
             ;;
         linux)
+            # Oh My Posh 安裝腳本需要 unzip
+            if ! has_command unzip; then
+                sudo apt-get update && sudo apt-get install -y unzip
+            fi
             curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin
             ;;
     esac
