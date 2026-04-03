@@ -44,18 +44,9 @@ install_sheldon() {
             brew install sheldon
             ;;
         linux)
-            local arch
-            arch="$(uname -m)"
-            case "${arch}" in
-                x86_64)  arch="x86_64-unknown-linux-musl" ;;
-                aarch64) arch="aarch64-unknown-linux-musl" ;;
-            esac
-            # 取得最新版本號（asset 檔名含版本號）
-            local version
-            version="$(curl -fsSL https://api.github.com/repos/rossmacarthur/sheldon/releases/latest | grep '"tag_name"' | sed 's/.*"tag_name": *"//;s/".*//')"
-            local url="https://github.com/rossmacarthur/sheldon/releases/download/${version}/sheldon-${version}-${arch}.tar.gz"
             mkdir -p ~/.local/bin
-            curl -fsSL "${url}" | tar xz -C ~/.local/bin sheldon
+            curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+                | bash -s -- --repo "rossmacarthur/sheldon" --to ~/.local/bin
             ;;
     esac
     log_ok "Sheldon 安裝完成"
