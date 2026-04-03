@@ -50,7 +50,10 @@ install_sheldon() {
                 x86_64)  arch="x86_64-unknown-linux-musl" ;;
                 aarch64) arch="aarch64-unknown-linux-musl" ;;
             esac
-            local url="https://github.com/rossmacarthur/sheldon/releases/latest/download/sheldon-${arch}.tar.gz"
+            # 取得最新版本號（asset 檔名含版本號）
+            local version
+            version="$(curl -fsSL https://api.github.com/repos/rossmacarthur/sheldon/releases/latest | grep '"tag_name"' | sed 's/.*"tag_name": *"//;s/".*//')"
+            local url="https://github.com/rossmacarthur/sheldon/releases/download/${version}/sheldon-${version}-${arch}.tar.gz"
             mkdir -p ~/.local/bin
             curl -fsSL "${url}" | tar xz -C ~/.local/bin sheldon
             ;;
