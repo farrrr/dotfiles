@@ -102,6 +102,15 @@ func InitAndApply(repo string) error {
 	return cmd.Run()
 }
 
+// Update 執行 chezmoi update（git pull + apply）
+func Update() error {
+	cmd := exec.Command("chezmoi", "update")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
+}
+
 // Apply 執行 chezmoi apply
 func Apply() error {
 	cmd := exec.Command("chezmoi", "apply")
